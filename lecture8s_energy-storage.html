@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="8s">
+<meta name="lecture-title" content="Energy Storage: Gravity, Heat, and Beyond">
+<meta name="lecture-topic" content="Energy storage categories, pumped hydro u = rho g h, high-density hydro, sensible vs latent heat, supercapacitors, SMES">
+<title>Lecture 8s: Energy Storage</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Energy Storage: Gravity, Heat, and Beyond</h1>
+  <p class="sub">Self-guided review of Lecture 8 (energy storage). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 8: the definition and categories of energy storage, pumped hydro and the u = ρgh gravity-storage example (including high-density hydro), compressed air, sensible versus latent heat, thermal storage with fly ash and phase-change materials, supercapacitors, and SMES. The 10,000 m³ reservoir volume is added for the total-energy step.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l8check.py) ----------
+const G=9.81, RW=1000, RHD=2000, H=100;       // m/s^2, kg/m^3, kg/m^3, m (lecture example)
+const UW = RW*G*H;                              // 981,000 J/m^3
+const UHD = RHD*G*H;                            // 1,962,000 J/m^3
+const H_HD = UW/(RHD*G);                        // 50 m
+const V = 10000;                                // m^3 (reservoir volume for the total-energy step)
+const E_RES = UW*V;                             // 9.81e9 J
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={UW:2,UHD:3,HHD:4,ERES:5,VIA:6,CAES:7,LAT:8,SEN:9,SC:10,SMES:11};
+const fmtN=v=>Math.round(v).toLocaleString('en-US');
+
+const stages=[
+{ // 0
+ title:'What is energy storage?', view:'cats',
+ body:`<p><b>Energy storage</b> is the capture of energy produced at one time for use at a later time, to reduce imbalances between energy demand and energy production.</p>
+ <p>Storage comes in several categories: mechanical, thermal, chemical, magnetic, and biological. This walk-through puts numbers on one mechanical method (gravity storage) and then sorts the others.</p>`,
+ cap:'Categories of energy storage from the lecture, with their examples.'
+},
+{ // 1
+ title:'Gravity storage', view:'hydro',
+ body:`<p>Pumped hydro stores electricity by moving water between an upper and a lower reservoir. The energy stored per cubic meter of fluid is:</p>
+ <span class="eq">u<sub>g</sub> = ρ g h</span>
+ <div class="given"><b>u<sub>g</sub></b> = gravitational potential energy per cubic meter of fluid (J/m³)<br>
+ <b>ρ</b> (rho) = fluid density (kg/m³)<br><b>g</b> = acceleration due to gravity = 9.81 m/s²<br><b>h</b> = height of the upper reservoir above the lower one (m)</div>`,
+ cap:'Pumped hydro: water moves between a lower and an upper reservoir separated by height h.'
+},
+{ // 2
+ title:'A 100 m water system', view:'hydro',
+ body:`<p>Water: ρ = 1,000 kg/m³. Height: h = 100 m.</p>`,
+ cap:'Water raised 100 m. The energy per cubic meter appears once you answer.',
+ q:{type:'num', prompt:'Energy stored per cubic meter of water (J/m³)?', label:'Energy per cubic meter in joules', unit:'J/m³',
+  // target 981,000 | distractors 981 (no rho), 100,000 (no g), 10,194 (divided by g), 9,810 (h=1) | nearest gap 881,000 -> tol 1000
+  answer:UW, tol:1000,
+  ok:`Correct: (1,000 kg/m³)(9.81 m/s²)(100 m) = ${fmtN(UW)} J per cubic meter.`,
+  diagFn:x=>{if(near(x,G*H,0.01))return 'You left out the density. Multiply by ρ = 1,000 kg/m³.';
+   if(near(x,RW*H,0.01))return 'You left out g. Multiply by 9.81 m/s².';
+   if(near(x,RW*H/G,0.01))return 'Multiply by g; don\'t divide.';
+   if(near(x,RW*G,0.01))return 'You left out the height, 100 m.';return null;},
+  generic:'Multiply ρ × g × h = 1,000 × 9.81 × 100.',
+  solution:`1,000 × 9.81 × 100 = <b>${fmtN(UW)} J/m³</b>.`}
+},
+{ // 3
+ title:'A denser fluid', view:'hydro',
+ body:`<p>One innovation from the lecture (High-Density Hydro, RheEnergise in the UK): use a fluid denser than water. Suppose ρ = 2,000 kg/m³, same 100 m height.</p>`,
+ cap:'Same height, fluid twice as dense.',
+ q:{type:'num', prompt:'Energy stored per cubic meter of the dense fluid (J/m³)?', label:'Energy per cubic meter in joules', unit:'J/m³',
+  // target 1,962,000 | distractors 981,000 (water), 490,500 (halved), 3,924,000 (x4) | nearest gap 981,000 -> tol 2000
+  answer:UHD, tol:2000,
+  ok:`Correct: ${fmtN(UHD)} J/m³. Doubling the density doubles the energy stored per cubic meter, because u is proportional to ρ.`,
+  diagFn:x=>{if(near(x,UW,0.005))return 'That is water. Use ρ = 2,000 kg/m³.';
+   if(near(x,UW/2,0.005))return 'A denser fluid stores more, not less. Multiply by 2,000 kg/m³.';
+   if(near(x,UW*4,0.005))return 'u is proportional to ρ, not ρ². Doubling ρ doubles u.';return null;},
+  generic:'Multiply 2,000 × 9.81 × 100.',
+  solution:`2,000 × 9.81 × 100 = <b>${fmtN(UHD)} J/m³</b>.`}
+},
+{ // 4
+ title:'Less elevation for the same energy', view:'hydro',
+ body:`<p>The lecture's point: a higher-density fluid needs less elevation for the same energy. Solve u = ρgh for h:</p>
+ <span class="eq">h = u / (ρ g)</span>`,
+ cap:'How high must the dense fluid go to match water raised 100 m?',
+ q:{type:'num', prompt:'What height gives the 2,000 kg/m³ fluid the same energy per cubic meter as water at 100 m (981,000 J/m³)?', label:'Height in meters', unit:'m',
+  // target 50 | distractors 200 (multiplied), 100 (unchanged), 25 | nearest gap 25 -> tol 0.5
+  answer:H_HD, tol:0.5,
+  ok:'Correct: 981,000 / (2,000 × 9.81) = 50 m. Half the height for the same energy, which is why dense-fluid hydro could turn small hills into batteries.',
+  diagFn:x=>{if(near(x,200,0.01))return 'A denser fluid needs less height, not more. h = u / (ρg).';
+   if(near(x,100,0.01))return 'At 100 m the dense fluid stores twice as much. Find the height that gives 981,000 J/m³.';
+   if(near(x,25,0.01))return 'Check: 2,000 × 9.81 × 25 = 490,500, only half of 981,000.';return null;},
+  generic:'Divide 981,000 by (2,000 × 9.81).',
+  solution:'981,000 / (2,000 × 9.81) = <b>50 m</b>.'}
+},
+{ // 5
+ title:'A whole reservoir', view:'hydro',
+ body:`<p>u is energy <em>per cubic meter</em>. For a reservoir, multiply by the volume of water moved:</p>
+ <span class="eq">E = u × V</span>
+ <p>Suppose 10,000 m³ of water is pumped up 100 m.</p>`,
+ cap:'10,000 cubic meters of water raised 100 m.',
+ q:{type:'num', prompt:'Total energy stored (J)? Use e-notation, e.g. 1.2e9.', label:'Total energy in joules', unit:'J',
+  // target 9.81e9 | distractors 9.81e5 (per m3), 98.1 (divided), 9.81e8, 9.81e10 | tol 0.1e9
+  answer:E_RES, tol:0.1e9,
+  ok:`Correct: 981,000 J/m³ × 10,000 m³ = 9.81 × 10⁹ J.`,
+  diagFn:x=>{if(near(x,UW,0.01))return 'That is per cubic meter. Multiply by the volume, 10,000 m³.';
+   if(near(x,UW/V,0.01))return 'Multiply by the volume; don\'t divide.';
+   if(near(x,E_RES/10,0.01)||near(x,E_RES*10,0.01))return 'Check your power of ten: 9.81 × 10⁵ × 10⁴ = 9.81 × 10⁹.';return null;},
+  generic:'Multiply 981,000 by 10,000.',
+  solution:`981,000 × 10,000 = <b>9.81 × 10⁹ J</b>.`}
+},
+{ // 6
+ title:'Where does pumped hydro work?', view:'hydro',
+ body:`<p>u = ρgh depends on the height difference, and pumped hydro needs two reservoirs of fluid.</p>`,
+ cap:'Pumped hydro needs height and water.',
+ q:{type:'choice', prompt:'Where would pumped hydro be most viable?',
+  options:[{v:'hill',label:'A site with a large elevation difference and water available for two reservoirs'},
+           {v:'flat',label:'A flat, dry plain'},{v:'any',label:'Anywhere: it doesn\'t depend on geography'},{v:'city',label:'The middle of a dense city'}],
+  answer:'hill',
+  ok:'Correct. Energy scales with h, and you need room and water for two reservoirs. Limitations of storage often include suitable natural features tied to geography and geology.',
+  diag:{flat:'With little height difference, h is small, so u = ρgh is small. And a dry site has no water to move.',
+        any:'u = ρgh depends directly on the height available, which depends on the landscape.',
+        city:'Pumped hydro needs space for two reservoirs and a height difference between them.'},
+  generic:'Try again.',
+  solution:'<b>A site with a large elevation difference and water</b> (Lecture 8).'}
+},
+{ // 7
+ title:'Compressed air', view:'cats',
+ body:`<p>Air is pumped into an underground hole, most likely a salt cavern, during off-peak hours when electricity is cheaper. When energy is needed, the air is released, heated, and its expansion turns an electricity generator.</p>`,
+ cap:'Which category does compressed air storage belong to?',
+ q:{type:'choice', prompt:'Compressed air storage is which type of energy storage?',
+  options:[{v:'mech',label:'Mechanical'},{v:'therm',label:'Thermal'},{v:'chem',label:'Chemical'},{v:'mag',label:'Magnetic'}],
+  answer:'mech',
+  ok:'Correct. Energy stored as the compression energy of a gas is mechanical storage, alongside pumped hydro. One note from the lecture: compression creates heat, and if that heat is stored and reused during expansion, efficiency improves considerably.',
+  diag:{therm:'Heat is involved, but the energy is stored as the compression of the gas: mechanical storage.',chem:'No chemical reaction stores the energy; the air is just compressed.',mag:'Magnetic storage uses a superconducting coil, not compressed air.'},
+  generic:'Try again.',
+  solution:'<b>Mechanical</b> (Lecture 8).'}
+},
+{ // 8
+ title:'Sensible versus latent heat', view:'phase',
+ body:`<p><b>Sensible heat</b>: literally, the heat you can feel. When the temperature of a storage medium increases, thermal energy is stored.</p>
+ <p><b>Latent heat</b>: the energy released or absorbed during a phase change (solid-to-liquid: fusion; liquid-to-gas: vaporization; solid-to-gas: sublimation).</p>`,
+ cap:'Heating curve: temperature versus heat added, with sloped and flat segments.',
+ q:{type:'choice', prompt:'A phase-change material (PCM) melts and absorbs heat without its temperature rising. That energy is stored as:',
+  options:[{v:'lat',label:'Latent heat'},{v:'sen',label:'Sensible heat'},{v:'mech',label:'Mechanical energy'}],
+  answer:'lat',
+  ok:'Correct. Heat absorbed during melting is the latent heat of fusion: the flat segment of the heating curve. Latent thermal storage is based on PCMs.',
+  diag:{sen:'Sensible heat raises the temperature. Here the temperature stays the same while the material melts.',mech:'This is thermal storage: heat absorbed during a phase change.'},
+  generic:'Try again.',
+  solution:'<b>Latent heat</b> (Lecture 8).'}
+},
+{ // 9
+ title:'Sensible heat storage', view:'phase',
+ body:`<p>Reclaimed fly ash is being studied as a sensible thermal energy storage material for concentrating solar power: it is heated up to store energy and releases the energy as it cools.</p>`,
+ cap:'Which segments of the heating curve store sensible heat?',
+ q:{type:'choice', prompt:'Heating solid fly ash to a higher temperature (no melting) stores energy as:',
+  options:[{v:'sen',label:'Sensible heat'},{v:'lat',label:'Latent heat'},{v:'chem',label:'Chemical energy'}],
+  answer:'sen',
+  ok:'Correct. The temperature of the storage medium rises: a sloped segment of the heating curve. When the temperature falls, the stored energy is released.',
+  diag:{lat:'Latent heat needs a phase change. The fly ash stays solid; only its temperature changes.',chem:'No reaction stores the energy here; the material just gets hotter.'},
+  generic:'Try again.',
+  solution:'<b>Sensible heat</b> (Lecture 8).'}
+},
+{ // 10
+ title:'Energy versus power', view:'power',
+ body:`<p><b>Energy</b> is the capacity to do work; <b>power</b> is the rate of work. Supercapacitors (also called double-layer capacitors or ultracapacitors) store energy by reversible adsorption and desorption of ions at the electrolyte–electrode interface.</p>`,
+ cap:'Batteries versus supercapacitors: energy density and power density (schematic, no scale).',
+ q:{type:'choice', prompt:'Compared with batteries, supercapacitors have:',
+  options:[{v:'lohi',label:'Lower energy density but greater power density'},{v:'hilo',label:'Higher energy density but lower power density'},{v:'hihi',label:'Higher energy and power density'},{v:'same',label:'The same energy and power density'}],
+  answer:'lohi',
+  ok:'Correct. A supercapacitor holds less energy but can deliver it faster (higher rate of work).',
+  diag:{hilo:'That is backwards: batteries win on energy density; supercapacitors win on power density.',hihi:'Supercapacitors have lower energy density than batteries.',same:'They differ: supercapacitors trade energy density for power density.'},
+  generic:'Try again.',
+  solution:'<b>Lower energy density, greater power density</b> (Lecture 8).'}
+},
+{ // 11
+ title:'Magnetic storage', view:'cats',
+ body:`<p>Superconducting magnetic energy storage (SMES) stores energy in the magnetic field created by direct current flowing in a superconducting coil, cryogenically cooled below its superconducting critical temperature.</p>`,
+ cap:'Magnetic storage and its limitations.',
+ q:{type:'choice', prompt:'Which is a limitation of SMES from the lecture?',
+  options:[{v:'cold',label:'It requires very low temperatures (and is costly)'},{v:'hill',label:'It needs a large elevation difference'},{v:'cave',label:'It needs a salt cavern'},{v:'sugar',label:'It needs a supply of sugar'}],
+  answer:'cold',
+  ok:'Correct. SMES limitations: cost, the need for very low temperatures, and chemical instability of materials.',
+  diag:{hill:'That is a limitation of pumped hydro (mechanical).',cave:'That is compressed air storage (mechanical).',sugar:'That is biological storage (biobatteries).'},
+  generic:'Try again.',
+  solution:'<b>Very low temperatures and cost</b> (Lecture 8).'}
+},
+{ // 12
+ title:'Putting it together', view:'cats',
+ body:`<ul>
+ <li>Energy storage shifts energy from when it is produced to when it is needed.</li>
+ <li>Gravity storage: u = ρgh. Water raised 100 m stores 981,000 J per cubic meter; doubling the density doubles that, or gives the same energy from half the height (50 m).</li>
+ <li>Thermal storage uses sensible heat (temperature change) or latent heat (phase change, as in PCMs).</li>
+ <li>Supercapacitors trade energy density for power density; SMES needs very low temperatures.</li>
+ <li>Common limitations: material availability and properties, suitable natural features tied to geography and geology, cost, and energy density. Room for innovation!</li>
+ </ul>`,
+ cap:'Categories of energy storage from the lecture, with their examples.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+function vlabel(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();}
+const g_=(k)=>done(k)||stage>k;
+
+// ---------- categories ----------
+function drawCats(){
+ const cats=[['Mechanical',['pumped hydro','compressed air'],C.steel],['Thermal',['sensible','latent'],C.terra],['Chemical',['batteries','supercapacitors'],C.teal],['Magnetic',['superconductors (SMES)'],C.purp],['Biological',['biobatteries'],C.green]];
+ const hi=stage===S.CAES?(done(S.CAES)?'compressed air':null):stage===S.SMES?(done(S.SMES)?'superconductors (SMES)':null):null;
+ cats.forEach(([n,items,col],i)=>{const x=20+(i%3)*232, y=40+Math.floor(i/3)*200, w=214, h=170;
+   rrect(x,y,w,h,10);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();
+   ctx.fillStyle=col;rrect(x,y,w,36,10);ctx.fill();txt(n,x+w/2,y+19,{sz:16,b:1,c:'#fff',al:'center'});
+   items.forEach((it,j)=>{const yy=y+62+j*32,h2=it===hi;
+     const hide=(stage===S.CAES&&!done(S.CAES)&&it==='compressed air');
+     if(h2){rrect(x+10,yy-13,w-20,26,6);ctx.fillStyle='#E8F3EC';ctx.fill();}
+     txt('• '+(hide?'?':it),x+18,yy,{sz:14.5,b:h2,c:h2?C.green:C.slate});});
+   if(n==='Magnetic'&&stage===S.SMES&&done(S.SMES))txt('limit: very low temperature',x+w/2,y+140,{sz:13,b:1,c:C.terra,al:'center'});});
+ if(stage===S.CAES&&!done(S.CAES))txt('compressed air goes in which box?',20+2*232+107,40+200+85,{sz:14,b:1,c:C.amber,al:'center'});
+}
+
+// ---------- pumped hydro ----------
+function drawHydro(){
+ // landscape
+ ctx.fillStyle='#E8E1D2';ctx.beginPath();ctx.moveTo(20,400);ctx.lineTo(20,300);ctx.lineTo(160,300);ctx.lineTo(300,100);ctx.lineTo(420,100);ctx.lineTo(420,400);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#8FB8E0';ctx.fillRect(40,280,110,22);ctx.fillRect(310,82,100,20);
+ txt('lower reservoir',95,322,{sz:13,b:1,c:C.steel,al:'center'});txt('upper reservoir',360,64,{sz:13,b:1,c:C.steel,al:'center'});
+ arrow(150,292,300,98,C.steel,2);txt('pump up (store)',190,185,{sz:12.5,c:C.steel,al:'right'});
+ arrow(305,110,160,300,C.teal,2);txt('flow down (generate)',260,215,{sz:12.5,c:C.teal});
+ line(440,91,440,291,C.amber,2);line(430,91,450,91,C.amber,2);line(430,291,450,291,C.amber,2);
+ txt('h = 100 m',454,191,{sz:15,b:1,c:C.amber});txt('(water)',454,209,{sz:12.5,c:C.amber});
+ if(stage===S.HHD){const y50=291-100;line(398,y50,398,291,C.purp,2.5);line(390,y50,406,y50,C.purp,2.5);line(390,291,406,291,C.purp,2.5);
+   txt(g_(S.HHD)?'50 m':'h = ?',390,y50+42,{sz:15,b:1,c:g_(S.HHD)?C.purp:C.terra,al:'right'});txt('dense fluid',390,y50+60,{sz:12.5,c:C.purp,al:'right'});}
+ // bars: energy per m3
+ const bx=520, by=380, sc=240/2.2e6;
+ txt('energy per m³ (J/m³)',610,40,{sz:14,b:1,c:C.navy,al:'center'});
+ const bars=[['water',UW,g_(S.UW)&&stage>=S.UW,C.steel],['ρ = 2,000',UHD,g_(S.UHD)&&stage>=S.UHD,C.purp]];
+ bars.forEach(([n,v,show,col],i)=>{const x=bx+i*95;
+   if(stage>=S.UW+i){if(show){ctx.fillStyle=col;ctx.fillRect(x,by-v*sc,70,v*sc);txt(fmtN(v),x+35,by-v*sc-12,{sz:13,b:1,c:col,al:'center'});}
+   else{ctx.strokeStyle=C.amber;ctx.setLineDash([5,4]);ctx.strokeRect(x,by-120,70,120);ctx.setLineDash([]);txt('?',x+35,by-60,{sz:26,b:1,c:C.amber,al:'center'});}
+   txt(n,x+35,by+16,{sz:13,c:C.slate,al:'center'});}});
+ line(bx-10,by,bx+180,by,C.slate,1.5);
+ if(stage===S.HHD&&g_(S.HHD))txt('dense fluid at 50 m = water at 100 m',CW/2,420,{sz:14,b:1,c:C.green,al:'center'});
+ if(stage===S.ERES)txt('10,000 m³ moved: E = u × V = '+(g_(S.ERES)?'9.81 × 10⁹ J':'?'),CW/2,420,{sz:14.5,b:1,c:g_(S.ERES)?C.green:C.amber,al:'center'});
+ if(stage===1)txt('u = ρ g h',610,220,{sz:24,c:C.navy,serif:1,al:'center'});
+}
+
+// ---------- heating curve ----------
+function drawPhase(){
+ const x0=90,x1=680,y0=380,y1=50;axes(x0,y0,x1,y1);
+ vlabel('Temperature',50,(y0+y1)/2);txt('Heat added',(x0+x1)/2,y0+24,{sz:13.5,c:C.mut,al:'center'});
+ const P=[[x0,y0-10],[200,280],[330,280],[440,160],[560,160],[680,60]];
+ const segs=[[0,'solid','sen'],[1,'melting','lat'],[2,'liquid','sen'],[3,'boiling','lat'],[4,'gas','sen']];
+ const showLat=g_(S.LAT)&&stage>=S.LAT, showSen=g_(S.SEN)&&stage>=S.SEN;
+ segs.forEach(([i,n,kind])=>{const [xa,ya]=P[i],[xb,yb]=P[i+1];
+   let col=C.slate;if(kind==='lat'&&showLat)col=C.purp;if(kind==='sen'&&showSen)col=C.terra;
+   line(xa,ya,xb,yb,col,4);txt(n,(xa+xb)/2+(kind==='lat'?0:12),(ya+yb)/2+(kind==='lat'?-16:10),{sz:13.5,b:1,c:col,al:kind==='lat'?'center':'left'});});
+ if(showLat)txt('flat: latent heat (phase change, T constant)',x0+20,y1+10,{sz:14,b:1,c:C.purp});
+ else if(stage===S.LAT)txt('PCM melting = which kind of heat?',x0+20,y1+10,{sz:14,b:1,c:C.amber});
+ if(showSen)txt('sloped: sensible heat (T rises)',x0+20,y1+32,{sz:14,b:1,c:C.terra});
+ else if(stage===S.SEN)txt('heating solid fly ash = which kind?',x0+20,y1+32,{sz:14,b:1,c:C.amber});
+}
+
+// ---------- energy vs power (schematic) ----------
+function drawPower(){
+ const d=g_(S.SC);
+ txt('schematic comparison (no scale)',CW/2,30,{sz:13,c:C.mut,al:'center'});
+ const groups=[['energy density',[['battery',0.8],['supercapacitor',0.3]]],['power density',[['battery',0.3],['supercapacitor',0.8]]]];
+ groups.forEach(([n,bars],gi)=>{const gx=90+gi*320;txt(n,gx+110,70,{sz:16,b:1,c:C.navy,al:'center'});
+   bars.forEach(([b,v],bi)=>{const x=gx+20+bi*110,h=v*260;
+     if(d){ctx.fillStyle=bi?C.teal:C.steel;ctx.fillRect(x,360-h,80,h);}
+     else{ctx.strokeStyle=C.line;ctx.lineWidth=1.5;ctx.strokeRect(x,160,80,200);txt('?',x+40,260,{sz:24,b:1,c:C.amber,al:'center'});}
+     txt(b,x+40,378,{sz:13,c:C.slate,al:'center'});});
+   line(gx,360,gx+240,360,C.slate,1.5);});
+ txt('energy = capacity to do work · power = rate of work',CW/2,414,{sz:14,b:1,c:C.navy,al:'center'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({cats:drawCats,hydro:drawHydro,phase:drawPhase,power:drawPower})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

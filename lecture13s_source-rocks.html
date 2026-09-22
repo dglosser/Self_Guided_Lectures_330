@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="13s">
+<meta name="lecture-title" content="Source Rocks: Cooking Oil and Gas">
+<meta name="lecture-topic" content="Source rock TOC, kerogen types, geothermal gradient, maturation windows, viscosity, sweet vs sour crude">
+<title>Lecture 13s: Source Rocks</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Source Rocks: Cooking Oil and Gas</h1>
+  <p class="sub">Self-guided review of Lecture 13 (source system and crude quality). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 13: source rock definition and TOC thresholds, organic matter types, black shales, the geothermal gradient, phases of petroleum maturation, viscosity, sweet versus sour crude, and benchmark crude quality. The example TOC values, depths, 180 °C burial, and 1.8% sulfur crude are added for the exercises.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l13check.py) ----------
+// Temperature increase (°F) = gradient (°F per 100 ft) × depth (ft) / 100   (gradients 0.6–1.6 °F/100 ft, lecture)
+const dT=(grad,d)=>grad*d/100, depthFor=(grad,t)=>t/grad*100;
+const D1=10000, T_10=dT(1.0,D1), T_16=dT(1.6,D1);          // 100, 160 °F
+const TGT=200, Z_16=depthFor(1.6,TGT), Z_06=depthFor(0.6,TGT); // 12,500 ft, 33,333 ft
+const V_HEAVY=1000, V_LIGHT=10, V_RATIO=V_HEAVY/V_LIGHT;       // centipoise; 100
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={WC:1,MID:2,TYPE:3,BLACK:4,T10:6,T16:7,Z16:8,Z06:9,ORDER:10,GAS:11,GRAPH:12,VIS:13,SOUR:14,PREM:15};
+const fmtN=v=>Math.round(v).toLocaleString('en-US');
+
+const tocOpts=[{v:'no',label:'Not a source rock'},{v:'src',label:'A source rock, but not world class'},{v:'wc',label:'A world-class source rock (TOC-wise)'}];
+const stages=[
+{ // 0
+ title:'The kitchen: source rocks', view:'toc',
+ body:`<p>A <b>source rock</b> is any fine-grained, organic-rich rock capable of generating petroleum, given sufficient exposure to heat and pressure. It needs:</p>
+ <ul><li>enough finely dispersed organic matter of biological origin,</li><li>organic matter that is hydrogen-rich, and</li><li>burial deep enough to reach the temperatures that start petroleum generation.</li></ul>
+ <div class="given"><b>TOC</b> = total organic content (weight %)<br>&gt; 1% TOC: considered a source rock<br>&gt; 15% TOC: considered world class (if it is also thick and widespread)</div>`,
+ cap:'Total organic content thresholds for source rocks.'
+},
+{ // 1
+ title:'World class?', view:'toc',
+ body:`<p>A thick, widespread black shale has <b>18% TOC</b>.</p>`,
+ cap:'Where does 18% TOC fall on the scale?',
+ q:{type:'choice', prompt:'Based on TOC, this rock is:', options:tocOpts, answer:'wc',
+  ok:'Correct. 18% exceeds 15% TOC, and it is thick and widespread: world class.',
+  diag:{no:'18% is well above the 1% threshold.',src:'It is a source rock, but 18% also exceeds the 15% world-class threshold.'},
+  generic:'Try again.', solution:'<b>World class</b>: 18% > 15% TOC (Lecture 13).'}
+},
+{ // 2
+ title:'A middle case', view:'toc',
+ body:`<p>A second shale has <b>5% TOC</b>. (Good source rocks commonly have 3–10% TOC.)</p>`,
+ cap:'Where does 5% TOC fall?',
+ q:{type:'choice', prompt:'Based on TOC, this rock is:', options:tocOpts, answer:'src',
+  ok:'Correct. 5% is above 1% (a source rock) but below 15% (not world class). It is in the good 3–10% range.',
+  diag:{no:'5% is above the 1% threshold for a source rock.',wc:'World class needs more than 15% TOC.'},
+  generic:'Try again.', solution:'<b>A source rock, not world class</b>: 1% < 5% < 15%.'}
+},
+{ // 3
+ title:'What kind of organic matter?', view:'types',
+ body:`<p>The type of organic material matters for the type of petroleum generated:</p>
+ <ul><li><b>Type I</b> (algal): marine and freshwater algae; waxy crude oils</li>
+ <li><b>Type II</b> (liptinic): algal detritus, zooplankton, phytoplankton; oil and gas</li>
+ <li><b>Type III</b> (humic): terrestrial plant matter</li><li><b>Type IV</b>: reworked, oxidized material</li></ul>`,
+ cap:'Kerogen types and what they generate. Type III\'s product appears once you answer.',
+ q:{type:'choice', prompt:'Type III (terrestrial plant) organic matter is:',
+  options:[{v:'gas',label:'Gas prone, and associated with coal'},{v:'wax',label:'The source of waxy crude oils'},{v:'none',label:'Generates nothing'},{v:'both',label:'Marine plankton that generates oil and gas'}],
+  answer:'gas',
+  ok:'Correct. Land-plant (humic) material is gas prone and associated with coal, which ties back to the coal lecture.',
+  diag:{wax:'Waxy crude oils come from Type I (algal) matter.',none:'That describes Type IV, which is reworked and oxidized.',both:'That describes Type II. Type III is land plants.'},
+  generic:'Try again.', solution:'<b>Gas prone; associated with coal</b> (Lecture 13).'}
+},
+{ // 4
+ title:'Not all shales are source rocks', view:'types',
+ body:`<p>Shale is the most common sedimentary rock, but only some shales are source rocks. Black organic shales get their color from tiny particles of organic matter deposited with the mud.</p>`,
+ cap:'Black organic shale: what does the color tell you?',
+ q:{type:'choice', prompt:'A black organic shale almost always formed in:',
+  options:[{v:'anox',label:'An oxygen-deficient (anoxic) environment'},{v:'ox',label:'A well-oxygenated environment'},{v:'desert',label:'A dry desert'}],
+  answer:'anox',
+  ok:'Correct. The black color almost always implies an anoxic depositional environment, where organic matter escaped decay.',
+  diag:{ox:'Oxygen would have let the organic matter decay; the preserved dark organic particles point to low oxygen.',desert:'Shale forms from mud deposited in water, and the organic matter points to anoxic water.'},
+  generic:'Try again.', solution:'<b>Anoxic</b> (Lecture 13).'}
+},
+{ // 5
+ title:'Heat: the geothermal gradient', view:'grad',
+ body:`<p>Temperature in the earth increases with depth. In most hydrocarbon-producing areas, the gradient is <b>0.6 to 1.6 °F per 100 ft</b> of depth.</p>
+ <span class="eq">temperature increase (°F) = gradient (°F per 100 ft) × depth (ft) / 100</span>`,
+ cap:'Temperature increase with depth for gradients of 0.6, 1.0, and 1.6 °F per 100 ft.'
+},
+{ // 6
+ title:'An average basin', view:'grad',
+ body:`<p>Gradient: 1.0 °F per 100 ft. Depth: 10,000 ft.</p>`,
+ cap:'1.0 °F per 100 ft, read at 10,000 ft. The value appears once you answer.',
+ q:{type:'num', prompt:'Temperature increase at 10,000 ft (°F)?', label:'Temperature increase in degrees F', unit:'°F',
+  // target 100 | distractors 10,000 (no /100), 1 (divided by 10,000), 1,000,000 | integer-ish tol 0.5
+  answer:T_10, tol:0.5,
+  ok:'Correct: 1.0 × 10,000 / 100 = 100 °F warmer than the surface.',
+  diagFn:x=>{if(near(x,1.0*D1,0.001))return 'The gradient is per 100 ft: divide the depth by 100 first.';if(near(x,1,0.01))return 'There are 100 "100-ft" steps in 10,000 ft, so multiply the gradient by 100.';return null;},
+  generic:'10,000 ft is 100 steps of 100 ft; multiply by the gradient.', solution:'1.0 × 10,000 / 100 = <b>100 °F</b>.'}
+},
+{ // 7
+ title:'A hotter basin', view:'grad',
+ body:`<p>Gradient: 1.6 °F per 100 ft. Depth: 10,000 ft.</p>`,
+ cap:'1.6 °F per 100 ft, read at 10,000 ft.',
+ q:{type:'num', prompt:'Temperature increase at 10,000 ft (°F)?', label:'Temperature increase in degrees F', unit:'°F',
+  // target 160 | distractors 16,000, 100 (1.0 gradient), 62.5 (divided) | tol 0.5
+  answer:T_16, tol:0.5,
+  ok:'Correct: 1.6 × 10,000 / 100 = 160 °F, 60 °F hotter than the average basin at the same depth.',
+  diagFn:x=>{if(near(x,1.6*D1,0.001))return 'Divide the depth by 100 first: the gradient is per 100 ft.';if(near(x,T_10,0.001))return 'That uses 1.0 °F/100 ft. This basin is 1.6.';if(near(x,D1/100/1.6,0.01))return 'Multiply by the gradient; don\'t divide.';return null;},
+  generic:'Compute 1.6 × 10,000 / 100.', solution:'1.6 × 10,000 / 100 = <b>160 °F</b>.'}
+},
+{ // 8
+ title:'How deep to reach a target temperature?', view:'grad',
+ body:`<p>Rearrange to find the depth where the rock is 200 °F warmer than the surface:</p>
+ <span class="eq">depth (ft) = temperature increase / gradient × 100</span>
+ <p>Hot basin: 1.6 °F per 100 ft.</p>`,
+ cap:'Depth to reach a 200 °F increase in the hot basin.',
+ q:{type:'num', prompt:'Depth for a 200 °F increase at 1.6 °F per 100 ft (ft)?', label:'Depth in feet', unit:'ft',
+  // target 12,500 | distractors 320 (multiplied, no 100), 125 (no x100), 32,000 (multiplied) | tol 50
+  answer:Z_16, tol:50,
+  ok:'Correct: 200 / 1.6 × 100 = 12,500 ft.',
+  diagFn:x=>{if(near(x,TGT/1.6,0.01))return 'That is the number of 100-ft steps. Multiply by 100 to get feet.';if(near(x,TGT*1.6*100,0.01)||near(x,TGT*1.6,0.01))return 'Divide the temperature increase by the gradient; don\'t multiply.';return null;},
+  generic:'Compute 200 / 1.6 × 100.', solution:'200 / 1.6 = 125 steps × 100 ft = <b>12,500 ft</b>.'}
+},
+{ // 9
+ title:'Same target, cool basin', view:'grad',
+ body:`<p>Now a cool basin: 0.6 °F per 100 ft. Same 200 °F increase.</p>`,
+ cap:'Depth to reach a 200 °F increase in the cool basin, compared with the hot one.',
+ q:{type:'num', prompt:'Depth for a 200 °F increase at 0.6 °F per 100 ft (ft)?', label:'Depth in feet', unit:'ft',
+  // target 33,333 | distractors 333 (no x100), 12,500 (hot basin), 120 | tol 150
+  answer:Z_06, tol:150,
+  ok:`Correct: 200 / 0.6 × 100 ≈ ${fmtN(Z_06)} ft, almost three times deeper than the hot basin. A cool basin needs much deeper burial to "cook" the same source rock.`,
+  diagFn:x=>{if(near(x,TGT/0.6,0.01))return 'That is the number of 100-ft steps. Multiply by 100.';if(near(x,Z_16,0.005))return 'That is the hot basin. Use 0.6 °F per 100 ft.';if(near(x,TGT*0.6,0.01)||near(x,TGT*0.6*100,0.01))return 'Divide by the gradient; don\'t multiply.';return null;},
+  generic:'Compute 200 / 0.6 × 100.', solution:`200 / 0.6 × 100 = <b>${fmtN(Z_06)} ft</b>.`}
+},
+{ // 10
+ title:'Phases of maturation', view:'phase',
+ body:`<p>After deposition (proteins, lipids, and carbohydrates buried with sediment), temperature, pressure, and time break the molecules into smaller, simpler building blocks.</p>`,
+ cap:'Phases of petroleum maturation with increasing depth and temperature. Labels appear once you answer.',
+ q:{type:'choice', prompt:'In order of increasing depth and temperature, the phases are:',
+  options:[{v:'ok',label:'Diagenesis (kerogen) → catagenesis (oil and gas) → metagenesis (graphite)'},{v:'rev',label:'Metagenesis → catagenesis → diagenesis'},{v:'mix',label:'Catagenesis (kerogen) → diagenesis (oil and gas) → metagenesis (graphite)'}],
+  answer:'ok',
+  ok:'Correct. Diagenesis makes kerogen (a dewatered, waxy material) under mild T and P; catagenesis cracks kerogen into oil and gas; metagenesis drives off hydrogen, leaving graphite.',
+  diag:{rev:'That is the reverse order. Kerogen forms first, under the mildest conditions.',mix:'Diagenesis comes first and makes kerogen; catagenesis then generates oil and gas.'},
+  generic:'Try again.', solution:'<b>Diagenesis → catagenesis → metagenesis</b> (Lecture 13).'}
+},
+{ // 11
+ title:'Oil or gas?', view:'phase',
+ body:`<p>From the lecture: oil forms at about <b>75–150 °C</b> (2–4 km); longer hydrocarbon chains are cracked to shorter ones, gas, at about <b>100–220 °C</b> (4–6 km).</p>
+ <p>A source rock has been buried to where it sits at <b>180 °C</b>.</p>`,
+ cap:'Oil and gas windows by temperature. Where does 180 °C fall?',
+ q:{type:'choice', prompt:'At 180 °C, this source rock generates mainly:',
+  options:[{v:'gas',label:'Gas'},{v:'oil',label:'Oil'},{v:'ker',label:'Kerogen only'},{v:'gr',label:'Graphite'}],
+  answer:'gas',
+  ok:'Correct. 180 °C is above the oil window (75–150 °C) but within the gas window (100–220 °C).',
+  diag:{oil:'The oil window tops out at about 150 °C. At 180 °C, oil chains are cracked into gas.',ker:'Kerogen forms at mild temperatures (diagenesis). 180 °C is well into catagenesis.',gr:'Graphite forms above about 250 °C.'},
+  generic:'Try again.', solution:'<b>Gas</b>: 150 °C < 180 °C < 220 °C.'}
+},
+{ // 12
+ title:'Overcooked', view:'phase',
+ body:`<p>Now the same rock is buried even deeper, to <b>above 250 °C</b>.</p>`,
+ cap:'Beyond the gas window.',
+ q:{type:'choice', prompt:'Above about 250 °C, what is left?',
+  options:[{v:'gr',label:'Graphite: hydrogen is driven off, leaving residual carbon'},{v:'oil',label:'Heavy oil'},{v:'gas',label:'More natural gas than ever'}],
+  answer:'gr',
+  ok:'Correct. In metagenesis, hydrogen is driven off, leaving residual carbon: graphite, the crystalline form of carbon.',
+  diag:{oil:'Oil was already cracked to gas at lower temperatures.',gas:'The gas window ends at about 220 °C; above 250 °C the hydrogen is gone.'},
+  generic:'Try again.', solution:'<b>Graphite</b> (Lecture 13).'}
+},
+{ // 13
+ title:'Crude quality: viscosity', view:'visc',
+ body:`<p><b>Viscosity</b> is a fluid's resistance to flow (its internal friction), measured in centipoise (cP). Water is about 1 cP. From the lecture's table: heavy oil is around 10³ cP (like molasses or honey); light oil around 1–10 cP.</p>`,
+ cap:'Viscosity of crude oils on a log scale (centipoise).',
+ q:{type:'num', prompt:'How many times more viscous is a heavy oil at 1,000 cP than a light oil at 10 cP?', label:'Ratio', unit:'×',
+  // target 100 | distractors 0.01 (inverted), 990 (difference), 1000 | tol 0.5
+  answer:V_RATIO, tol:0.5,
+  ok:'Correct: 1,000 / 10 = 100 times. On the log scale that is two steps (two factors of 10).',
+  diagFn:x=>{if(near(x,0.01,0.01))return 'Put the heavy oil on top: 1,000 / 10.';if(near(x,990,0.001))return 'That is the difference. "How many times" asks for the ratio.';if(near(x,1000,0.001))return 'That compares heavy oil with water (1 cP). Use the light oil, 10 cP.';return null;},
+  generic:'Divide 1,000 by 10.', solution:'1,000 / 10 = <b>100×</b>.'}
+},
+{ // 14
+ title:'Sweet or sour?', view:'crude',
+ body:`<p>Sulfur content: <b>sweet</b> crude has less than 0.5% sulfur; <b>sour</b> crude has more than 0.5%. Sour crude has more hydrogen sulfide and CO₂; its impurities must be removed before refining into gasoline, increasing processing cost.</p>
+ <p>A crude contains <b>1.8% sulfur</b>.</p>`,
+ cap:'Crude quality chart: sulfur content versus density (API gravity).',
+ q:{type:'choice', prompt:'This crude is:',
+  options:[{v:'sour',label:'Sour'},{v:'sweet',label:'Sweet'}],
+  answer:'sour',
+  ok:'Correct. 1.8% is above the 0.5% threshold: sour.',
+  diag:{sweet:'Sweet crude has less than 0.5% sulfur; 1.8% is well above that.'},
+  generic:'Try again.', solution:'<b>Sour</b>: 1.8% > 0.5% sulfur.'}
+},
+{ // 15
+ title:'Which crude sells at a premium?', view:'crude',
+ body:`<p>On the benchmark chart, higher API gravity means lighter (less dense) oil, and lower sulfur means sweeter.</p>`,
+ cap:'The four quality quadrants. Which is most valuable to a refiner?',
+ q:{type:'choice', prompt:'Which kind of crude generally sells at a premium?',
+  options:[{v:'ls',label:'Light, sweet'},{v:'hs',label:'Heavy, sour'},{v:'hsw',label:'Heavy, sweet'},{v:'lso',label:'Light, sour'}],
+  answer:'ls',
+  ok:'Correct. Light, sweet crude flows easily and needs little sulfur removal, so it is cheaper to process into gasoline, kerosene, and diesel. Heavy, sour crude costs more to refine and has a higher carbon intensity when processed.',
+  diag:{hs:'Heavy, sour crude is the most costly to process: viscous and full of sulfur.',hsw:'Sweet helps, but heavy crude is viscous and harder to process.',lso:'Light helps, but the sulfur must be removed, adding cost.'},
+  generic:'Try again.', solution:'<b>Light, sweet</b> (Lecture 13).'}
+},
+{ // 16
+ title:'Putting it together', view:'phase',
+ body:`<ul>
+ <li>A source rock is fine grained and organic rich (> 1% TOC; > 15% and thick and widespread is world class), often a black shale deposited in anoxic water. The organic matter type controls oil versus gas.</li>
+ <li>Heat comes from burial: 0.6–1.6 °F per 100 ft. A cool basin needs much deeper burial to reach the same temperature.</li>
+ <li>Diagenesis makes kerogen; catagenesis cracks it to oil (≈ 75–150 °C) and then gas (≈ 100–220 °C); above ≈ 250 °C, only graphite remains.</li>
+ <li>Crude quality (viscosity, sulfur) sets value: light, sweet crudes sell at a premium.</li>
+ </ul>`,
+ cap:'Phases of petroleum maturation with increasing depth and temperature.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+function vlabel(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();}
+const g_=(k)=>done(k)||stage>k;
+
+function drawToc(){
+ const x0=60,x1=680,X=v=>x0+v/25*(x1-x0),y=180;
+ ctx.fillStyle='#E6E1D8';ctx.fillRect(X(0),y,X(1)-X(0),40);ctx.fillStyle='#8FA7C8';ctx.fillRect(X(1),y,X(15)-X(1),40);ctx.fillStyle='#2E5496';ctx.fillRect(X(15),y,X(25)-X(15),40);
+ txt('< 1%: not a source rock',X(0),y+80,{sz:12.5,c:C.mut});txt('source rock',X(8),y+20,{sz:15,b:1,c:'#fff',al:'center'});txt('world class',X(20),y+20,{sz:15,b:1,c:'#fff',al:'center'});
+ ctx.fillStyle='rgba(44,110,73,0.25)';ctx.fillRect(X(3),y+44,X(10)-X(3),10);txt('good: 3–10%',X(6.5),y+64,{sz:12.5,c:C.green,al:'center'});
+ line(x0,y+100,x1,y+100,C.slate,1.5);for(let v=0;v<=25;v+=5){line(X(v),y+100,X(v),y+106,C.slate,1.5);txt(v+'%',X(v),y+118,{sz:13,c:C.mut,al:'center'});}
+ line(X(1),y-10,X(1),y+100,C.slate,1,true);line(X(15),y-10,X(15),y+100,C.slate,1,true);
+ txt('TOC (total organic content, weight %)',CW/2,y+146,{sz:13.5,c:C.mut,al:'center'});
+ const mark=(v,k)=>{const d=g_(k);ctx.beginPath();ctx.moveTo(X(v),y-6);ctx.lineTo(X(v)-8,y-22);ctx.lineTo(X(v)+8,y-22);ctx.closePath();ctx.fillStyle=d?C.green:C.terra;ctx.fill();txt(v+'%',X(v),y-32,{sz:15,b:1,c:d?C.green:C.terra,al:'center'});};
+ if(stage===S.WC||stage>S.WC&&stage<=S.MID)mark(18,S.WC);if(stage===S.MID)mark(5,S.MID);
+ txt('world class also needs: thick and widespread',CW/2,60,{sz:13.5,c:C.navy,al:'center'});
+}
+function drawTypes(){
+ const rows=[['I','algal','waxy crude oils','#E8890C'],['II','plankton, algal detritus','oil and gas','#1F7A63'],['III','terrestrial plants',g_(S.TYPE)?'gas prone; coal':'?','#8B5A2B'],['IV','reworked, oxidized','none','#9AA3AE']];
+ rows.forEach(([t,s,p,col],i)=>{const y=60+i*72;rrect(60,y,600,56,10);ctx.fillStyle=C.light;ctx.fill();ctx.fillStyle=col;rrect(60,y,70,56,10);ctx.fill();
+   txt('Type '+t,95,y+28,{sz:15,b:1,c:'#fff',al:'center'});txt(s,150,y+28,{sz:15,c:C.navy});txt(p,640,y+28,{sz:15,b:1,c:p==='?'?C.amber:col,al:'right'});});
+ if(stage===S.BLACK){const d=g_(S.BLACK);txt(d?'black shale → anoxic deposition':'black shale → ?',CW/2,370,{sz:15,b:1,c:d?C.green:C.amber,al:'center'});}
+}
+function drawGrad(){
+ const x0=100,x1=560,y0=60,y1=390,X=t=>x0+t/350*(x1-x0),Y=d=>y0+d/35000*(y1-y0);
+ ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();
+ for(let t=0;t<=350;t+=50){line(X(t),y0,X(t),y0-5,C.slate,1.5);txt(String(t),X(t),y0-14,{sz:12.5,c:C.mut,al:'center'});}
+ for(let d=0;d<=35000;d+=5000){line(x0-5,Y(d),x0,Y(d),C.slate,1.5);txt(d.toLocaleString('en-US'),x0-9,Y(d),{sz:12.5,c:C.mut,al:'right'});}
+ txt('Temperature increase (°F)',(x0+x1)/2,y0-32,{sz:13.5,c:C.mut,al:'center'});vlabel('Depth (ft)',24,(y0+y1)/2);
+ [[0.6,C.steel],[1.0,C.purp],[1.6,C.terra]].forEach(([gr,col])=>{const dEnd=Math.min(35000,350/gr*100);line(X(0),Y(0),X(dT(gr,dEnd)),Y(dEnd),col,2.5);
+   });
+ [[0.6,C.steel],[1.0,C.purp],[1.6,C.terra]].forEach(([gr,col],i)=>{line(590,210+i*24,620,210+i*24,col,3);txt(gr.toFixed(1)+' °F/100 ft',626,210+i*24,{sz:13,b:1,c:col});});
+ const pt=(t,d,k,lab)=>{const ok=g_(k);ctx.beginPath();ctx.arc(X(t),Y(d),6,0,2*Math.PI);ctx.fillStyle=ok?C.green:C.amber;ctx.fill();txt(ok?lab:'?',X(t)-10,Y(d)+2,{sz:14,b:1,c:ok?C.green:C.amber,al:'right'});};
+ if(stage>=S.T10&&stage<S.Z16){line(x0,Y(D1),x1,Y(D1),C.line,1,true);pt(T_10,D1,S.T10,'+100 °F');if(stage>=S.T16)pt(T_16,D1,S.T16,'+160 °F');}
+ if(stage>=S.Z16){line(X(TGT),y0,X(TGT),y1,C.line,1,true);txt('+200 °F',X(TGT)+4,y1-6,{sz:12.5,c:C.mut});pt(TGT,Z_16,S.Z16,fmtN(Z_16)+' ft');if(stage>=S.Z06)pt(TGT,Z_06,S.Z06,fmtN(Z_06)+' ft');}
+ rrect(575,80,135,90,8);ctx.fillStyle=C.light;ctx.fill();txt('ΔT = gradient',642,105,{sz:13,b:1,c:C.navy,al:'center'});txt('× depth / 100',642,125,{sz:13,b:1,c:C.navy,al:'center'});txt('(°F, ft)',642,148,{sz:12,c:C.mut,al:'center'});
+}
+function drawPhase(){
+ const x0=120,x1=600,y0=50,y1=390,Y=t=>y0+t/300*(y1-y0);
+ const d=g_(S.ORDER)||stage===16;
+ [['diagenesis → kerogen',0,75,'#E6E1D8'],['catagenesis → oil and gas',75,220,'#F4D9A6'],['',220,250,'#E9D0D0'],['metagenesis → graphite',250,300,'#BFC3C9']].forEach(([n,a,b,col])=>{ctx.fillStyle=col;ctx.fillRect(x0,Y(a),x1-x0,Y(b)-Y(a));if(n)txt(d?n:'?',x0+14,(Y(a)+Y(b))/2,{sz:15,b:1,c:d?C.navy:C.amber});});
+ // windows
+ ctx.fillStyle='rgba(107,142,58,0.6)';ctx.fillRect(470,Y(75),50,Y(150)-Y(75));txt('oil',495,(Y(75)+Y(150))/2,{sz:13,b:1,c:'#fff',al:'center'});
+ ctx.fillStyle='rgba(184,80,66,0.6)';ctx.fillRect(530,Y(100),50,Y(220)-Y(100));txt('gas',555,(Y(100)+Y(220))/2,{sz:13,b:1,c:'#fff',al:'center'});
+ for(let t=0;t<=300;t+=50){line(x0-5,Y(t),x0,Y(t),C.slate,1.5);txt(t+' °C',x0-9,Y(t),{sz:12.5,c:C.mut,al:'right'});}
+ vlabel('Increasing depth and temperature',30,(y0+y1)/2);
+ if(stage===S.GAS){line(x0,Y(180),x1+20,Y(180),C.terra,2.5);txt('180 °C',x1+24,Y(180),{sz:14,b:1,c:C.terra});}
+ if(stage===S.GRAPH){line(x0,Y(260),x1+20,Y(260),C.terra,2.5);txt('> 250 °C',x1+24,Y(260),{sz:14,b:1,c:C.terra});}
+ txt('oil ≈ 75–150 °C · gas ≈ 100–220 °C (lecture)',CW/2,y1+26,{sz:13,c:C.mut,al:'center'});
+}
+function drawVisc(){
+ const x0=160,x1=680,X=v=>x0+(Math.log10(v)+1)/9*(x1-x0);
+ const rows=[['ultra-light oil',0.1,1,'nail polish remover'],['light oil',1,10,'water'],['intermediate oil',10,100,'maple syrup'],['heavy oil',100,1000,'molasses, honey'],['extra-heavy oil',1e3,1e5,'ketchup, peanut butter'],['tar, bitumen',1e5,1e7,'window putty']];
+ rows.forEach(([n,a,b,f],i)=>{const y=50+i*48;txt(n,x0-10,y+12,{sz:13.5,b:1,c:C.navy,al:'right'});ctx.fillStyle='rgba(46,84,150,'+(0.3+i*0.12)+')';ctx.fillRect(X(a),y,X(b)-X(a),24);txt(f,X(b)+6,y+12,{sz:12,c:C.mut});});
+ const ay=350;line(x0,ay,x1,ay,C.slate,1.5);for(let e=-1;e<=8;e++){line(X(Math.pow(10,e)),ay,X(Math.pow(10,e)),ay+5,C.slate,1.5);txt('10',X(Math.pow(10,e))-4,ay+17,{sz:12.5,c:C.mut,al:'center'});txt(String(e).replace('-','−'),X(Math.pow(10,e))+5,ay+11,{sz:10,c:C.mut});}
+ txt('Viscosity (centipoise, log scale); water ≈ 1 cP',(x0+x1)/2,ay+40,{sz:13.5,c:C.mut,al:'center'});
+ const d=g_(S.VIS);line(X(10),330,X(1000),330,d?C.green:C.amber,2.5);txt(d?'× 100':'× ?',(X(10)+X(1000))/2,318,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+}
+function drawCrude(){
+ const x0=120,x1=640,y0=380,y1=60,X=a=>x0+(a-20)/30*(x1-x0),Y=s=>y0-s/3.5*(y0-y1);
+ ctx.fillStyle='#E7B7B2';ctx.fillRect(X(20),Y(3.5),X(26)-X(20),Y(0.5)-Y(3.5));ctx.fillStyle='#F6F1C8';ctx.fillRect(X(26),Y(3.5),X(50)-X(26),Y(0.5)-Y(3.5));
+ ctx.fillStyle='#D9E3C8';ctx.fillRect(X(20),Y(0.5),X(26)-X(20),Y(0)-Y(0.5));ctx.fillStyle='#BFD9A8';ctx.fillRect(X(26),Y(0.5),X(50)-X(26),Y(0)-Y(0.5));
+ txt('heavy / sour',X(23),Y(2),{sz:13,b:1,c:C.navy,al:'center'});txt('light / sour',X(38),Y(2),{sz:14,b:1,c:C.navy,al:'center'});
+ txt('heavy/sweet',X(23),Y(0.25),{sz:11.5,b:1,c:C.navy,al:'center'});
+ const p=stage===S.PREM&&g_(S.PREM);txt('light / sweet'+(p?': premium':''),X(38),Y(0.25),{sz:14,b:1,c:p?C.green:C.navy,al:'center'});
+ axes(x0,y0,x1,y1);for(let a=20;a<=50;a+=5){line(X(a),y0,X(a),y0+5,C.slate,1.5);txt(String(a),X(a),y0+16,{sz:12.5,c:C.mut,al:'center'});}
+ for(let s=0;s<=3.5;s+=0.5){line(x0-5,Y(s),x0,Y(s),C.slate,1.5);txt(s.toFixed(1),x0-9,Y(s),{sz:12.5,c:C.mut,al:'right'});}
+ txt('API gravity: heavy ← → light',(x0+x1)/2,y0+36,{sz:13.5,c:C.mut,al:'center'});vlabel('Sulfur content (%)',50,(y0+y1)/2);
+ line(x0,Y(0.5),x1,Y(0.5),C.slate,1.5,true);txt('0.5% line',x1+6,Y(0.5),{sz:12,c:C.mut});
+ if(stage===S.SOUR){const d=g_(S.SOUR);line(x0,Y(1.8),x1,Y(1.8),d?C.green:C.terra,2.5);txt('1.8% S'+(d?': sour':''),x1+6,Y(1.8),{sz:13.5,b:1,c:d?C.green:C.terra});}
+}
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({toc:drawToc,types:drawTypes,grad:drawGrad,phase:drawPhase,visc:drawVisc,crude:drawCrude})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

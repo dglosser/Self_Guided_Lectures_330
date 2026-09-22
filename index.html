@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENRG 330: Self-Guided Lectures</title>
+<style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --fg: #1a1c20;
+      --muted: #55606e;
+      --accent: #1f3864;
+      --line: #d7dde5;
+      --card: #f6f8fa;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14161a;
+        --fg: #e8eaed;
+        --muted: #a4adba;
+        --accent: #9db8e8;
+        --line: #2c313a;
+        --card: #1c1f25;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap { max-width: 40rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.5rem; line-height: 1.3; margin: 0 0 0.25rem; color: var(--accent); }
+    .sub { margin: 0 0 2rem; color: var(--muted); font-size: 0.95rem; }
+    h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 2.5rem 0 0.75rem;
+      border-top: 1px solid var(--line);
+      padding-top: 1rem;
+    }
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { margin: 0 0 0.5rem; }
+    a.entry {
+      display: flex;
+      gap: 0.7rem;
+      align-items: baseline;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 0.5rem;
+      background: var(--card);
+      text-decoration: none;
+      color: inherit;
+    }
+    a.entry:hover, a.entry:focus { border-color: var(--accent); }
+    a.entry:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .num {
+      flex: 0 0 auto;
+      min-width: 1.8rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .body { flex: 1 1 auto; min-width: 0; }
+    .title { display: block; font-weight: 600; }
+    .topic { display: block; margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+    .file { display: block; margin: 0.2rem 0 0; color: var(--muted); font-size: 0.85rem; word-break: break-word; }
+    .empty { color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>ENRG 330: Self-Guided Lectures</h1>
+  <p class="sub">Supplemental self-guided lectures and problems.</p>
+  <ul>
+    <li>
+      <a class="entry" href="lecture1s_chapman-cycle.html">
+        <span class="num">1s</span>
+        <span class="body">
+          <span class="title">Why the Stratosphere Warms: The Chapman Cycle</span>
+          <span class="topic">Atmospheric layers, stratospheric temperature profile, Chapman cycle bookkeeping</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture2s_greenhouse-effect.html">
+        <span class="num">2s</span>
+        <span class="body">
+          <span class="title">Why More CO₂ Means a Warmer Surface</span>
+          <span class="topic">Stefan-Boltzmann law, CO2 vibrational modes, emission altitude, energy balance</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture3s_isotope-fingerprint.html">
+        <span class="num">3s</span>
+        <span class="body">
+          <span class="title">The Isotopic Fingerprint of Fossil CO₂</span>
+          <span class="topic">Climate fingerprints, carbon isotopes, delta 13C notation, Suess effect, bomb pulse</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture4s_dating-and-proxies.html">
+        <span class="num">4s</span>
+        <span class="body">
+          <span class="title">Reading the Past: Dating Archives and the Oxygen-Isotope Proxy</span>
+          <span class="topic">Climate archives, radiometric dating and half-life, choosing a dating isotope, delta 18O temperature proxy</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture5s_energy-sources-and-uses.html">
+        <span class="num">5s</span>
+        <span class="body">
+          <span class="title">Where Our Energy Comes From and Where It Goes</span>
+          <span class="topic">2021 global energy mix, fossil share, U.S. energy flow chart, rejected energy, sector efficiencies, scale of transitions</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture6s_energy-futures.html">
+        <span class="num">6s</span>
+        <span class="body">
+          <span class="title">Energy Futures to 2050: Scenarios and Demand Drivers</span>
+          <span class="topic">Scenario planning, BP Energy Outlook scenarios, motorization, vehicle efficiency, hydrogen colors</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture7s_nuclear-mass-defect.html">
+        <span class="num">7s</span>
+        <span class="body">
+          <span class="title">Nuclear Energy: Energy from Missing Mass</span>
+          <span class="topic">Mass defect, binding energy, fission of U-235, E = mc2, energy per gram, enrichment</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture8s_energy-storage.html">
+        <span class="num">8s</span>
+        <span class="body">
+          <span class="title">Energy Storage: Gravity, Heat, and Beyond</span>
+          <span class="topic">Energy storage categories, pumped hydro u = rho g h, high-density hydro, sensible vs latent heat, supercapacitors, SMES</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture9s_solar-pv-math.html">
+        <span class="num">9s</span>
+        <span class="body">
+          <span class="title">Solar PV: How Big a Panel?</span>
+          <span class="topic">Solar thermal vs PV, intensity, cosine angle factor, efficiency, unit conversion, panel area, latitude and season</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture10s_petroleum-system.html">
+        <span class="num">10s</span>
+        <span class="body">
+          <span class="title">The Petroleum System: Kitchen, Plumbing, Container</span>
+          <span class="topic">Source, reservoir, seal, migration, trap; grain size; organic preservation; passive margins; geologic time; timing</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture11s_coal.html">
+        <span class="num">11s</span>
+        <span class="body">
+          <span class="title">Coal: Rank, Carbon, and CO₂ per kWh</span>
+          <span class="topic">Coal formation, peat, coalification, coal rank trends, CO2 per kWh from CO2 factor and heat rate, H:C ratio</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture12s_rare-earths.html">
+        <span class="num">12s</span>
+        <span class="body">
+          <span class="title">Rare Earth Elements: Structure, Magnets, and Supply</span>
+          <span class="topic">Shell capacity 2n2, n+l filling order, lanthanide contraction, REE magnetism, NdFeB in wind turbines, radioactive waste, ppm and enrichment</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture13s_source-rocks.html">
+        <span class="num">13s</span>
+        <span class="body">
+          <span class="title">Source Rocks: Cooking Oil and Gas</span>
+          <span class="topic">Source rock TOC, kerogen types, geothermal gradient, maturation windows, viscosity, sweet vs sour crude</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture14s_unconventional.html">
+        <span class="num">14s</span>
+        <span class="body">
+          <span class="title">Unconventional Resources: Alter the Rock, the Fluid, or Both</span>
+          <span class="topic">Conventional vs unconventional, viscosity-permeability framework, shale maturity, U.S. shale resource fractions, gas hydrates, oil shale</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="lecture15s_fracking.html">
+        <span class="num">15s</span>
+        <span class="body">
+          <span class="title">Fracking: Flow, Fractures, and Risk</span>
+          <span class="topic">Conventional vs unconventional development, Q = kA dP/(mu L), hydraulic fracturing sequence, stray gas, induced seismicity, wellbore integrity, risk assessment</span>
+        </span>
+      </a>
+    </li>
+  </ul>
+</main>
+</body>
+</html>

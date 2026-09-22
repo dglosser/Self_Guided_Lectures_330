@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="2s">
+<meta name="lecture-title" content="Why More CO₂ Means a Warmer Surface">
+<meta name="lecture-topic" content="Stefan-Boltzmann law, CO2 vibrational modes, emission altitude, energy balance">
+<title>Lecture 2s: Greenhouse Effect</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Why More CO₂ Means a Warmer Surface</h1>
+  <p class="sub">Self-guided review of Lecture 2 (greenhouse effect). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 2: temperature and the Stefan–Boltzmann law, CO₂ vibrational modes, how greenhouse gases turn IR into heat, CO₂ concentration and emission altitude, and restoring balance. The bar and column pictures are schematics, not data. The value of σ is the standard Stefan–Boltzmann constant; it reproduces the lecture's 390 and 130 W/m².</p>
+</div>
+
+<script>
+// ---------- constants (verified in scratch script l2check.py) ----------
+const SIGMA = 5.670374419e-8;             // W m^-2 K^-4
+const T_S = 288, T_UT = 220, T_NEW = 293; // K: surface, upper troposphere, lecture's warmed-surface illustration
+const F = T => SIGMA*Math.pow(T,4);
+const F_S = F(T_S);        // 390.1 W/m^2
+const F_UT = F(T_UT);      // 132.8 W/m^2
+const F_NEW = F(T_NEW);    // 417.9 W/m^2
+const T_RATIO = T_UT/T_S;          // 0.7639
+const F_RATIO = Math.pow(T_RATIO,4);   // 0.3405 (= F_UT/F_S)
+const PCT_T = 100*(T_NEW-T_S)/T_S;     // 1.736 %
+const PCT_F = 100*(F_NEW/F_S-1);       // 7.127 %
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+
+// stage indices of gated questions (used by the canvas)
+const S={F288:2,F220:3,TR:4,R4:5,MODE:6,SYM:7,COL:8,ALT:9,OUT:10,BAL:11,F293:12,PT:13,PF:14};
+
+const stages=[
+{ // 0
+ title:'Power in, power out', view:'balance',
+ body:`<p>Earth constantly receives energy from the Sun, and it is always seeking to stay in equilibrium:</p>
+ <span class="eq">power in = power out</span>
+ <p>Greenhouse gases (GHGs) reduce the "power out" side. In this walk-through you will put numbers on that idea with the Stefan–Boltzmann law, then connect it to what CO₂ molecules actually do.</p>`,
+ cap:'Schematic energy balance: incoming solar power equals outgoing infrared (IR) power.'
+},
+{ // 1
+ title:'The Stefan–Boltzmann law', view:'sb',
+ body:`<p>Temperature controls how much power a body emits as electromagnetic radiation. More molecular motion means more frequent charge accelerations, which means more radiation.</p>
+ <span class="eq">F = σ T⁴</span>
+ <div class="given"><b>F</b> = radiative flux: power emitted per unit area (W/m²)<br>
+ <b>σ</b> = Stefan–Boltzmann constant = 5.67 × 10⁻⁸ W/(m²·K⁴)<br>
+ <b>T</b> = absolute temperature (K). It must be in kelvin, not °C or °F.</div>
+ <p>Because T is raised to the fourth power, F depends <b>very strongly</b> on temperature. The curve on the left is F = σT⁴.</p>`,
+ cap:'Outgoing flux F = σT⁴ versus absolute temperature. The curve gets steeper as T rises.'
+},
+{ // 2
+ title:'Flux from Earth\'s surface', view:'sb',
+ body:`<p>Earth's average surface temperature is about 288 K (about 60 °F).</p>`,
+ cap:'F = σT⁴ with the surface temperature, 288 K, marked. Read the flux across to the axis once you have computed it.',
+ q:{type:'num', prompt:'Compute F at T = 288 K.', label:'Flux at 288 K in watts per square meter', unit:'W/m²',
+  // target 390.1 | distractors 132.8 (220 K), 0.00287 (°C), 1.35 (cubed), 0.0047 (squared), 1.6e-5 (no exponent), 3.9e10 (dropped 10^-8), 0.73 (°F) | nearest gap 257 -> tol 8
+  answer:F_S, tol:8,
+  ok:`Correct: F = (5.67 × 10⁻⁸)(288)⁴ ≈ ${F_S.toFixed(0)} W/m², the lecture's value.`,
+  diagFn:x=>{
+   if(near(x,SIGMA*Math.pow(15,4),0.05)) return 'That is what you get with 15 °C. T must be absolute temperature in kelvin: use 288 K.';
+   if(near(x,SIGMA*Math.pow(60,4),0.05)) return 'That is what you get with 60 °F. T must be in kelvin: use 288 K.';
+   if(near(x,SIGMA*Math.pow(288,3),0.05)) return 'That is T cubed. The law uses the fourth power: 288⁴.';
+   if(near(x,SIGMA*Math.pow(288,2),0.05)) return 'That is T squared. The law uses the fourth power: 288⁴.';
+   if(near(x,SIGMA*288,0.05)) return 'You multiplied σ by T once. The law uses T⁴.';
+   if(near(x,5.670374419*Math.pow(288,4),0.05)) return 'Check the power of ten on σ: it is 5.67 × 10⁻⁸, not 5.67.';
+   if(near(x,F_UT,0.05)) return 'That is the flux at 220 K. This question uses the surface temperature, 288 K.';
+   return null;},
+  generic:'Compute 288⁴ first, then multiply by σ = 5.67 × 10⁻⁸ W/(m²·K⁴).',
+  solution:`288⁴ = 6.88 × 10⁹ K⁴. F = (5.67 × 10⁻⁸)(6.88 × 10⁹) ≈ <b>${F_S.toFixed(0)} W/m²</b>.`}
+},
+{ // 3
+ title:'Flux from the upper troposphere', view:'sb',
+ body:`<p>Air in the upper troposphere is much colder: about 220 K (about −63 °F). Treat a layer of that air as a thermal emitter.</p>`,
+ cap:'F = σT⁴ with 288 K and 220 K marked. Read the 220 K flux across once you have computed it.',
+ q:{type:'num', prompt:'Compute F at T = 220 K.', label:'Flux at 220 K in watts per square meter', unit:'W/m²',
+  // target 132.8 (lecture ≈130) | distractors 390.1 (288 K), 0.45 (°C), 0.89 (°F), 0.60 (cubed), 0.0027 (squared) | nearest gap 257 -> tol 5 (accepts 128-138)
+  answer:F_UT, tol:5,
+  ok:`Correct: F = (5.67 × 10⁻⁸)(220)⁴ ≈ ${F_UT.toFixed(0)} W/m². The lecture rounds this to about 130 W/m².`,
+  diagFn:x=>{
+   if(near(x,F_S,0.03)) return 'That is the surface flux at 288 K. Use the upper-troposphere temperature, 220 K.';
+   if(near(x,SIGMA*Math.pow(53.15,4),0.06)) return 'That is what you get with the Celsius value (−53 °C). T must be in kelvin: 220 K.';
+   if(near(x,SIGMA*Math.pow(63,4),0.06)) return 'That is what you get with the Fahrenheit value (−63 °F). T must be in kelvin: 220 K.';
+   if(near(x,SIGMA*Math.pow(220,3),0.05)) return 'That is T cubed. Use the fourth power: 220⁴.';
+   if(near(x,SIGMA*Math.pow(220,2),0.05)) return 'That is T squared. Use the fourth power: 220⁴.';
+   if(x<0) return 'A flux from σT⁴ can\'t be negative. Use the absolute temperature, 220 K.';
+   return null;},
+  generic:'Compute 220⁴, then multiply by σ.',
+  solution:`220⁴ = 2.34 × 10⁹ K⁴. F = (5.67 × 10⁻⁸)(2.34 × 10⁹) ≈ <b>${F_UT.toFixed(0)} W/m²</b> (lecture: ≈130 W/m²).`}
+},
+{ // 4
+ title:'Compare the temperatures', view:'ratio',
+ body:`<p>The lecture's punchline was that a layer of air at 220 K emits only about one-third as much as the surface. Build that result without σ, in two moves. First, the temperature ratio:</p>
+ <span class="eq">T<sub>air</sub> / T<sub>surface</sub></span>`,
+ cap:'Bar comparison of the two temperatures (K) and the two fluxes you computed (W/m²).',
+ q:{type:'num', prompt:'Compute 220 K / 288 K (three decimal places).', label:'Temperature ratio', unit:'',
+  // target 0.7639 | distractors 1.309 (inverted), 0.3405 (skipped ahead to 4th power), 68 (difference) | nearest gap 0.42 -> tol 0.006
+  answer:T_RATIO, tol:0.006,
+  ok:`Correct: 220/288 = ${T_RATIO.toFixed(3)}. The air is only about 24% colder than the surface in kelvin.`,
+  diagFn:x=>{
+   if(near(x,1/T_RATIO,0.01)) return 'That is 288/220, the ratio upside down. Put the air temperature on top: 220/288.';
+   if(near(x,F_RATIO,0.04)) return 'That is already the fourth-power ratio (next screen). Here, just divide the temperatures: 220/288.';
+   if(Math.abs(x-68)<0.5) return 'That is the difference, 288 − 220. This step asks for the ratio, 220/288.';
+   return null;},
+  generic:'Divide 220 by 288.',
+  solution:`220 / 288 = <b>${T_RATIO.toFixed(3)}</b>.`}
+},
+{ // 5
+ title:'Now apply the fourth power', view:'ratio',
+ body:`<p>Divide one Stefan–Boltzmann equation by the other. σ cancels:</p>
+ <span class="eq">F<sub>air</sub> / F<sub>surface</sub> = σT<sub>air</sub>⁴ / σT<sub>surface</sub>⁴ = (T<sub>air</sub> / T<sub>surface</sub>)⁴</span>`,
+ cap:'Flux bars for 288 K and 220 K. The flux ratio label fills in once you answer.',
+ q:{type:'num', prompt:'Raise your temperature ratio from the previous screen to the fourth power.', label:'Flux ratio', unit:'',
+  // target 0.3405 (1/3 = 0.333 also accepted) | distractors 0.7639 (no power), 0.5835 (squared), 0.4457 (cubed), 2.937 (inverted), 34.05 (percent) | nearest gap 0.105 -> tol 0.0105 (accepts 0.330-0.351)
+  answer:F_RATIO, tol:0.0105,
+  ok:`Correct: (0.764)⁴ ≈ ${F_RATIO.toFixed(2)}, about one-third. It matches your two fluxes: ${F_UT.toFixed(0)} / ${F_S.toFixed(0)} ≈ ${(F_UT/F_S).toFixed(2)}. A 24% drop in temperature cuts emission by about two-thirds.`,
+  diagFn:x=>{
+   if(near(x,T_RATIO,0.01)) return 'That is the temperature ratio itself. Raise it to the fourth power.';
+   if(near(x,T_RATIO*T_RATIO,0.01)) return 'That is the ratio squared. Stefan–Boltzmann uses the fourth power.';
+   if(near(x,Math.pow(T_RATIO,3),0.01)) return 'That is the ratio cubed. Stefan–Boltzmann uses the fourth power.';
+   if(near(x,1/F_RATIO,0.02)) return 'That is (288/220)⁴, the ratio upside down. Use (220/288)⁴.';
+   if(near(x,100*F_RATIO,0.04)) return 'That looks like a percent. Enter the ratio as a decimal fraction.';
+   return null;},
+  generic:'Take your answer from the previous screen and raise it to the fourth power.',
+  solution:`(220/288)⁴ = (0.764)⁴ ≈ <b>${F_RATIO.toFixed(2)}</b>, about one-third (Lecture 2).`}
+},
+{ // 6
+ title:'Why CO₂? Matching the jiggle', view:'modes',
+ body:`<p>CO₂ has 4 vibrational modes: 1 symmetric stretch (~7.5 µm), 1 asymmetric stretch (~4.3 µm), and 2 bending modes (~15 µm). (µm = micrometer.)</p>
+ <p>A mode matters for the greenhouse effect only if it (1) absorbs IR at all, and (2) sits where Earth actually emits. Earth's thermal emission range is about 8–20 µm.</p>`,
+ cap:'Earth\'s thermal emission at 288 K versus wavelength, with CO₂\'s three vibrational wavelengths marked.',
+ q:{type:'choice', prompt:'Which CO₂ vibration is most important for Earth\'s greenhouse effect?',
+  options:[{v:'bend',label:'Bending modes, ~15 µm'},{v:'asym',label:'Asymmetric stretch, ~4.3 µm'},{v:'sym',label:'Symmetric stretch, ~7.5 µm'},{v:'all',label:'All three contribute about equally'}],
+  answer:'bend',
+  ok:'Correct. The ~15 µm bending band has an oscillating dipole and lies right in Earth\'s emission range, near where the emission is strong. Pressure broadening in the troposphere also makes it wide.',
+  diag:{asym:'The asymmetric stretch is IR active (right jiggle), but Earth emits very little at ~4 µm, so there is little energy there to absorb.',
+        sym:'Check whether that vibration makes CO₂\'s dipole oscillate. In the symmetric stretch, both bonds stretch in unison.',
+        all:'They are not equal. One is IR inactive, one sits where Earth emits little, and one has the right jiggle and the right overlap.'},
+  generic:'Try again.',
+  solution:'<b>Bending modes, ~15 µm.</b> Right jiggle (dipole oscillates) and right overlap with Earth\'s emission (Lecture 2).'}
+},
+{ // 7
+ title:'Why the symmetric stretch doesn\'t count', view:'modes',
+ body:`<p>For a vibration to absorb IR (be "IR active"), the vibration must make the molecule's dipole moment oscillate. The oscillating dipole acts like an antenna for IR light of the same frequency.</p>
+ <p>In the symmetric stretch, both C=O bonds lengthen and shorten in unison.</p>`,
+ cap:'The symmetric stretch sits at ~7.5 µm, where Earth emits strongly. So why doesn\'t it contribute?',
+ q:{type:'choice', prompt:'Why doesn\'t CO₂\'s symmetric stretch contribute to the greenhouse effect?',
+  options:[{v:'dip',label:'The dipole moment doesn\'t change, so it is IR inactive'},
+           {v:'emit',label:'Earth emits almost nothing at 7.5 µm'},
+           {v:'strat',label:'It only happens in the stratosphere'},
+           {v:'perm',label:'CO₂ has a permanent dipole that blocks it'}],
+  answer:'dip',
+  ok:'Correct. The two bond dipoles stretch in unison and cancel, so the molecule\'s dipole doesn\'t oscillate. No oscillating dipole, no IR absorption.',
+  diag:{emit:'Check the plot: Earth emits strongly near 7.5 µm. The problem is the jiggle, not the overlap.',
+        strat:'All of CO₂\'s vibrations can happen at any altitude. The issue is whether the vibration changes the dipole.',
+        perm:'CO₂ is symmetric on average, so it has no permanent dipole. What matters is whether a vibration makes the dipole oscillate.'},
+  generic:'Try again.',
+  solution:'<b>No dipole change, so it is IR inactive.</b> "If the dipole doesn\'t change during the vibration → no IR absorption" (Lecture 2).'}
+},
+{ // 8
+ title:'How absorbed IR becomes warm air', view:'collide',
+ body:`<ol>
+ <li><b>Absorption:</b> Earth's surface emits IR; CO₂ absorbs a photon if its frequency matches one of the vibrational jiggles.</li>
+ <li><b>Collisions:</b> the troposphere is dense. An excited CO₂ molecule usually collides with N₂ or O₂ before it can re-emit the photon. Some of the vibration energy becomes motion energy of the colliding molecules.</li>
+ <li><b>Energy flows outward:</b> eventually some molecules emit new IR photons, which travel upward and get absorbed again.</li>
+ </ol>
+ <p>Recall: temperature is a measure of the <b>average kinetic energy</b> per molecule.</p>`,
+ cap:'Three steps: a CO₂ molecule absorbs IR, collides with N₂, and later IR is re-emitted upward.',
+ q:{type:'choice', prompt:'According to the lecture, where does most of the actual warming of the air come from?',
+  options:[{v:'col',label:'Collisions in the troposphere that turn vibration energy into motion energy'},
+           {v:'abs',label:'The absorption of the photon by CO₂ itself'},
+           {v:'thermo',label:'UV and x-rays hitting the thermosphere'},
+           {v:'emit',label:'CO₂ re-emitting the photon right away'}],
+  answer:'col',
+  ok:'Correct. More motion means higher average kinetic energy, which means warmer air. The absorption sets up the vibration; the collisions turn it into heat.',
+  diag:{abs:'Absorption only excites a vibration in one CO₂ molecule. The air warms when that energy is shared as motion through collisions.',
+        thermo:'The thermosphere is hot but has very few molecules and plays almost no role in the greenhouse effect.',
+        emit:'In the dense troposphere, an excited CO₂ molecule usually collides with N₂ or O₂ before it can re-emit.'},
+  generic:'Try again.',
+  solution:'<b>Collisions in the troposphere.</b> "Most of the actual warming of the air comes from the collisions in the troposphere, not from the absorption of the photon" (Lecture 2).'}
+},
+{ // 9
+ title:'Where does the 15 µm radiation escape from?', view:'column',
+ body:`<p>With lower CO₂, absorption at 15 µm is narrow, and radiation can escape from lower, warmer parts of the atmosphere.</p>
+ <p>As CO₂ increases, the absorption band broadens and saturates: photons must travel farther upward before they finally get emitted to space.</p>`,
+ cap:'Schematic column of the troposphere, warmer at the bottom, colder at the top. Where does 15 µm radiation escape with more CO₂?',
+ q:{type:'choice', prompt:'With more CO₂, radiation in the 15 µm band escapes to space from:',
+  options:[{v:'hi',label:'Higher, colder air'},{v:'lo',label:'Lower, warmer air'},{v:'same',label:'The same altitude as before'},{v:'surf',label:'Directly from Earth\'s surface'}],
+  answer:'hi',
+  ok:'Correct. More CO₂ means photons must travel higher before they escape, so the effective emission comes from higher, colder layers.',
+  diag:{lo:'That is the low-CO₂ case. Adding CO₂ pushes the escape level up, not down.',
+        same:'The escape level moves. More CO₂ means photons are absorbed again and again, so they must climb higher before escaping.',
+        surf:'At 15 µm, CO₂ absorbs strongly, so surface photons in that band don\'t escape directly. They escape from somewhere up in the air.'},
+  generic:'Try again.',
+  solution:'<b>Higher, colder air</b> (Lecture 2).'}
+},
+{ // 10
+ title:'Colder air emits less', view:'column',
+ body:`<p>Use what you computed: the surface at 288 K emits about ${F_S.toFixed(0)} W/m², and air at 220 K emits only about one-third as much.</p>`,
+ cap:'The escape level has moved up into colder air. Compare how much each level emits.',
+ q:{type:'choice', prompt:'When the 15 µm band escapes from higher, colder air, the outgoing power in that band:',
+  options:[{v:'dec',label:'Decreases'},{v:'inc',label:'Increases'},{v:'same',label:'Stays the same'}],
+  answer:'dec',
+  ok:'Correct. Colder things radiate less (F = σT⁴), so outgoing power drops while incoming solar power stays the same.',
+  diag:{inc:'Check with Stefan–Boltzmann: lower T means lower σT⁴. Colder air emits less, not more.',
+        same:'The emitting temperature changed, and F = σT⁴ depends very strongly on T. The power changes.'},
+  generic:'Try again.',
+  solution:'<b>Decreases.</b> Higher altitude = colder air, and colder air emits far less (Lecture 2).'}
+},
+{ // 11
+ title:'Restoring the balance', view:'balance',
+ body:`<p>Now power out &lt; power in, so Earth accumulates energy.</p>`,
+ cap:'Before: balanced. Right after the CO₂ increase: outgoing IR is smaller than incoming solar.',
+ q:{type:'choice', prompt:'What restores power in = power out?',
+  options:[{v:'warm',label:'The surface and lower atmosphere warm until outgoing power rises back'},
+           {v:'sun',label:'The Sun sends less energy'},
+           {v:'stop',label:'CO₂ stops absorbing at 15 µm'},
+           {v:'thermo',label:'The thermosphere emits the extra energy'}],
+  answer:'warm',
+  ok:'Correct. The only way to increase power out is to increase temperature. Warming lifts emission at all wavelengths until the balance is restored, at a higher T.',
+  diag:{sun:'Power in from the Sun stays the same. The adjustment has to happen on the power-out side.',
+        stop:'CO₂ keeps absorbing; the absorption band stays. The whole emission curve lifts as the planet warms.',
+        thermo:'The thermosphere emits almost no IR, so it plays no real role in the greenhouse effect.'},
+  generic:'Try again.',
+  solution:'<b>The surface and lower atmosphere warm.</b> "Only way to increase Power out is to increase Temp" (Lecture 2).'}
+},
+{ // 12
+ title:'How much does a little warming help?', view:'sb',
+ body:`<p>The lecture illustrated the rebalancing with a surface warming from 288 K to 293 K (an illustration, not a forecast).</p>`,
+ cap:'F = σT⁴ with 288 K and 293 K marked. Read the 293 K flux across once you have computed it.',
+ q:{type:'num', prompt:'Compute F at T = 293 K.', label:'Flux at 293 K in watts per square meter', unit:'W/m²',
+  // target 417.9 | distractors 390.1 (288 K), 27.8 (difference), 0.0091 (°C) | nearest gap 27.8 -> tol 5
+  answer:F_NEW, tol:5,
+  ok:`Correct: F = (5.67 × 10⁻⁸)(293)⁴ ≈ ${F_NEW.toFixed(0)} W/m², up from ${F_S.toFixed(0)} W/m² at 288 K.`,
+  diagFn:x=>{
+   if(near(x,F_S,0.01)) return 'That is the flux at 288 K. Use the warmed temperature, 293 K.';
+   if(near(x,F_NEW-F_S,0.05)) return 'That is the increase in flux. The question asks for the flux itself at 293 K.';
+   if(near(x,SIGMA*Math.pow(20,4),0.05)) return 'That is what you get with 20 °C. T must be in kelvin: 293 K.';
+   if(near(x,SIGMA*Math.pow(293,3),0.05)) return 'That is T cubed. Use the fourth power: 293⁴.';
+   return null;},
+  generic:'Compute 293⁴, then multiply by σ.',
+  solution:`293⁴ = 7.37 × 10⁹ K⁴. F = (5.67 × 10⁻⁸)(7.37 × 10⁹) ≈ <b>${F_NEW.toFixed(0)} W/m²</b>.`}
+},
+{ // 13
+ title:'Percent change in temperature', view:'sb',
+ body:`<p>To see how steep the curve is, compare percent changes. Start with temperature:</p>
+ <span class="eq">% change = 100 × (new − old) / old</span>`,
+ cap:'The 288 K to 293 K step on the F = σT⁴ curve.',
+ q:{type:'num', prompt:'Percent change in T from 288 K to 293 K (two decimal places).', label:'Percent change in temperature', unit:'%',
+  // target 1.736 | distractors 1.707 (divided by 293), 5 (kelvin difference), 0.01736 (fraction) | nearest gap 0.029 -> tol 0.012 (accepts 1.73, 1.74)
+  answer:PCT_T, tol:0.012,
+  ok:`Correct: 100 × 5/288 = ${PCT_T.toFixed(2)}%.`,
+  diagFn:x=>{
+   if(Math.abs(x-100*5/293)<0.006) return 'You divided by 293. Percent change is relative to the old value: divide by 288.';
+   if(Math.abs(x-5)<0.01) return 'That is the change in kelvin. Divide it by the old temperature and multiply by 100.';
+   if(near(x,PCT_T/100,0.02)) return 'That is a fraction. Multiply by 100 to get percent.';
+   return null;},
+  generic:'Use 100 × (293 − 288) / 288.',
+  solution:`100 × (293 − 288)/288 = <b>${PCT_T.toFixed(2)}%</b>.`}
+},
+{ // 14
+ title:'Percent change in emitted power', view:'sb',
+ body:`<p>Now do the same for the flux, using your values at 288 K and 293 K.</p>`,
+ cap:'The 288 K to 293 K step on the curve, with the change in flux bracketed.',
+ q:{type:'num', prompt:'Percent change in F from 288 K to 293 K (two decimal places).', label:'Percent change in flux', unit:'%',
+  // target 7.127 (7.18 from rounded 390, 418 also accepted) | distractors 6.654 (divided by new F), 1.736 (T %), 27.8 (W/m2 difference), 0.0713 (fraction), 107.1 (ratio as %) | nearest gap 0.47 -> tol 0.06
+  answer:PCT_F, tol:0.06,
+  ok:`Correct: 100 × (${F_NEW.toFixed(1)} − ${F_S.toFixed(1)})/${F_S.toFixed(1)} ≈ ${PCT_F.toFixed(2)}%. A ${PCT_T.toFixed(1)}% rise in temperature gives a ${PCT_F.toFixed(1)}% rise in emitted power, about four times as large. That is the steep power–temperature relationship.`,
+  diagFn:x=>{
+   if(near(x,100*(F_NEW-F_S)/F_NEW,0.01)) return 'You divided by the new flux. Percent change is relative to the old value (288 K).';
+   if(near(x,PCT_T,0.02)) return 'That is the percent change in temperature from the previous screen. Now do it for the flux F.';
+   if(near(x,F_NEW-F_S,0.03)) return 'That is the change in W/m². Divide by the old flux and multiply by 100.';
+   if(near(x,PCT_F/100,0.03)) return 'That is a fraction. Multiply by 100 to get percent.';
+   if(near(x,100*F_NEW/F_S,0.01)) return 'That is the new flux as a percent of the old. Subtract 100% to get the change.';
+   return null;},
+  generic:'Use 100 × (F at 293 K − F at 288 K) / (F at 288 K).',
+  solution:`100 × (${F_NEW.toFixed(1)} − ${F_S.toFixed(1)})/${F_S.toFixed(1)} = <b>${PCT_F.toFixed(2)}%</b>.`}
+},
+{ // 15
+ title:'Putting it together', view:'balance',
+ body:`<ol>
+ <li>Earth seeks power in = power out.</li>
+ <li>CO₂'s ~15 µm bending mode has an oscillating dipole and overlaps Earth's emission (8–20 µm), so CO₂ absorbs outgoing IR. Collisions in the dense troposphere turn that energy into warmer air.</li>
+ <li>More CO₂ pushes the escape level for that band higher, into colder air. Air at 220 K emits only about one-third as much as the 288 K surface (F = σT⁴).</li>
+ <li>Power out drops, power in stays the same, and Earth accumulates energy.</li>
+ <li>The only way to raise power out is to raise temperature. Because F ∝ T⁴, a small warming (+${PCT_T.toFixed(1)}%) raises emission a lot (+${PCT_F.toFixed(1)}%).</li>
+ </ol>
+ <p>Timescale: the atmosphere alone would respond in days to weeks, but the oceans stretch the full response to decades to centuries.</p>`,
+ cap:'Before, right after a CO₂ increase, and after warming: balance is restored at a higher surface temperature.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);
+ ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.setLineDash(dash?[6,5]:[]);ctx.stroke();ctx.setLineDash([]);arrowHead(x2,y2,ux,uy,col);}
+function wavy(x1,y1,x2,y2,col,w){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+ ctx.beginPath();for(let t=0;t<=L-9;t+=1.5){const a=5*Math.sin(t/4);const px=x1+ux*t+nx*a,py=y1+uy*t+ny*a;t?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+ ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function dline(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);}
+function atom(x,y,r,fill,label){ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#fff';ctx.stroke();if(label)txt(label,x,y+1,{sz:12,b:1,c:'#fff',al:'center'});}
+function co2(x,y){ctx.beginPath();ctx.moveTo(x-24,y);ctx.lineTo(x+24,y);ctx.strokeStyle=C.slate;ctx.lineWidth=4;ctx.stroke();atom(x-24,y,11,C.steel,'O');atom(x,y,12,C.slate,'C');atom(x+24,y,11,C.steel,'O');}
+function n2(x,y){atom(x-9,y,11,C.purp,'N');atom(x+9,y,11,C.purp,'N');}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+
+// ---------- Stefan–Boltzmann curve ----------
+const SB={x0:92,x1:690,y0:382,y1:36,Tmin:150,Tmax:320,Fmax:600};
+const sx=T=>SB.x0+(T-SB.Tmin)/(SB.Tmax-SB.Tmin)*(SB.x1-SB.x0);
+const sy=f=>SB.y0-f/SB.Fmax*(SB.y0-SB.y1);
+function drawSB(){
+ axes(SB.x0,SB.y0,SB.x1,SB.y1);
+ for(let T=160;T<=320;T+=20){ctx.beginPath();ctx.moveTo(sx(T),SB.y0);ctx.lineTo(sx(T),SB.y0+5);ctx.strokeStyle=C.slate;ctx.stroke();txt(String(T),sx(T),SB.y0+16,{sz:13,c:C.mut,al:'center'});}
+ for(let f=0;f<=600;f+=100){ctx.beginPath();ctx.moveTo(SB.x0-5,sy(f));ctx.lineTo(SB.x0,sy(f));ctx.stroke();txt(String(f),SB.x0-9,sy(f),{sz:13,c:C.mut,al:'right'});}
+ txt('Absolute temperature T (K)',(SB.x0+SB.x1)/2,SB.y0+38,{sz:13.5,c:C.mut,al:'center'});
+ ctx.save();ctx.translate(26,(SB.y0+SB.y1)/2);ctx.rotate(-Math.PI/2);txt('Emitted flux F (W/m²)',0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();
+ ctx.beginPath();for(let T=SB.Tmin;T<=SB.Tmax;T+=1){const X=sx(T),Y=sy(F(T));T===SB.Tmin?ctx.moveTo(X,Y):ctx.lineTo(X,Y);}ctx.strokeStyle=C.steel;ctx.lineWidth=3;ctx.stroke();
+ txt('F = σT⁴',sx(168),sy(480),{sz:17,c:C.navy,serif:1});
+ const mark=(T,k,lab,dy)=>{ // given temperature -> vertical guide; computed flux gated on done(k)
+  dline(sx(T),SB.y0,sx(T),sy(F(T)),C.amber);
+  txt(lab,sx(T),SB.y0-10,{sz:13,b:1,c:C.amber,al:'center'});
+  if(done(k)){dline(SB.x0,sy(F(T)),sx(T),sy(F(T)),C.green);ctx.beginPath();ctx.arc(sx(T),sy(F(T)),5,0,2*Math.PI);ctx.fillStyle=C.terra;ctx.fill();
+    txt('F ≈ '+F(T).toFixed(0)+' W/m²',SB.x0+8,sy(F(T))+(dy||-10),{sz:14,b:1,c:C.green});}
+  else {ctx.beginPath();ctx.arc(sx(T),sy(F(T)),5,0,2*Math.PI);ctx.fillStyle=C.terra;ctx.fill();
+    txt('F = ?  ← read across',sx(T)+10,sy(F(T))+(dy||-10),{sz:14,b:1,c:C.terra,al:(T>280?'right':'left')});}
+ };
+ if(stage>=S.F288) mark(T_S,S.F288,'288 K',stage>=S.F293?12:-10);
+ if(stage>=S.F220 && stage<S.F293) mark(T_UT,S.F220,'220 K',-10);
+ if(stage>=S.F293){
+   // label 293 K above the curve, 288 K below it
+   dline(sx(T_NEW),SB.y0,sx(T_NEW),sy(F(T_NEW)),C.amber);txt('293',sx(T_NEW)+4,SB.y0-26,{sz:13,b:1,c:C.amber,al:'left'});
+   ctx.beginPath();ctx.arc(sx(T_NEW),sy(F_NEW),5,0,2*Math.PI);ctx.fillStyle=C.terra;ctx.fill();
+   if(done(S.F293)){dline(SB.x0,sy(F_NEW),sx(T_NEW),sy(F_NEW),C.green);txt('F ≈ '+F_NEW.toFixed(0)+' W/m²',SB.x0+8,sy(F_NEW)-12,{sz:14,b:1,c:C.green});}
+   else txt('F = ?',sx(T_NEW)-12,sy(F_NEW)-14,{sz:14,b:1,c:C.terra,al:'right'});
+   if(stage>=S.PT){ // bracket the step
+     const xb=sx(T_NEW)+22; ctx.beginPath();ctx.moveTo(xb,sy(F_S));ctx.lineTo(xb,sy(F_NEW));ctx.strokeStyle=C.purp;ctx.lineWidth=2;ctx.stroke();
+     txt('ΔF',xb+6,(sy(F_S)+sy(F_NEW))/2,{sz:14,b:1,c:C.purp});
+     txt('ΔT = 5 K',sx(286),SB.y0-44,{sz:13,b:1,c:C.purp,al:'right'});
+     if(done(S.PT)) txt('+'+PCT_T.toFixed(2)+'% in T',sx(205),sy(330),{sz:14,b:1,c:C.green,al:'center'});
+     if(stage>=S.PF && done(S.PF)) txt('+'+PCT_F.toFixed(2)+'% in F',sx(205),sy(300),{sz:14,b:1,c:C.green,al:'center'});
+   }
+ }
+}
+
+// ---------- ratio bars ----------
+function drawRatio(){
+ const base=372, top=60, h=v=>v*(base-top);
+ const grp=(x0,title,a,b,max,unit,labA,labB,col)=>{
+  txt(title,x0+120,32,{sz:15,b:1,c:C.navy,al:'center'});
+  [[a,labA,x0+30],[b,labB,x0+140]].forEach(([v,l,x])=>{const hh=h(v/max);ctx.fillStyle=col;ctx.fillRect(x,base-hh,80,hh);
+    txt(v.toFixed(0)+' '+unit,x+40,base-hh-12,{sz:14,b:1,c:C.slate,al:'center'});txt(l,x+40,base+16,{sz:13.5,c:C.mut,al:'center'});});
+  ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0+10,base);ctx.lineTo(x0+240,base);ctx.stroke();
+ };
+ grp(30,'Temperature',T_S,T_UT,300,'K','surface','upper trop.',C.amber);
+ grp(390,'Emitted flux F',F_S,F_UT,420,'W/m²','surface','upper trop.',C.steel);
+ txt('220/288 = '+(done(S.TR)?T_RATIO.toFixed(3):'?'),150,408,{sz:15,b:1,c:done(S.TR)?C.green:C.terra,al:'center'});
+ txt('F ratio = '+(stage>=S.R4&&done(S.R4)?F_RATIO.toFixed(2)+' ≈ 1/3':'?'),510,408,{sz:15,b:1,c:(stage>=S.R4&&done(S.R4))?C.green:C.terra,al:'center'});
+ txt('bars start at zero',CW-14,432,{sz:12,c:C.mut,al:'right'});
+}
+
+// ---------- Earth emission + CO2 modes ----------
+const MP={x0:80,x1:690,y0:290,y1:40,lmin:2,lmax:25};
+const mx=l=>MP.x0+(l-MP.lmin)/(MP.lmax-MP.lmin)*(MP.x1-MP.x0);
+const my=v=>MP.y0-v*(MP.y0-MP.y1);
+const planck=l=>Math.pow(l,-5)/(Math.exp(14388/(l*T_S))-1); // wavelength in µm; c2 = hc/k = 14388 µm·K
+let PMAX=0;for(let l=MP.lmin;l<=MP.lmax;l+=0.01)PMAX=Math.max(PMAX,planck(l));
+function drawModes(){
+ ctx.fillStyle='rgba(217,225,242,0.6)';ctx.fillRect(mx(8),MP.y1,mx(20)-mx(8),MP.y0-MP.y1);
+ txt('Earth\'s emission range 8–20 µm',mx(8)+8,MP.y0-12,{sz:13,c:C.steel,b:1});
+ axes(MP.x0,MP.y0,MP.x1,MP.y1);
+ for(let l=5;l<=25;l+=5){ctx.beginPath();ctx.moveTo(mx(l),MP.y0);ctx.lineTo(mx(l),MP.y0+5);ctx.strokeStyle=C.slate;ctx.stroke();txt(String(l),mx(l),MP.y0+16,{sz:13,c:C.mut,al:'center'});}
+ txt('Wavelength (µm)',(MP.x0+MP.x1)/2,MP.y0+38,{sz:13.5,c:C.mut,al:'center'});
+ ctx.save();ctx.translate(30,(MP.y0+MP.y1)/2);ctx.rotate(-Math.PI/2);txt('Earth emission, 288 K (relative)',0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();
+ ctx.beginPath();for(let l=MP.lmin;l<=MP.lmax;l+=0.05){const X=mx(l),Y=my(planck(l)/PMAX);l===MP.lmin?ctx.moveTo(X,Y):ctx.lineTo(X,Y);}ctx.strokeStyle=C.slate;ctx.lineWidth=2.5;ctx.stroke();
+ const m6=stage>=S.MODE&&done(S.MODE), m7=stage>=S.SYM&&done(S.SYM);
+ const modes=[[4.3,'asymmetric stretch',m6?'IR active, but Earth emits little here':''],[7.5,'symmetric stretch',m7?'IR inactive: no dipole change':''],[15,'bending (2 modes)',m6?'right jiggle + right overlap: most important':'']];
+ modes.forEach(([l,n,note],i)=>{const col=(l===15&&m6)?C.green:(l===7.5&&m7)?C.mut:C.terra;
+   ctx.beginPath();ctx.moveTo(mx(l),MP.y0);ctx.lineTo(mx(l),MP.y1+34);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+   txt(String(l),mx(l),MP.y1+24,{sz:13,b:1,c:col,al:'center'});
+   const ly=352+i*26; txt('~'+l+' µm',30,ly,{sz:14,b:1,c:col});txt(n,110,ly,{sz:14,c:col});if(note)txt(note,270,ly,{sz:13.5,b:1,c:col});});
+}
+
+// ---------- collisions ----------
+function drawCollide(){
+ const dc=stage>=S.COL&&done(S.COL);
+ const pw=224, py=40, ph=330;
+ ['1  Absorption','2  Collision','3  Re-emission'].forEach((t,i)=>{const px=12+i*(pw+8);rrect(px,py,pw,ph,9);
+   ctx.fillStyle=(i===1&&dc)?'#E8F3EC':C.light;ctx.fill();ctx.strokeStyle=(i===1&&dc)?C.green:C.line;ctx.lineWidth=(i===1&&dc)?2.5:1.2;ctx.stroke();
+   txt(t,px+14,py+20,{sz:15,b:1,c:C.navy,serif:1});});
+ // panel 1: IR photon from surface into CO2
+ let x=12+pw/2; wavy(x-60,330,x-12,210,C.terra,2.2); txt('IR from surface',x-60,350,{sz:13,c:C.terra,b:1,al:'center'});
+ co2(x+10,190); txt('vibration excited',x+10,160,{sz:13,c:C.mut,al:'center'});
+ // panel 2: CO2 collides with N2
+ x=12+pw+8+pw/2; co2(x-40,170); n2(x+45,200); arrow(x-10,150,x+30,178,C.slate,1.5);
+ [[x+62,190,x+95,178],[x+62,210,x+95,222]].forEach(a=>{arrow(...a,C.amber,2);});
+ txt('N₂ moves faster',x+30,245,{sz:13,c:C.mut,al:'center'});
+ txt(dc?'vibration → motion = warmer air':'where does the warming happen?',x,300,{sz:13,b:1,c:dc?C.green:C.amber,al:'center'});
+ if(dc)txt('most of the warming',x,322,{sz:13,b:1,c:C.green,al:'center'});
+ // panel 3: new photon upward
+ x=12+2*(pw+8)+pw/2; co2(x,250); wavy(x+5,230,x+40,100,C.terra,2.2); txt('new IR photon, upward',x,340,{sz:13,c:C.terra,b:1,al:'center'});
+ txt('absorbed again higher up',x+10,85,{sz:12.5,c:C.mut,al:'center'});
+ txt('Temperature = average kinetic energy per molecule',CW/2,408,{sz:14,c:C.navy,al:'center'});
+}
+
+// ---------- atmosphere column ----------
+function drawColumn(){
+ const x0=150,x1=560,yb=388,yt=40, ykm=k=>yb-k/12*(yb-yt);
+ const g=ctx.createLinearGradient(0,yb,0,yt);g.addColorStop(0,'#F4D9C9');g.addColorStop(1,'#D9E1F2');ctx.fillStyle=g;ctx.fillRect(x0,yt,x1-x0,yb-yt);
+ ctx.fillStyle='#8A9A6A';ctx.fillRect(x0-20,yb,x1-x0+40,14);
+ axes(x0-20,yb,x0-20,yt); for(let k=0;k<=12;k+=3){txt(String(k),x0-28,ykm(k),{sz:13,c:C.mut,al:'right'});}
+ ctx.save();ctx.translate(40,(yb+yt)/2);ctx.rotate(-Math.PI/2);txt('Altitude (km, schematic)',0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();
+ txt('surface ≈ 288 K (warmer)',x1+10,yb-6,{sz:13.5,b:1,c:C.terra});
+ txt('upper troposphere',x1+10,ykm(11)-8,{sz:13.5,b:1,c:C.steel});txt('≈ 220 K (colder)',x1+10,ykm(11)+10,{sz:13.5,b:1,c:C.steel});
+ txt('SPACE ↑',(x0+x1)/2,22,{sz:14,b:1,c:C.navy,al:'center'});
+ const hiDone=stage>=S.ALT&&done(S.ALT), outDone=stage>=S.OUT&&done(S.OUT);
+ // lower-CO2 escape level (given)
+ const yl=ykm(4), yh=ykm(9);
+ dline(x0,yl,x1,yl,C.teal,2);txt('lower CO₂: 15 µm escapes here',x0+8,yl+14,{sz:13,b:1,c:C.teal});
+ wavy(x0+250,yl-4,x0+250,yt+8,C.terra,outDone?4:2.2);
+ if(hiDone){dline(x0,yh,x1,yh,C.purp,2);txt('higher CO₂: escapes from here',x0+8,yh+14,{sz:13,b:1,c:C.purp});
+   wavy(x0+330,yh-4,x0+330,yt+8,C.terra,outDone?1.3:2.2);}
+ else{txt('more CO₂: escape level = ?',x0+8,ykm(7),{sz:14,b:1,c:C.amber});}
+ if(outDone){txt('warmer → emits more',x0+242,yl-26,{sz:13,c:C.terra,b:1,al:'right'});txt('colder → emits less (σT⁴)',x0+346,yh-24,{sz:13,c:C.green,b:1});}
+}
+
+// ---------- balance bars ----------
+function drawBalance(){
+ const panels=[['Before CO₂ increase','balanced',1.0,true],['Right after CO₂ increase','imbalance',0.8,stage>=S.OUT&&done(S.OUT)],['After warming','balanced, higher T',1.0,stage>=S.BAL&&done(S.BAL)]];
+ const pw=226, bx=v=>v*150;
+ panels.forEach(([t,sub,out,show],i)=>{const px=10+i*(pw+8);rrect(px,20,pw,380,9);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+   txt(t,px+pw/2,42,{sz:14.5,b:1,c:C.navy,al:'center',serif:1});
+   if(!show){txt('?',px+pw/2,210,{sz:30,b:1,c:C.amber,al:'center'});return;}
+   txt(sub,px+pw/2,62,{sz:13,c:out<1?C.terra:C.green,b:1,al:'center'});
+   const x=px+60;
+   txt('Outgoing IR',px+14,120,{sz:13,c:C.mut});ctx.fillStyle=C.steel;ctx.fillRect(x-46,132,bx(out),40);
+   if(out<1){ctx.strokeStyle=C.steel;ctx.setLineDash([4,4]);ctx.lineWidth=1.5;ctx.strokeRect(x-46,132,bx(1),40);ctx.setLineDash([]);}
+   txt('Incoming solar',px+14,230,{sz:13,c:C.mut});ctx.fillStyle=C.amber;ctx.fillRect(x-46,242,bx(1),40);
+   if(i===2)txt('surface warmer',px+pw/2,320,{sz:13,c:C.terra,b:1,al:'center'});
+   if(i===1)txt('Earth accumulates energy',px+pw/2,320,{sz:13,c:C.terra,b:1,al:'center'});
+ });
+ txt('schematic: bar lengths show the balance, not measured values',CW/2,424,{sz:12.5,c:C.mut,al:'center'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ const v=stages[stage].view;
+ ({sb:drawSB,ratio:drawRatio,modes:drawModes,collide:drawCollide,column:drawColumn,balance:drawBalance})[v]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

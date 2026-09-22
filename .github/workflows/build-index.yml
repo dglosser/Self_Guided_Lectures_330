@@ -1,0 +1,45 @@
+name: Rebuild lecture index
+
+# Runs build_index.py on every push to main and commits index.html if it changed.
+# workflow_dispatch lets you run it by hand from the Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Required. Without contents: write the push step fails with a 403.
+# This is the single most common way this workflow breaks.
+permissions:
+  contents: write
+
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild index.html
+        run: python build_index.py
+
+      # NOTE ON LOOPS — do not "fix" this with a Personal Access Token.
+      # This workflow commits to the same repo that triggers it. That is safe
+      # ONLY because commits pushed with the default GITHUB_TOKEN do not
+      # trigger further workflow runs. Swap in a PAT (or a deploy key) and
+      # every rebuild commit starts another run: an infinite loop.
+      - name: Commit index.html if it changed
+        run: |
+          if [ -n "$(git status --porcelain index.html)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "Rebuild lecture index"
+            git push
+          else
+            echo "index.html unchanged - nothing to commit."
+          fi

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="11s">
+<meta name="lecture-title" content="Coal: Rank, Carbon, and CO₂ per kWh">
+<meta name="lecture-topic" content="Coal formation, peat, coalification, coal rank trends, CO2 per kWh from CO2 factor and heat rate, H:C ratio">
+<title>Lecture 11s: Coal</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Coal: Rank, Carbon, and CO₂ per kWh</h1>
+  <p class="sub">Self-guided review of Lecture 11 (coal). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 11: how coal forms, peat, coalification stages, coal ranks and their trends, Bellingham coal, the EIA CO₂-per-kWh table, and the H:C energy-content table from the first class. Rank drawings are schematic.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l11check.py) ----------
+// lb CO2 per kWh = (lb CO2 per million Btu) x (heat rate, Btu per kWh) / 1,000,000   (lecture table, EIA)
+const CO2kWh=(f,h)=>f*h/1e6;
+const BIT=[205,10080], LIG=[215,10080], DIST=[161,10156];
+const E_BIT=CO2kWh(...BIT), E_LIG=CO2kWh(...LIG), E_DIST=CO2kWh(...DIST);   // 2.07, 2.17, 1.64
+const TABLE=[['Bituminous coal',205,10080,2.07],['Subbituminous coal',214,10080,2.16],['Lignite',215,10080,2.17],['Natural gas',116,10408,1.22],['Distillate oil (No. 2)',161,10156,1.64],['Residual oil (No. 6)',173,10156,1.76]];
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={SRC:1,PEAT:2,COAL:3,ORDER:4,TREND:5,BHAM:6,BIT:8,LIG:9,DIST:10,GAS:11};
+
+const numDiag=(f,h,label)=>x=>{const e=f*h/1e6;
+  if(near(x,f*h,0.01))return 'Don\'t forget to divide by 1,000,000 (the factor is per million Btu).';
+  if(near(x,f*h/1e3,0.01))return 'Divide by 1,000,000, not 1,000.';
+  if(near(x,f/h*1e6,0.01)||near(x,h/f,0.01))return 'Multiply the CO₂ factor by the heat rate; don\'t divide.';
+  if(near(x,e*1000,0.01))return 'Check the power of ten: the answer is a few pounds per kWh.';return null;};
+
+const stages=[
+{ // 0
+ title:'Where coal comes from', view:'ranks',
+ body:`<p>In a way, coal comes from the sun: plants capture solar energy, and that energy is stored in their tissue. But note the time scales. Coal took <b>millions</b> of years to form; we are burning it over <b>hundreds</b>.</p>
+ <p>This walk-through covers how coal forms and matures (rank), then puts numbers on the CO₂ produced when it is burned for electricity.</p>`,
+ cap:'Coal ranks, from peat to anthracite, with increasing burial pressure, heat, and time.'
+},
+{ // 1
+ title:'What coal is (and isn\'t) made of', view:'ranks',
+ body:`<p>Fossil fuels are formed from the remains of living organisms.</p>`,
+ cap:'Coal forms from buried plant material.',
+ q:{type:'choice', prompt:'Coal forms mainly from:',
+  options:[{v:'pl',label:'Land plants that accumulated in wetlands'},{v:'dino',label:'Dinosaur remains'},{v:'zoo',label:'Marine zooplankton'},{v:'rock',label:'Volcanic rock'}],
+  answer:'pl',
+  ok:'Correct. Coal comes from terrestrial plant matter that accumulated in swamps, marshes, peat bogs, or lakes. Not dinosaurs!',
+  diag:{dino:'That\'s the classic misconception: the lecture\'s "what coal is NOT made of." Coal comes from plants.',zoo:'Marine plankton and algae are source material for oil and gas. Coal comes from land plants.',rock:'Coal is organic: it comes from living things, not volcanic rock.'},
+  generic:'Try again.', solution:'<b>Land plants in wetlands</b> (Lecture 11).'}
+},
+{ // 2
+ title:'Peat: the first step', view:'ranks',
+ body:`<p>Peat is the sediment that forms coal: brown, partially decayed plant fragments that accumulate in wetlands. Forming peat is Stage 1 of coalification, <b>biochemical degradation</b>: decomposition of plant matter aided by organisms.</p>`,
+ cap:'Peat accumulates in wetlands before it is buried.',
+ q:{type:'choice', prompt:'Why do wetlands preserve enough plant matter to form peat?',
+  options:[{v:'stag',label:'Stagnant water (little or no oxygen) slows decomposition'},{v:'fast',label:'Fast-flowing, oxygen-rich water carries plants away'},{v:'heat',label:'Wetlands are extremely hot'},{v:'salt',label:'Salt stops all decomposition'}],
+  answer:'stag',
+  ok:'Correct. With little or no oxygen, decomposition slows, so partially decayed plant material builds up.',
+  diag:{fast:'Oxygen-rich water speeds decay, and moving water carries material away. Peat needs the opposite.',heat:'Heat isn\'t the reason; low oxygen is.',salt:'The key factor in the lecture is low oxygen in stagnant water.'},
+  generic:'Try again.', solution:'<b>Stagnant, low-oxygen water</b> (Lecture 11).'}
+},
+{ // 3
+ title:'Stage 2: coalification', view:'ranks',
+ body:`<p>Stage 2, <b>physiochemical coalification</b>, depends on the amount of overburden deposited and the history of heat flow in the crust. Tectonic heat and pressure change the chemistry and structure of the organic material.</p>`,
+ cap:'Burial pressure, heat, and time drive coalification.',
+ q:{type:'choice', prompt:'As burial pressure and temperature increase, what happens to the coal?',
+  options:[{v:'right',label:'Water is squeezed out, volatiles (methane, CO₂, water, nitrogen) are lost, and carbon becomes enriched'},
+           {v:'wet',label:'It absorbs more water and gains volatiles'},{v:'lose',label:'It loses carbon and gains oxygen'},{v:'none',label:'Its chemistry stays the same; only its shape changes'}],
+  answer:'right',
+  ok:'Correct. Pressure squeezes out water and shrinks the pores; volatiles are driven off; organically bound carbon is progressively enriched.',
+  diag:{wet:'Pressure squeezes water out, and heat drives volatiles off.',lose:'The opposite: coalification progressively enriches carbon.',none:'Heat and pressure change both the chemistry and the structure.'},
+  generic:'Try again.', solution:'<b>Water and volatiles lost, carbon enriched</b> (Lecture 11).'}
+},
+{ // 4
+ title:'Coal rank', view:'ranks',
+ body:`<p>The rank of a coal is set by the vegetation it came from, the depth of burial, the temperatures and pressures at depth, and how long it has been forming.</p>`,
+ cap:'Put the ranks in order. The labels appear once you answer.',
+ q:{type:'choice', prompt:'Order from lowest to highest rank:',
+  options:[{v:'ok',label:'Peat → lignite → subbituminous → bituminous → anthracite'},{v:'rev',label:'Anthracite → bituminous → subbituminous → lignite → peat'},{v:'mix',label:'Lignite → peat → bituminous → anthracite → subbituminous'},{v:'mix2',label:'Peat → bituminous → lignite → anthracite → subbituminous'}],
+  answer:'ok',
+  ok:'Correct. Anthracite is the highest rank: a metamorphic rock formed from bituminous coal at higher temperatures and pressures.',
+  diag:{rev:'That is highest to lowest. Start with peat, the least altered.',mix:'Peat is the starting sediment, below lignite, and anthracite is the top rank.',mix2:'Lignite (low burial P and T) comes before bituminous, and anthracite is the top rank.'},
+  generic:'Try again.', solution:'<b>Peat → lignite → subbituminous → bituminous → anthracite</b> (Lecture 11).'}
+},
+{ // 5
+ title:'What rank tells you', view:'trends',
+ body:`<p>Lignite: soft, crumbly, sooty; plant parts may be visible. Bituminous: hard, dull to shiny, may be layered. Anthracite: hard and shiny with a silvery luster, carbon content 86–98% (dry basis).</p>`,
+ cap:'Trends with increasing rank: carbon content, calorific value, volatile matter, moisture.',
+ q:{type:'choice', prompt:'As coal rank increases, which set of trends is correct?',
+  options:[{v:'ok',label:'Carbon ↑, calorific (heating) value ↑, volatile matter ↓, moisture ↓'},{v:'rev',label:'Carbon ↓, calorific value ↓, volatile matter ↑, moisture ↑'},{v:'mix',label:'Carbon ↑, calorific value ↓, volatile matter ↑, moisture ↑'},{v:'mix2',label:'Carbon ↑, calorific value ↑, volatile matter ↑, moisture ↑'}],
+  answer:'ok',
+  ok:'Correct. Higher rank means more carbon and a higher heating value, with water and volatiles driven out. Carbon is the principal source of heat when coal burns.',
+  diag:{rev:'That is the trend going down in rank. Pressure, heat, and time enrich carbon.',mix:'Carbon is the main source of heat, so more carbon means a higher calorific value; and burial drives volatiles and water out.',mix2:'Burial squeezes out water and drives off volatiles, so those decrease.'},
+  generic:'Try again.', solution:'<b>Carbon ↑, calorific value ↑, volatiles ↓, moisture ↓</b> (Lecture 11).'}
+},
+{ // 6
+ title:'Bellingham coal', view:'trends',
+ body:`<p>Bellingham had coal mines. Whatcom County coal was <b>bituminous and anthracite</b>.</p>`,
+ cap:'Bellingham coal sits at the high-rank end.',
+ q:{type:'choice', prompt:'What does that tell you about the history of Bellingham coal?',
+  options:[{v:'high',label:'It experienced relatively high pressure, temperature, and/or time'},{v:'low',label:'It was barely buried and is still close to peat'},{v:'none',label:'Nothing: rank is unrelated to burial history'}],
+  answer:'high',
+  ok:'Correct. Bituminous and anthracite need deeper, longer burial and higher temperatures than the low ranks; anthracite forms from bituminous coal at still higher T and P.',
+  diag:{low:'Barely buried coal would be peat or lignite. Bituminous and anthracite are high rank.',none:'Rank is set by burial depth, temperature, pressure, and time, so it records that history.'},
+  generic:'Try again.', solution:'<b>High P, T, and/or t</b> (Lecture 11).'}
+},
+{ // 7
+ title:'CO₂ per kilowatt-hour', view:'table',
+ body:`<p>The CO₂ from making electricity depends on the fuel's carbon per unit of heat and on how much heat the power plant needs per kWh:</p>
+ <span class="eq">lb CO₂ per kWh = (lb CO₂ per million Btu) × (heat rate, Btu per kWh) / 1,000,000</span>
+ <div class="given"><b>Btu</b> = British thermal unit (a unit of heat energy)<br><b>CO₂ factor</b> = pounds of CO₂ released per million Btu of fuel burned<br><b>Heat rate</b> = Btu of fuel heat needed to generate 1 kWh of electricity<br><b>kWh</b> = kilowatt-hour of electricity</div>`,
+ cap:'The lecture\'s table (EIA data): CO₂ factor, heat rate, and CO₂ per kWh for each fuel.'
+},
+{ // 8
+ title:'Bituminous coal', view:'table',
+ body:`<p>Bituminous coal: 205 lb CO₂ per million Btu; heat rate 10,080 Btu/kWh.</p>`,
+ cap:'The bituminous coal row. Its result appears once you answer.',
+ q:{type:'num', prompt:'Pounds of CO₂ per kWh from bituminous coal?', label:'Pounds of CO2 per kilowatt hour', unit:'lb/kWh',
+  // target 2.066 (table 2.07) | distractors 2,066,400 (no /1e6), 2066.4 (/1e3), 20337 (divided) | tol 0.02
+  answer:E_BIT, tol:0.02,
+  ok:`Correct: 205 × 10,080 / 1,000,000 ≈ ${E_BIT.toFixed(2)} lb CO₂ per kWh, matching the table.`,
+  diagFn:numDiag(...BIT), generic:'Compute 205 × 10,080, then divide by 1,000,000.',
+  solution:`205 × 10,080 / 1,000,000 = <b>${E_BIT.toFixed(2)} lb/kWh</b>.`}
+},
+{ // 9
+ title:'Lignite', view:'table',
+ body:`<p>Lignite: 215 lb CO₂ per million Btu; same heat rate, 10,080 Btu/kWh.</p>`,
+ cap:'The lignite row. Its result appears once you answer.',
+ q:{type:'num', prompt:'Pounds of CO₂ per kWh from lignite?', label:'Pounds of CO2 per kilowatt hour', unit:'lb/kWh',
+  // target 2.167 (table 2.17) | distractors 2.066 (bituminous), 2,167,200 (no /1e6) | nearest gap 0.10 -> tol 0.02
+  answer:E_LIG, tol:0.02,
+  ok:`Correct: 215 × 10,080 / 1,000,000 ≈ ${E_LIG.toFixed(2)} lb/kWh. Lower-rank coal releases a bit more CO₂ for the same electricity.`,
+  diagFn:x=>{if(near(x,E_BIT,0.005))return 'That is bituminous. Use lignite\'s factor, 215.';return numDiag(...LIG)(x);},
+  generic:'Compute 215 × 10,080 / 1,000,000.',
+  solution:`215 × 10,080 / 1,000,000 = <b>${E_LIG.toFixed(2)} lb/kWh</b>.`}
+},
+{ // 10
+ title:'Distillate oil', view:'table',
+ body:`<p>Distillate oil (No. 2): 161 lb CO₂ per million Btu; heat rate 10,156 Btu/kWh.</p>`,
+ cap:'The distillate oil row. Its result appears once you answer.',
+ q:{type:'num', prompt:'Pounds of CO₂ per kWh from distillate oil?', label:'Pounds of CO2 per kilowatt hour', unit:'lb/kWh',
+  // target 1.635 (table 1.64) | distractors 1.757 (residual oil), 1.623 (coal heat rate), 1,635,116 | nearest gap 0.12 -> tol 0.02
+  answer:E_DIST, tol:0.02,
+  ok:`Correct: 161 × 10,156 / 1,000,000 ≈ ${E_DIST.toFixed(2)} lb/kWh, about 20% less than bituminous coal.`,
+  diagFn:x=>{if(near(x,CO2kWh(173,10156),0.005))return 'That is residual oil (173). Use distillate oil\'s 161.';return numDiag(...DIST)(x);},
+  generic:'Compute 161 × 10,156 / 1,000,000.',
+  solution:`161 × 10,156 / 1,000,000 = <b>${E_DIST.toFixed(2)} lb/kWh</b>.`}
+},
+{ // 11
+ title:'Why natural gas emits less', view:'table',
+ body:`<p>Natural gas plants in the table have a slightly <em>higher</em> heat rate than coal plants (10,408 vs 10,080 Btu/kWh), yet produce much less CO₂ per kWh (1.22 vs about 2.1 lb).</p>
+ <p>Recall the energy-content table from the first class: H:C ratio of natural gas 4:1, coal 0.5:1; CO₂ released per 10³ kJ: natural gas 1.2 mol, coal 2.0 mol.</p>`,
+ cap:'Natural gas: slightly higher heat rate, much lower CO₂ per kWh.',
+ q:{type:'choice', prompt:'Why does natural gas produce less CO₂ per kWh?',
+  options:[{v:'hc',label:'Its high H:C ratio means much less CO₂ per unit of heat (116 vs about 205–215 lb per million Btu)'},{v:'hr',label:'Its lower heat rate'},{v:'less',label:'Gas plants burn less fuel per kWh than coal plants'},{v:'no',label:'It doesn\'t: gas and coal emit about the same'}],
+  answer:'hc',
+  ok:'Correct. More of natural gas\'s energy comes from hydrogen, which burns to water, so each Btu comes with much less CO₂. That outweighs the small difference in heat rate.',
+  diag:{hr:'Gas plants in the table actually have a slightly higher heat rate (10,408 vs 10,080).',less:'A higher heat rate means slightly more fuel heat per kWh, not less.',no:'The table shows 1.22 lb/kWh for gas versus about 2.1 for coal.'},
+  generic:'Try again.', solution:'<b>High H:C ratio → less CO₂ per Btu</b> (Lectures 1 and 11).'}
+},
+{ // 12
+ title:'Putting it together', view:'trends',
+ body:`<ul>
+ <li>Coal forms from land plants in low-oxygen wetlands (peat), then matures under burial pressure, heat, and time.</li>
+ <li>Coalification squeezes out water and drives off volatiles, enriching carbon: peat → lignite → subbituminous → bituminous → anthracite. Higher rank means more carbon and a higher heating value.</li>
+ <li>CO₂ per kWh = CO₂ factor × heat rate / 1,000,000: about 2.1–2.2 lb/kWh for coal, 1.6–1.8 for oil, 1.2 for natural gas.</li>
+ <li>Gas emits least because its high H:C ratio gives less CO₂ per unit of heat.</li>
+ </ul>`,
+ cap:'Trends with increasing coal rank.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.stroke();}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+const g_=(k)=>done(k)||stage>k;
+
+// ---------- ranks ----------
+function drawRanks(){
+ const names=['peat','lignite','subbituminous','bituminous','anthracite'], cols=['#7A5A36','#5A4230','#3E342C','#26241F','#15171A'];
+ const show=stage!==S.ORDER||done(S.ORDER);
+ txt('increasing burial pressure, heat, and time →',CW/2,40,{sz:15,b:1,c:C.terra,al:'center'});
+ arrow(60,62,660,62,C.terra,3);
+ names.forEach((n,i)=>{const x=40+i*134, h=150-i*22;
+   ctx.fillStyle=cols[i];ctx.fillRect(x,300-h,110,h);
+   if(i===4){ctx.fillStyle='rgba(220,225,235,0.35)';ctx.fillRect(x+10,300-h+8,60,6);}
+   txt(show?n:'?',x+55,322,{sz:14.5,b:1,c:show?C.navy:C.amber,al:'center'});});
+ txt('layers get thinner and denser as water and volatiles are squeezed out',CW/2,360,{sz:13,c:C.mut,al:'center'});
+ if(stage===S.PEAT&&done(S.PEAT))txt('stage 1: biochemical degradation (peat)',40+55,120,{sz:13,b:1,c:C.green});
+ if(stage===S.COAL&&done(S.COAL))txt('stage 2: water & volatiles out, carbon enriched',CW/2,400,{sz:14,b:1,c:C.green,al:'center'});
+ if(stage===S.SRC&&done(S.SRC))txt('land plants in wetlands (not dinosaurs!)',CW/2,400,{sz:14,b:1,c:C.green,al:'center'});
+}
+
+// ---------- trends ----------
+function drawTrends(){
+ const d=g_(S.TREND)||stage===12, x0=160,x1=680;
+ txt('increasing rank →',(x0+x1)/2,40,{sz:15,b:1,c:C.terra,al:'center'});
+ const rows=[['carbon content',1],['calorific value',1],['volatile matter (N, H, O)',-1],['moisture content',-1]];
+ rows.forEach(([n,dir],i)=>{const y=90+i*70;txt(n,x0-12,y+15,{sz:14,b:1,c:C.navy,al:'right'});
+   if(d){ctx.fillStyle=dir>0?'rgba(46,84,150,0.7)':'rgba(184,80,66,0.7)';ctx.beginPath();
+     if(dir>0){ctx.moveTo(x0,y+15);ctx.lineTo(x1,y);ctx.lineTo(x1,y+30);}else{ctx.moveTo(x0,y);ctx.lineTo(x0,y+30);ctx.lineTo(x1,y+15);}ctx.closePath();ctx.fill();
+     txt(dir>0?'↑':'↓',x1+14,y+15,{sz:20,b:1,c:dir>0?C.steel:C.terra});}
+   else{ctx.strokeStyle=C.line;ctx.strokeRect(x0,y,x1-x0,30);txt('?',(x0+x1)/2,y+15,{sz:20,b:1,c:C.amber,al:'center'});}});
+ ['lignite','subbit.','bituminous','anthracite'].forEach((n,i)=>txt(n,x0+i*(x1-x0)/3,380,{sz:13,c:C.mut,al:'center'}));
+ if(stage===S.BHAM){const bd=g_(S.BHAM);rrect(x0+2*(x1-x0)/3-50,392,(x1-x0)/3+100,30,6);ctx.fillStyle=bd?'#E8F3EC':C.light;ctx.fill();txt('Bellingham coal'+(bd?': high P, T, t':''),x0+2.5*(x1-x0)/3,407,{sz:13.5,b:1,c:bd?C.green:C.amber,al:'center'});}
+}
+
+// ---------- CO2 table ----------
+function drawTable(){
+ const x0=20, cols=[20,210,370,520,700], y0=50, rh=44;
+ const hd=['Fuel','lb CO₂ per million Btu','Heat rate (Btu/kWh)','lb CO₂ per kWh'];
+ ctx.fillStyle='#6B8E3A';ctx.fillRect(x0,y0,680,rh);
+ hd.forEach((h,i)=>txt(h,(cols[i]+cols[i+1])/2,y0+rh/2,{sz:13,b:1,c:'#fff',al:'center'}));
+ const act={[S.BIT]:0,[S.LIG]:2,[S.DIST]:4}[stage];
+ const gate={0:S.BIT,2:S.LIG,4:S.DIST};
+ TABLE.forEach(([n,f,h,e],i)=>{const y=y0+rh*(i+1);ctx.fillStyle=i===act?'#FFF4E0':(i%2?'#F6F8FB':'#EEF2E6');ctx.fillRect(x0,y,680,rh);
+   txt(n,cols[0]+10,y+rh/2,{sz:14,b:1,c:C.navy});txt(String(f),(cols[1]+cols[2])/2,y+rh/2,{sz:14,al:'center'});txt(h.toLocaleString('en-US'),(cols[2]+cols[3])/2,y+rh/2,{sz:14,al:'center'});
+   const k=gate[i];const hide=k!==undefined&&stage>=7&&stage<=k&&!done(k);
+   txt(hide?'?':e.toFixed(2),(cols[3]+cols[4])/2,y+rh/2,{sz:15,b:1,c:hide?C.amber:(k!==undefined&&done(k)?C.green:C.slate),al:'center'});});
+ txt('lb CO₂/kWh = factor × heat rate / 1,000,000   (source: EIA, via the lecture table)',CW/2,y0+rh*7+26,{sz:13,c:C.mut,al:'center'});
+ if(stage===S.GAS){const d=g_(S.GAS);txt(d?'gas: H:C 4:1 → far less CO₂ per Btu; that beats its slightly higher heat rate':'gas: higher heat rate, but lower CO₂. Why?',CW/2,y0+rh*7+54,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});}
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({ranks:drawRanks,trends:drawTrends,table:drawTable})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="10s">
+<meta name="lecture-title" content="The Petroleum System: Kitchen, Plumbing, Container">
+<meta name="lecture-topic" content="Source, reservoir, seal, migration, trap; grain size; organic preservation; passive margins; geologic time; timing">
+<title>Lecture 10s: The Petroleum System</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>The Petroleum System: Kitchen, Plumbing, Container</h1>
+  <p class="sub">Self-guided review of Lecture 10 (foundational geologic principles, part 2). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 10: the petroleum system (essential elements and processes), sedimentary grain sizes, preservation of organic matter, sedimentary basins and passive margins, the Gulf of Mexico example, geologic time, and "timing is everything." The 80-year lifetime and the timing scenario's dates are added for the exercises; diagrams are schematic.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l10check.py) ----------
+const GOM_KM=15, GOM_MYR=180;                     // Gulf of Mexico: > 15 km of subsidence, ~180 million years (lecture)
+const RATE = GOM_KM*1e6/(GOM_MYR*1e6);            // 0.0833 mm/yr
+const LIFE = 80;                                   // years (a human lifetime, added)
+const LIFE_MM = RATE*LIFE;                         // 6.67 mm
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={SRC:1,RES:2,SEAL:3,MIG:4,GRAIN:5,PRES:6,MARG:7,RATE:8,LIFE:9,TIME:10};
+
+const elOpts=[{v:'src',label:'Source rock'},{v:'res',label:'Reservoir rock'},{v:'seal',label:'Seal (cap) rock'},{v:'trap',label:'Trap'}];
+const stages=[
+{ // 0
+ title:'The petroleum system', view:'system',
+ body:`<p>Fossil fuels are energy resources derived from organic matter that has been substantially changed by geologic processes. For oil and gas to accumulate, a whole <b>petroleum system</b> has to come together:</p>
+ <ul><li>a <b>kitchen</b> where organic material is cooked (the source),</li><li><b>plumbing</b> to connect the kitchen to the container (migration), and</li><li>a <b>container</b> where oil and gas can be accumulated and preserved (reservoir, trap, and seal).</li></ul>`,
+ cap:'The petroleum system as kitchen, plumbing, and container.'
+},
+{ // 1
+ title:'The kitchen', view:'xsec',
+ body:`<p>This layer is <b>organic rich</b>. Buried deep enough, geothermal heating converts its organic sediment into oil and gas over geologic time.</p>`,
+ cap:'Cross-section of a petroleum system. Which layer is the kitchen?',
+ q:{type:'choice', prompt:'This organic-rich layer is the:', options:elOpts, answer:'src',
+  ok:'Correct. The source rock generates oil and/or gas when buried and heated.',
+  diag:{res:'The reservoir stores the oil and gas; it doesn\'t generate it.',seal:'The seal stops oil and gas from escaping upward; it doesn\'t generate it.',trap:'The trap is the geometric arrangement that holds petroleum in place.'},
+  generic:'Try again.', solution:'<b>Source rock</b> (Lecture 10).'}
+},
+{ // 2
+ title:'The container', view:'xsec',
+ body:`<p>This layer has the requisite <b>porosity and permeability</b> to store and transfer hydrocarbon fluids.</p>`,
+ cap:'Cross-section: which layer stores the oil and gas?',
+ q:{type:'choice', prompt:'This porous, permeable layer is the:', options:elOpts, answer:'res',
+  ok:'Correct. The reservoir rock stores and transmits the oil and gas.',
+  diag:{src:'The source generates petroleum; the porous storage layer is the reservoir.',seal:'A seal is impermeable, the opposite of this layer.',trap:'The trap is the arrangement of layers, not a single porous layer.'},
+  generic:'Try again.', solution:'<b>Reservoir rock</b> (Lecture 10).'}
+},
+{ // 3
+ title:'The lid', view:'xsec',
+ body:`<p>This layer is <b>impermeable</b>. Without it, oil and gas would keep moving upward and escape at Earth's surface.</p>`,
+ cap:'Cross-section: which layer keeps the oil and gas from escaping?',
+ q:{type:'choice', prompt:'This impermeable layer is the:', options:elOpts, answer:'seal',
+  ok:'Correct. The seal, or cap rock, prevents upward escape of petroleum compounds.',
+  diag:{src:'Source rock generates petroleum; the impermeable lid is the seal.',res:'The reservoir must be permeable; this layer is impermeable.',trap:'The trap is the overall geometry; the impermeable layer itself is the seal.'},
+  generic:'Try again.', solution:'<b>Seal (cap) rock</b> (Lecture 10).'}
+},
+{ // 4
+ title:'The plumbing', view:'xsec',
+ body:`<p>The essential <b>processes</b> of a petroleum system are generation/expulsion/migration and trap formation.</p>`,
+ cap:'Cross-section: arrows show oil moving from the source to the reservoir.',
+ q:{type:'choice', prompt:'The pathway that lets fluids move from the source rock to the reservoir is:',
+  options:[{v:'mig',label:'Migration'},{v:'trap',label:'Trap formation'},{v:'seal',label:'The seal'},{v:'sub',label:'Subduction'}],
+  answer:'mig',
+  ok:'Correct. Generation, expulsion, and migration move petroleum from the kitchen to the container; trap formation arranges source, reservoir, and seal so it stays there.',
+  diag:{trap:'Trap formation is the geometric arrangement that holds petroleum. The pathway itself is migration.',seal:'The seal blocks movement; it isn\'t the pathway.',sub:'Subduction is a plate process, not the petroleum pathway.'},
+  generic:'Try again.', solution:'<b>Migration</b> (Lecture 10).'}
+},
+{ // 5
+ title:'Grain size matters', view:'grain',
+ body:`<p>Sedimentary rocks range from coarse (pebbles, sand) to very fine (silt, clay). Grain size helps decide each rock's role. Shale is a fine-grained rock formed by compaction of silt- and clay-size particles ("mud").</p>`,
+ cap:'Sedimentary grain sizes, from pebbles (top) to clay (bottom).',
+ q:{type:'choice', prompt:'Which rock is most likely to act as a seal (cap rock)?',
+  options:[{v:'sh',label:'Shale (clay and silt)'},{v:'ss',label:'Coarse sandstone'},{v:'cg',label:'Pebble conglomerate'}],
+  answer:'sh',
+  ok:'Correct. Fine-grained clay and silt make low-permeability rocks: good cap rocks and source rocks. Coarser sands and gravels make conventional reservoirs.',
+  diag:{ss:'Coarse sandstone has the porosity and permeability of a reservoir, so oil can move through it.',cg:'Coarse pebbly rock is highly permeable: a reservoir, not a seal.'},
+  generic:'Try again.', solution:'<b>Shale.</b> Fine grained, low permeability (Lecture 10).'}
+},
+{ // 6
+ title:'Preserving the organic matter', view:'anoxic',
+ body:`<p>Two factors control how much organic matter is preserved over geologic time:</p>
+ <ol><li><b>Rate of generation</b> (growing organisms): high temperature, abundant moisture, long daylight hours; in the ocean, productivity is greatest at shallow depths.</li><li><b>Preservation.</b></li></ol>`,
+ cap:'Organic matter settling through the water column to the sea floor.',
+ q:{type:'choice', prompt:'Which sea-floor conditions best preserve organic matter?',
+  options:[{v:'anox',label:'Anaerobic (low-oxygen) water and fine-grained clay sediment'},{v:'ox',label:'Well-oxygenated water and coarse sand'},{v:'ox2',label:'Well-oxygenated water and fine clay'},{v:'sand',label:'Low-oxygen water and coarse gravel'}],
+  answer:'anox',
+  ok:'Correct. Anaerobic conditions plus low-permeability, fine-grained sediment (clay) preserve organic matter. Restricted basins like the Black Sea (the stagnation model) are one way to get there.',
+  diag:{ox:'Oxygen lets the organic matter decay, and coarse sand is permeable. Both work against preservation.',ox2:'Fine clay helps, but oxygenated water lets organic matter decay before it is buried.',sand:'Low oxygen helps, but preservation also needs low-permeability, fine-grained sediment.'},
+  generic:'Try again.', solution:'<b>Anaerobic water + fine-grained clay</b> (Lecture 10).'}
+},
+{ // 7
+ title:'Where the basins are', view:'margin',
+ body:`<p>Sedimentary basins are depressions filled with sedimentary rock, and the essential elements of a petroleum system are deposited in them. Plate tectonics frames the basin types.</p>
+ <p>Passive margins (the transition from continental to oceanic crust, away from any active plate boundary) accumulate thick sedimentary deposits as they cool and subside, up to about 20 km thick.</p>`,
+ cap:'Continental margins: active (narrow shelf) versus passive (wide shelf, thick sediment).',
+ q:{type:'choice', prompt:'About 70% of oil and gas is found in basins at which kind of margin?',
+  options:[{v:'div',label:'Divergent (passive) margins'},{v:'conv',label:'Convergent (collision) margins'},{v:'tr',label:'Transform margins'}],
+  answer:'div',
+  ok:'Correct. Divergent/passive margins, like the eastern coasts of North and South America and the U.S. Gulf Coast, have wide shelves and thick sediment accumulations.',
+  diag:{conv:'Convergent margins, like the U.S. west coast, have narrow shelves and steep slopes, with less room for thick sediment.',tr:'Transform margins host some pull-apart basins (for example along the San Andreas), but not most of the world\'s oil and gas.'},
+  generic:'Try again.', solution:'<b>Divergent (passive) margins</b>, ~70% (Lecture 10).'}
+},
+{ // 8
+ title:'How slow is geologic time?', view:'rate',
+ body:`<p>The Gulf of Mexico formed by sea-floor spreading starting about <b>180 million years</b> ago. Its crust has subsided to depths exceeding <b>15 kilometers</b>, making room for thick sedimentary successions.</p>
+ <div class="given">1 km = 1,000,000 mm</div>`,
+ cap:'Gulf of Mexico: 15 km of subsidence over 180 million years.',
+ q:{type:'num', prompt:'Average subsidence rate in millimeters per year?', label:'Rate in millimeters per year', unit:'mm/yr',
+  // target 0.0833 | distractors 12 (inverted), 8.33e-5 (m/yr), 83.3 (x1000), 0.0833e-3 | nearest gap 0.08 -> tol 0.003
+  answer:RATE, tol:0.003,
+  ok:`Correct: 15,000,000 mm / 180,000,000 yr ≈ ${RATE.toFixed(3)} mm per year, less than a tenth of a millimeter.`,
+  diagFn:x=>{if(near(x,12,0.02))return 'That is 180 / 15, upside down. Put the distance on top: mm / yr.';
+   if(near(x,RATE/1000,0.03))return 'That is meters per year. Convert km to mm (× 1,000,000), not m.';
+   if(near(x,RATE*1000,0.03))return 'Too big by 1,000: 15 km = 15,000,000 mm, and 180 million years = 180,000,000 yr.';
+   if(near(x,RATE/1e6,0.03))return 'That is km per year. Convert to mm.';return null;},
+  generic:'Divide 15,000,000 mm by 180,000,000 years.',
+  solution:`15,000,000 / 180,000,000 = <b>${RATE.toFixed(4)} mm/yr</b>.`}
+},
+{ // 9
+ title:'In a human lifetime', view:'rate',
+ body:`<p>Our sense of time spans a day, a year, a lifetime. How much would the Gulf floor subside during one 80-year human lifetime, at your average rate?</p>`,
+ cap:'The same subsidence rate, over one human lifetime.',
+ q:{type:'num', prompt:'Subsidence over 80 years (mm)?', label:'Subsidence in millimeters', unit:'mm',
+  // target 6.67 | distractors 0.00104 (divided), 0.0067 (m), 80 | tol 0.3
+  answer:LIFE_MM, tol:0.3,
+  ok:`Correct: ${RATE.toFixed(4)} × 80 ≈ ${LIFE_MM.toFixed(1)} mm: about the thickness of a pencil. Imperceptible in a lifetime, yet 15 km given 180 million years. That is why geologic time matters to the petroleum system.`,
+  diagFn:x=>{if(near(x,RATE/80,0.03))return 'Multiply the rate by the time; don\'t divide.';
+   if(near(x,LIFE_MM/1000,0.05))return 'That looks like meters. Give the answer in millimeters.';return null;},
+  generic:'Multiply your rate by 80 years.',
+  solution:`${RATE.toFixed(4)} mm/yr × 80 yr = <b>${LIFE_MM.toFixed(1)} mm</b>.`}
+},
+{ // 10
+ title:'Timing is everything', view:'timing',
+ body:`<p>A source, migration pathway, reservoir, trap, and seal are essential, but they are not enough on their own. They must be arranged correctly <b>at the time</b> when petroleum is expelled from the source rock (the critical moment).</p>
+ <p>Scenario: in a basin, oil is generated and migrates away 60 million years ago. The anticline that would trap it forms 40 million years ago.</p>`,
+ cap:'Event chart: when each element forms, versus when oil is generated and migrates.',
+ q:{type:'choice', prompt:'Will this basin have an oil accumulation in that anticline?',
+  options:[{v:'no',label:'No: the trap formed after the oil had already migrated past'},{v:'yes',label:'Yes: all five elements are present'},{v:'later',label:'Yes: traps can collect oil that migrated before they formed'}],
+  answer:'no',
+  ok:'Correct. Each element may originate at different times and places, but they must come together in one contiguous system at the critical moment. Here the container wasn\'t there yet when the oil moved.',
+  diag:{yes:'All five elements exist, but not at the same time. The trap came 20 million years too late.',later:'Once oil has migrated past (or escaped to the surface), a trap that forms later has nothing to catch.'},
+  generic:'Try again.', solution:'<b>No.</b> Timing is everything (Lecture 10).'}
+},
+{ // 11
+ title:'Putting it together', view:'xsec',
+ body:`<ul>
+ <li>A petroleum system needs essential <b>elements</b> (source, reservoir, seal) and <b>processes</b> (generation/expulsion/migration, trap formation).</li>
+ <li>Fine-grained rocks (clay, shale) make source rocks and seals; coarser sands and gravels make conventional reservoirs.</li>
+ <li>Organic matter is preserved where production is high and the sea floor is anaerobic with fine clay.</li>
+ <li>Plate tectonics frames sedimentary basins; about 70% of oil and gas is in divergent (passive) margins with thick sediment.</li>
+ <li>Geologic time makes imperceptibly slow processes monumental, and the elements must line up in time: timing is everything.</li>
+ </ul>`,
+ cap:'The complete petroleum system: source, migration, reservoir, trap, and seal.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+const g_=(k)=>done(k)||stage>k;
+
+// ---------- kitchen / plumbing / container ----------
+function drawSystem(){
+ const box=(x,y,w,h,t,sub,col)=>{rrect(x,y,w,h,12);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.stroke();txt(t,x+w/2,y+28,{sz:18,b:1,c:col,al:'center'});sub.forEach((s,i)=>txt(s,x+w/2,y+58+i*22,{sz:14,c:C.slate,al:'center'}));};
+ box(30,220,180,130,'Kitchen',['source rock','organic matter "cooked"'],C.terra);
+ box(270,120,180,110,'Plumbing',['migration pathway'],C.amber);
+ box(510,40,180,160,'Container',['reservoir','trap','seal'],C.steel);
+ arrow(210,260,270,190,C.amber,3);arrow(450,160,510,130,C.amber,3);
+ txt('oil and gas generated → migrate → accumulate and are preserved',CW/2,400,{sz:14,b:1,c:C.navy,al:'center'});
+}
+
+// ---------- cross-section (anticline) ----------
+function layer(yTop,thick,col,amp){ctx.beginPath();for(let x=20;x<=700;x+=4){const y=yTop-amp*Math.exp(-Math.pow((x-380)/150,2));x===20?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+ for(let x=700;x>=20;x-=4){const y=yTop+thick-amp*Math.exp(-Math.pow((x-380)/150,2));ctx.lineTo(x,y);}ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function drawXsec(){
+ ctx.fillStyle='#E9E3D6';ctx.fillRect(20,40,680,360);
+ layer(360,40,'#3A3530',40);   // source: dark organic-rich shale
+ layer(300,60,'#E8C45A',90);   // reservoir sandstone
+ layer(260,40,'#9AA3AE',90);   // seal shale
+ // oil at crest
+ ctx.save();ctx.beginPath();for(let x=280;x<=480;x+=4){const y=300-90*Math.exp(-Math.pow((x-380)/150,2));x===280?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.lineTo(480,245);ctx.lineTo(280,245);ctx.closePath();ctx.restore();
+ ctx.fillStyle='rgba(31,56,100,0.55)';ctx.beginPath();ctx.ellipse(380,236,70,16,0,0,2*Math.PI);ctx.fill();txt('oil & gas',380,236,{sz:13,b:1,c:'#fff',al:'center'});
+ const lab=(k,y,name,col,x)=>{const d=g_(k)||stage===11;txt(d?name:'?',x||610,y,{sz:15,b:1,c:d?col:C.amber,al:'center'});};
+ const cur=k=>stage===k;
+ // highlight current layer
+ const hl=(k,yTop,th,amp)=>{if(cur(k)){ctx.save();ctx.strokeStyle=C.amber;ctx.lineWidth=3;ctx.setLineDash([6,4]);ctx.beginPath();for(let x=20;x<=700;x+=4){const y=yTop-amp*Math.exp(-Math.pow((x-380)/150,2));x===20?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.stroke();ctx.restore();}};
+ hl(S.SRC,360,40,40);hl(S.RES,300,60,90);hl(S.SEAL,260,40,90);
+ lab(S.SRC,385,'source rock',C.terra);lab(S.RES,325,'reservoir (sandstone)',C.amber,625);lab(S.SEAL,278,'seal (shale)',C.slate);
+ if(stage>=S.MIG){const d=g_(S.MIG)||stage===11;arrow(210,352,260,300,d?C.green:C.amber,3);arrow(510,345,470,290,d?C.green:C.amber,3);txt(d?'migration':'?',190,325,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});}
+ if(stage===11)txt('trap: the arch holds oil under the seal',380,170,{sz:14,b:1,c:C.navy,al:'center'});
+ txt('schematic cross-section',690,58,{sz:12,c:C.mut,al:'right'});
+}
+
+// ---------- grain sizes ----------
+function drawGrain(){
+ const rows=[['pebbles','4–64 mm','#8A7A62'],['granules','2–4 mm','#A08E6E'],['coarse sand','0.5–2 mm','#C9B27E'],['medium sand','0.25–0.5 mm','#D8C38E'],['fine sand','0.06–0.25 mm','#E3D2A2'],['silt','0.004–0.06 mm','#B28A5A'],['clay','< 0.004 mm','#7A5234']];
+ rows.forEach(([n,r,col],i)=>{const y=50+i*48;ctx.fillStyle=col;ctx.fillRect(60,y,120,40);txt(n,195,y+13,{sz:14,b:1,c:C.navy});txt(r,195,y+30,{sz:12.5,c:C.mut});});
+ const d=g_(S.GRAIN);
+ // conventional reservoirs bracket (pebbles-fine sand)
+ line(380,55,380,285,C.green,4);txt('conventional reservoirs',392,170,{sz:14,b:1,c:C.green});
+ if(d){line(380,300,380,380,C.terra,4);txt('source rocks and cap rocks (seals)',392,330,{sz:14,b:1,c:C.terra});txt('also: unconventional shale gas/oil reservoirs',392,352,{sz:12.5,c:C.mut});}
+ else txt('fine grained: which role? ?',392,340,{sz:14,b:1,c:C.amber});
+ txt('coarse ↑',40,40,{sz:12,c:C.mut});txt('fine ↓',40,400,{sz:12,c:C.mut});
+}
+
+// ---------- anoxic sea floor ----------
+function drawAnoxic(){
+ const d=g_(S.PRES);
+ ctx.fillStyle='#CFE3F5';ctx.fillRect(40,40,640,110);ctx.fillStyle=d?'#5E6E86':'#A9BCD3';ctx.fillRect(40,150,640,190);
+ ctx.fillStyle='#7A5234';ctx.fillRect(40,340,640,50);
+ txt('sunlight: high productivity near the surface',60,62,{sz:14,b:1,c:C.navy});
+ for(let i=0;i<22;i++){const x=70+i*28,y=90+((i*37)%120)+ (i%3)*40;ctx.beginPath();ctx.arc(x,y,3.5,0,2*Math.PI);ctx.fillStyle='#2C6E49';ctx.fill();}
+ for(let i=0;i<14;i++)arrow(90+i*42,180+(i%3)*20,90+i*42,210+(i%3)*20,'rgba(44,110,73,0.8)',1.5);
+ txt(d?'anaerobic (low-oxygen) bottom water':'bottom water: oxygen?',60,300,{sz:14.5,b:1,c:d?'#fff':C.amber});
+ txt(d?'fine clay buries and preserves organic matter':'sediment: ?',60,365,{sz:14.5,b:1,c:'#fff'});
+}
+
+// ---------- margins ----------
+function drawMargin(){
+ const d=g_(S.MARG);
+ txt('Active (convergent) margin',180,40,{sz:15,b:1,c:C.terra,al:'center'});txt('Passive (divergent) margin',540,40,{sz:15,b:1,c:C.steel,al:'center'});
+ // active: narrow shelf, steep slope
+ ctx.fillStyle='#CFE3F5';ctx.fillRect(30,110,300,250);ctx.fillStyle='#B8A67E';ctx.beginPath();ctx.moveTo(30,110);ctx.lineTo(110,110);ctx.lineTo(160,330);ctx.lineTo(330,330);ctx.lineTo(330,380);ctx.lineTo(30,380);ctx.closePath();ctx.fill();
+ txt('narrow shelf, steep slope',180,400,{sz:13,c:C.slate,al:'center'});
+ // passive: wide shelf, thick sediment wedge
+ ctx.fillStyle='#CFE3F5';ctx.fillRect(390,110,300,250);ctx.fillStyle='#8C8C8C';ctx.beginPath();ctx.moveTo(390,200);ctx.lineTo(690,380);ctx.lineTo(390,380);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#E8C45A';ctx.beginPath();ctx.moveTo(390,110);ctx.lineTo(590,120);ctx.lineTo(690,300);ctx.lineTo(690,380);ctx.lineTo(390,200);ctx.closePath();ctx.fill();
+ txt('thick sediment (up to ~20 km)',520,190,{sz:13.5,b:1,c:C.navy,al:'center'});txt('wide shelf',490,98,{sz:13,c:C.slate,al:'center'});
+ txt('continental → oceanic crust',540,400,{sz:13,c:C.slate,al:'center'});
+ txt(d?'~70% of oil & gas':'where is ~70% of oil & gas?',540,70,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+}
+
+// ---------- rates ----------
+function drawRate(){
+ const d8=g_(S.RATE), d9=g_(S.LIFE)&&stage>=S.LIFE;
+ txt('Gulf of Mexico',40,40,{sz:16,b:1,c:C.navy});
+ ctx.fillStyle='#E8C45A';ctx.fillRect(80,70,120,300);txt('> 15 km',140,220,{sz:18,b:1,c:C.navy,al:'center'});txt('of sediment',140,242,{sz:13,c:C.navy,al:'center'});
+ txt('over ~180 million years',140,392,{sz:13.5,c:C.slate,al:'center'});
+ rrect(260,90,420,80,10);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=d8?C.green:C.line;ctx.lineWidth=2;ctx.stroke();
+ txt('average rate',470,112,{sz:14,c:C.mut,al:'center'});txt(d8?RATE.toFixed(3)+' mm per year':'? mm per year',470,142,{sz:20,b:1,c:d8?C.green:C.amber,al:'center'});
+ if(stage>=S.LIFE){rrect(260,210,420,80,10);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=d9?C.green:C.line;ctx.lineWidth=2;ctx.stroke();
+   txt('in one 80-year lifetime',470,232,{sz:14,c:C.mut,al:'center'});txt(d9?LIFE_MM.toFixed(1)+' mm':'? mm',470,262,{sz:20,b:1,c:d9?C.green:C.amber,al:'center'});
+   if(d9){ctx.fillStyle=C.terra;ctx.fillRect(460,320,LIFE_MM*3,20);txt('← drawn at 3× actual size',470+LIFE_MM*3,330,{sz:12.5,c:C.mut});}}
+}
+
+// ---------- timing ----------
+function drawTiming(){
+ const x0=160,x1=680,X=m=>x0+(100-m)/100*(x1-x0);
+ txt('millions of years ago',(x0+x1)/2,40,{sz:13.5,c:C.mut,al:'center'});
+ for(let m=100;m>=0;m-=20){line(X(m),52,X(m),370,C.line,1);txt(String(m),X(m),62,{sz:12.5,c:C.mut,al:'center'});}
+ const rows=[['source rock',[95,85],C.terra],['reservoir',[80,72],C.amber],['seal',[70,65],C.slate],['generation & migration',[62,58],C.purp],['trap formation',[42,38],C.steel]];
+ rows.forEach(([n,[a,b],col],i)=>{const y=100+i*50;txt(n,x0-10,y+10,{sz:14,b:1,c:C.navy,al:'right'});ctx.fillStyle=col;ctx.fillRect(X(a),y,X(b)-X(a),20);});
+ line(X(60),80,X(60),360,C.purp,2,true);txt('critical moment (oil moves)',X(60),370,{sz:13,b:1,c:C.purp,al:'center'});
+ const d=g_(S.TIME);
+ txt(d?'trap forms 20 Myr too late: no accumulation':'is the trap ready when the oil moves?',CW/2,405,{sz:14.5,b:1,c:d?C.terra:C.amber,al:'center'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({system:drawSystem,xsec:drawXsec,grain:drawGrain,anoxic:drawAnoxic,margin:drawMargin,rate:drawRate,timing:drawTiming})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

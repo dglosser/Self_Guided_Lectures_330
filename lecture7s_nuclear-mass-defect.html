@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="7s">
+<meta name="lecture-title" content="Nuclear Energy: Energy from Missing Mass">
+<meta name="lecture-topic" content="Mass defect, binding energy, fission of U-235, E = mc2, energy per gram, enrichment">
+<title>Lecture 7s: Energy from Missing Mass</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Nuclear Energy: Energy from Missing Mass</h1>
+  <p class="sub">Self-guided review of Lecture 7 (nuclear energy). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 7: nuclear energy basics, the helium mass defect, binding energy, the ²³⁵U fission example (n + ²³⁵U → ⁹⁷Rb + ¹³⁷Cs + 2n), energy per gram compared with other fuels, and enrichment. The constants 1 amu = 1.66 × 10⁻²⁷ kg, Avogadro's number, and 1 kcal = 4,184 J are supplied for the conversions.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l7check.py) ----------
+const MP=1.00728, MN=1.00866, MHE=4.00153;       // amu (lecture)
+const HE_EXP = 2*MP+2*MN;                          // 4.03188
+const HE_DM = HE_EXP-MHE;                          // 0.03035
+const MU235=235.043, MRB=96.937, MCS=136.907;      // amu (lecture)
+const N_OUT = 2;                                   // 236 - 97 - 137
+const M_BEFORE = MN+MU235;                         // 236.05
+const M_AFTER = MRB+MCS+N_OUT*MN;                  // 235.86
+const DM = M_BEFORE-M_AFTER;                       // 0.19 (lecture rounds to 0.2)
+const AMU=1.66e-27, CL=3.00e8, NA=6.022e23, KCAL=4184;
+const E_AT = 0.2*AMU*CL*CL;                        // 2.99e-11 J (lecture: 3e-11 J)
+const N_G = NA/235;                                // 2.56e21 atoms per gram
+const E_G = E_AT*N_G;                              // 7.66e10 J/g = 76.6 GJ/g (lecture: 76 GJ/g)
+const KC_G = E_G/KCAL;                             // 1.83e7 kcal/g (lecture: about 20 million)
+const RATIO = KC_G/10/1e6;                         // 1.83 million times fossil fuel (10 kcal/g)
+const BE=[['²H',2,1.1],['⁴He',4,7.1],['⁶Li',6,6],['⁹Be',9,6.5],['¹²C',12,7.5],['¹⁶O',16,7.9],['⁵⁶Fe',56,8.8],['⁶²Ni',62,8.78],['⁸⁵Br',85,8.7],['¹⁰⁷Ag',107,8.5],['¹²⁷I',127,8.45],['²⁰⁶Pb',206,7.88],['²³⁵U',235,7.59],['²³⁸U',238,7.57]];
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={HEX:1,HDM:2,CURVE:3,NOUT:4,BEF:5,AFT:6,DM:7,EAT:9,NG:10,EG:11,KC:12,RAT:13,ENR:14};
+const sci=(v,d)=>{const e=Math.floor(Math.log10(Math.abs(v)));return (v/Math.pow(10,e)).toFixed(d==null?2:d)+' × 10'+String(e).replace('-','⁻').replace(/[0-9]/g,c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[c]);};
+
+const stages=[
+{ // 0
+ title:'Energy from missing mass', view:'he',
+ body:`<p>An atom is made of protons (mass, + charge), neutrons (mass, no charge), and electrons (almost no mass, − charge). Protons in a nucleus <em>do</em> repel each other, but the strong nuclear force holds the nucleus together.</p>
+ <p>Most nuclear energy comes from <b>changing mass</b>:</p>
+ <span class="eq">E = mc²</span>
+ <div class="given"><b>E</b> = energy released (J)<br><b>m</b> = mass converted to energy (kg)<br><b>c</b> = speed of light = 3.00 × 10⁸ m/s<br>
+ <b>amu</b> = atomic mass unit; 1 amu = 1.66 × 10⁻²⁷ kg</div>`,
+ cap:'Two protons and two neutrons combining into a helium nucleus.'
+},
+{ // 1
+ title:'Build a helium nucleus', view:'he',
+ body:`<p>A helium nucleus has 2 protons and 2 neutrons.</p>
+ <ul><li>proton: 1.00728 amu</li><li>neutron: 1.00866 amu</li></ul>`,
+ cap:'Helium from its parts. What should the parts weigh in total?',
+ q:{type:'num', prompt:'What is the total mass of 2 protons + 2 neutrons? (amu, five decimal places)', label:'Mass of parts in amu', unit:'amu',
+  // target 4.03188 | distractors 2.01456 (protons only), 2.01732 (neutrons only), 2.01594 (one of each), 4.00153 (actual He) | nearest gap 0.030 -> tol 0.0005
+  answer:HE_EXP, tol:0.0005,
+  ok:'Correct: 2(1.00728) + 2(1.00866) = 4.03188 amu. That is what we would expect helium to weigh.',
+  diagFn:x=>{if(near(x,2*MP,0.0005))return 'That is the 2 protons only. Add the 2 neutrons.';
+   if(near(x,2*MN,0.0005))return 'That is the 2 neutrons only. Add the 2 protons.';
+   if(near(x,MP+MN,0.0005))return 'That is one proton and one neutron. Helium has two of each.';
+   if(near(x,MHE,0.00005))return 'That is the measured mass of the helium nucleus. Add up the parts instead.';return null;},
+  generic:'Add 1.00728 twice and 1.00866 twice.',
+  solution:'2(1.00728) + 2(1.00866) = <b>4.03188 amu</b>.'}
+},
+{ // 2
+ title:'The missing mass', view:'he',
+ body:`<p>The measured mass of a helium nucleus is <b>4.00153 amu</b>.</p>`,
+ cap:'Parts versus the real helium nucleus. The missing mass appears once you answer.',
+ q:{type:'num', prompt:'How much mass is missing? (amu)', label:'Missing mass in amu', unit:'amu',
+  // target 0.03035 | distractors 8.03341 (added), -0.03035 (order) | nearest gap 0.06 -> tol 0.0002
+  answer:HE_DM, tol:0.0002,
+  ok:'Correct: 4.03188 − 4.00153 = 0.03035 amu. That mass was converted to energy, the binding energy, and released.',
+  diagFn:x=>{if(near(x,HE_EXP+MHE,0.001))return 'You added the masses. Subtract: parts − nucleus.';
+   if(near(x,-HE_DM,0.01))return 'Report the missing mass as a positive amount: parts − nucleus.';return null;},
+  generic:'Subtract: 4.03188 − 4.00153.',
+  solution:'4.03188 − 4.00153 = <b>0.03035 amu</b>.'}
+},
+{ // 3
+ title:'Fusion or fission?', view:'curve',
+ body:`<p>Binding energy per nucleon is greatest for iron (⁵⁶Fe). Moving toward iron releases energy: light nuclei release energy when they combine (fusion), and heavy nuclei release energy when they split (fission). Heavier elements <em>absorb</em> energy when combined.</p>`,
+ cap:'Binding energy per nucleon versus mass number (values from the lecture table).',
+ q:{type:'choice', prompt:'How can uranium-235 release energy?',
+  options:[{v:'fis',label:'By splitting (fission)'},{v:'fus',label:'By fusing with another nucleus'},{v:'both',label:'Either way'},{v:'none',label:'It can\'t: uranium is stable'}],
+  answer:'fis',
+  ok:'Correct. ²³⁵U sits far to the right of iron. Splitting it into two mid-sized nuclei moves toward the peak and releases energy.',
+  diag:{fus:'Fusing heavy nuclei moves away from iron, so it absorbs energy. That route only releases energy for light nuclei.',
+        both:'Only one direction moves ²³⁵U toward the iron peak.',
+        none:'²³⁵U is one of only three heavy nuclei (²³³U, ²³⁵U, ²³⁹Pu) that are readily split.'},
+  generic:'Try again.',
+  solution:'<b>Fission.</b> Heavy elements release energy when split (Lecture 7).'}
+},
+{ // 4
+ title:'A fission reaction', view:'fission',
+ body:`<p>A neutron hits ²³⁵U, which splits into rubidium-97 and cesium-137 plus some free neutrons:</p>
+ <span class="eq">n + ²³⁵U → ⁹⁷Rb + ¹³⁷Cs + ? n</span>
+ <p>The number before each symbol is the number of nucleons (protons + neutrons). Nucleons are conserved.</p>`,
+ cap:'The fission reaction. How many neutrons come out?',
+ q:{type:'num', prompt:'How many neutrons are released?', label:'Neutrons released', unit:'neutrons',
+  // target 2 | distractors 1, 3, 0 | integer -> tol 0.01
+  answer:N_OUT, tol:0.01,
+  ok:'Correct: 1 + 235 = 236 nucleons in; 97 + 137 = 234, so 2 neutrons come out. Those neutrons can split more ²³⁵U: a chain reaction.',
+  diagFn:x=>{if(x===1)return 'Count nucleons: 1 + 235 = 236 in; 97 + 137 = 234 in the fragments. The difference is the free neutrons.';
+   if(x===3)return 'Check: 97 + 137 + 3 = 237, one too many.';
+   if(x===0)return '97 + 137 = 234, not 236. Two nucleons are left over as free neutrons.';return null;},
+  generic:'Neutrons out = 236 − 97 − 137.',
+  solution:'236 − 97 − 137 = <b>2 neutrons</b>.'}
+},
+{ // 5
+ title:'Mass before', view:'fission',
+ body:`<ul><li>neutron: 1.00866 amu</li><li>²³⁵U: 235.043 amu</li></ul>`,
+ cap:'The mass ledger: before the split.',
+ q:{type:'num', prompt:'Total mass before the reaction (amu, two decimal places)?', label:'Mass before in amu', unit:'amu',
+  // target 236.05 | distractors 235.043 (no neutron), 234.03 (subtracted) | nearest gap 1.0 -> tol 0.01
+  answer:M_BEFORE, tol:0.01,
+  ok:'Correct: 1.00866 + 235.043 ≈ 236.05 amu.',
+  diagFn:x=>{if(near(x,MU235,0.00002))return 'Don\'t forget the incoming neutron.';
+   if(near(x,MU235-MN,0.00005))return 'Add the neutron\'s mass; don\'t subtract it.';return null;},
+  generic:'Add 1.00866 and 235.043.',
+  solution:'1.00866 + 235.043 = <b>236.05 amu</b>.'}
+},
+{ // 6
+ title:'Mass after', view:'fission',
+ body:`<ul><li>⁹⁷Rb: 96.937 amu</li><li>¹³⁷Cs: 136.907 amu</li><li>each neutron: 1.00866 amu (use the number you found)</li></ul>`,
+ cap:'The mass ledger: after the split.',
+ q:{type:'num', prompt:'Total mass after the reaction (amu, two decimal places)?', label:'Mass after in amu', unit:'amu',
+  // target 235.86 | distractors 234.85 (one neutron), 233.84 (no neutrons), 236.05 (before) | nearest gap 0.19 -> tol 0.01
+  answer:M_AFTER, tol:0.01,
+  ok:`Correct: 96.937 + 136.907 + 2(1.00866) ≈ ${M_AFTER.toFixed(2)} amu.`,
+  diagFn:x=>{if(near(x,MRB+MCS+MN,0.00005))return 'That includes only one neutron. Two neutrons are released.';
+   if(near(x,MRB+MCS,0.00005))return 'Include the released neutrons.';
+   if(near(x,M_BEFORE,0.00005))return 'That is the mass before. Add up the products.';return null;},
+  generic:'Add 96.937 + 136.907 + 2(1.00866).',
+  solution:`96.937 + 136.907 + 2.01732 = <b>${M_AFTER.toFixed(2)} amu</b>.`}
+},
+{ // 7
+ title:'Mass converted to energy', view:'fission',
+ body:`<p>Compare your two totals.</p>`,
+ cap:'Before versus after: some mass is missing.',
+ q:{type:'num', prompt:'How much mass is missing (amu)?', label:'Missing mass in amu', unit:'amu',
+  // target 0.19 (lecture rounds to 0.2) | distractors -0.19 (order), 471.9 (added), 1.19 | nearest gap 0.38 -> tol 0.015
+  answer:DM, tol:0.015,
+  ok:'Correct: 236.05 − 235.86 = 0.19 amu, which the lecture rounds to about 0.2 amu. The next screens use 0.2 amu, as the lecture does.',
+  diagFn:x=>{if(near(x,-DM,0.1))return 'Report the missing mass as positive: before − after.';
+   if(near(x,M_BEFORE+M_AFTER,0.001))return 'You added the masses. Subtract: before − after.';return null;},
+  generic:'Subtract: mass before − mass after.',
+  solution:'236.05 − 235.86 = <b>0.19 amu</b> (≈ 0.2 amu).'}
+},
+{ // 8
+ title:'From amu to joules', view:'chain',
+ body:`<p>Now convert the missing mass into energy, one step at a time, the way the lecture did.</p>
+ <div class="given">Δm = 0.2 amu (the lecture's rounded value)<br>1 amu = 1.66 × 10⁻²⁷ kg<br>c = 3.00 × 10⁸ m/s</div>
+ <span class="eq">E = (Δm in kg) × c²</span>`,
+ cap:'The conversion chain from missing mass to energy per gram. Each box fills in as you answer.'
+},
+{ // 9
+ title:'Energy from one fission', view:'chain',
+ body:`<p>Convert 0.2 amu to kg, then multiply by c².</p>`,
+ cap:'Step 1 of the chain: energy per fission.',
+ q:{type:'num', prompt:'Energy released by one fission (J)? Use e-notation, e.g. 1.5e-11.', label:'Energy per fission in joules', unit:'J',
+  // target 2.99e-11 (lecture: 3e-11) | distractors 9.96e-20 (no square), 1.8e16 (no amu->kg), 3.32e-28 (mass only), 2.84e-11 (used 0.19; accepted) | tol 0.17e-11
+  answer:E_AT, tol:0.17e-11,
+  ok:`Correct: (0.2 × 1.66 × 10⁻²⁷ kg)(3.00 × 10⁸ m/s)² ≈ ${sci(E_AT)} J, the lecture's 3 × 10⁻¹¹ J.`,
+  diagFn:x=>{if(near(x,0.2*AMU*CL,0.03))return 'You multiplied by c once. E = mc² squares the speed of light.';
+   if(near(x,0.2*CL*CL,0.03))return 'Convert amu to kg first: 0.2 × 1.66 × 10⁻²⁷ kg.';
+   if(near(x,0.2*AMU,0.03))return 'That is the mass in kg. Multiply by c² = 9 × 10¹⁶ m²/s².';
+   const r=x/E_AT;if(near(r,10,0.1)||near(r,100,0.1)||near(r,0.1,0.1)||near(r,0.01,0.1))return 'Your digits are right but the power of ten is off. Check: 3.32 × 10⁻²⁸ × 9 × 10¹⁶ ≈ 3 × 10⁻¹¹.';return null;},
+  generic:'m = 0.2 × 1.66 × 10⁻²⁷ kg, then E = m × (3.00 × 10⁸)².',
+  solution:`0.2 × 1.66 × 10⁻²⁷ = 3.32 × 10⁻²⁸ kg; × 9.00 × 10¹⁶ = <b>${sci(E_AT)} J</b>.`}
+},
+{ // 10
+ title:'How many atoms in a gram?', view:'chain',
+ body:`<p>One mole of ²³⁵U has a mass of 235 grams and contains 6.022 × 10²³ atoms.</p>
+ <span class="eq">atoms per gram = 6.022 × 10²³ / 235</span>`,
+ cap:'Step 2 of the chain: atoms of ²³⁵U per gram.',
+ q:{type:'num', prompt:'Number of ²³⁵U atoms in one gram? (e-notation)', label:'Atoms per gram', unit:'atoms/g',
+  // target 2.56e21 (lecture: 2.6e21) | distractors 1.415e26 (multiplied), 3.9e-22 (inverted), 6.022e23 (per mole) | tol 0.05e21
+  answer:N_G, tol:0.05e21,
+  ok:`Correct: 6.022 × 10²³ / 235 ≈ ${sci(N_G)} atoms per gram (lecture: 2.6 × 10²¹).`,
+  diagFn:x=>{if(near(x,NA*235,0.02))return 'Divide by 235, don\'t multiply.';
+   if(near(x,235/NA,0.02))return 'That is 235 / 6.022 × 10²³. Put Avogadro\'s number on top.';
+   if(near(x,NA,0.02))return 'That is atoms per mole (235 g). Divide by 235 to get atoms per gram.';return null;},
+  generic:'Divide 6.022e23 by 235.',
+  solution:`6.022 × 10²³ / 235 = <b>${sci(N_G)}</b> atoms per gram.`}
+},
+{ // 11
+ title:'Energy per gram', view:'chain',
+ body:`<p>Multiply the energy per fission by the number of atoms in a gram. Give the answer in gigajoules (1 GJ = 10⁹ J).</p>`,
+ cap:'Step 3 of the chain: energy per gram of ²³⁵U.',
+ q:{type:'num', prompt:'Energy released per gram of ²³⁵U (GJ)?', label:'Energy per gram in gigajoules', unit:'GJ/g',
+  // target 76.6 (lecture 76; 78 from rounded inputs) | distractors 7.66e10 (in J), 7.66e4 (MJ), 0.0766 | tol 3
+  answer:E_G/1e9, tol:3,
+  ok:`Correct: (3 × 10⁻¹¹ J)(2.56 × 10²¹) ≈ ${(E_G/1e9).toFixed(0)} GJ per gram, the lecture's 76 GJ/gram.`,
+  diagFn:x=>{if(near(x,E_G,0.05))return 'That is in joules. Divide by 10⁹ to get GJ.';
+   if(near(x,E_G/1e6,0.05))return 'That is in megajoules. Divide by 1,000 more to get GJ.';
+   if(near(x,E_G/1e12,0.05))return 'Too small by 1,000: check the conversion from J to GJ (divide by 10⁹).';return null;},
+  generic:'Multiply your two answers, then divide by 10⁹.',
+  solution:`2.99 × 10⁻¹¹ × 2.56 × 10²¹ = 7.66 × 10¹⁰ J = <b>${(E_G/1e9).toFixed(1)} GJ</b> per gram.`}
+},
+{ // 12
+ title:'In kilocalories', view:'chain',
+ body:`<p>The lecture compared fuels in kilocalories per gram. Use 1 kcal = 4,184 J.</p>`,
+ cap:'Step 4 of the chain: energy per gram in kcal.',
+ q:{type:'num', prompt:'Energy per gram of ²³⁵U in millions of kcal? (e.g. enter 5 for 5 million)', label:'Millions of kcal per gram', unit:'million kcal/g',
+  // target 18.3 (lecture: about 20) | distractors 3.2e14 (multiplied), 1.83e7 (not in millions), 18300 (thousands) | tol 1.8
+  answer:KC_G/1e6, tol:1.8,
+  ok:`Correct: 7.66 × 10¹⁰ J / 4,184 J/kcal ≈ ${(KC_G/1e6).toFixed(0)} million kcal per gram, the lecture's "about 20 million kilocalories per gram."`,
+  diagFn:x=>{if(near(x,KC_G,0.1))return 'That is the number of kcal. Enter it in millions (divide by 10⁶).';
+   if(near(x,E_G*KCAL/1e6,0.1)||near(x,E_G*KCAL,0.1))return 'Divide by 4,184 J/kcal, don\'t multiply.';
+   if(near(x,KC_G/1e3,0.1))return 'That is in thousands. Enter the value in millions.';return null;},
+  generic:'Divide your J/g value by 4,184, then express in millions.',
+  solution:`7.66 × 10¹⁰ / 4,184 = 1.83 × 10⁷ kcal = <b>${(KC_G/1e6).toFixed(1)} million kcal</b> per gram.`}
+},
+{ // 13
+ title:'Compared with fossil fuel', view:'chain',
+ body:`<p>From the lecture: fossil fuels ~10 kcal/gram; hot water ~0.5 kcal/gram.</p>`,
+ cap:'Step 5: how many times more energy per gram than fossil fuel?',
+ q:{type:'num', prompt:'How many times more energy per gram does fission release than fossil fuel? (in millions)', label:'Ratio in millions', unit:'million ×',
+  // target 1.83 (lecture's 20 million / 10 = 2.0 accepted) | distractors 18.3 (didn't divide), 36.6 (hot water), 0.183 | tol 0.25
+  answer:RATIO, tol:0.25,
+  ok:`Correct: about ${RATIO.toFixed(1)} million times. That is the lecture's "over a million times more potent than chemical energy."`,
+  diagFn:x=>{if(near(x,KC_G/1e6,0.1))return 'That is the kcal per gram (in millions). Divide by fossil fuel\'s 10 kcal/gram.';
+   if(near(x,KC_G/0.5/1e6,0.1))return 'That compares with hot water (0.5 kcal/g). Use fossil fuel, 10 kcal/g.';
+   if(near(x,RATIO/10,0.1))return 'Divide by 10, not 100: fossil fuel is ~10 kcal/gram.';
+   if(near(x,RATIO*1e6,0.1))return 'Enter the answer in millions (divide by 10⁶).';return null;},
+  generic:'Divide your million-kcal answer by 10.',
+  solution:`${(KC_G/1e6).toFixed(1)} million / 10 = <b>${RATIO.toFixed(2)} million</b> times.`}
+},
+{ // 14
+ title:'Is nuclear renewable?', view:'enrich',
+ body:`<p>Only three isotopes are readily fissile: ²³³U, ²³⁵U, and ²³⁹Pu. ²³³U and ²³⁹Pu don't exist in nature, and only 0.7% of natural uranium is ²³⁵U (99.3% is ²³⁸U, which isn't fissile). So uranium must be <b>enriched</b> (concentrated in ²³⁵U).</p>`,
+ cap:'Percent ²³⁵U in natural uranium, power reactor fuel, and weapons material.',
+ q:{type:'choice', prompt:'Uranium for power reactors is enriched to about:',
+  options:[{v:'p',label:'3–5% ²³⁵U'},{v:'n',label:'0.7% ²³⁵U'},{v:'w',label:'95% ²³⁵U'},{v:'h',label:'100% ²³⁵U'}],
+  answer:'p',
+  ok:'Correct. Power reactor fuel is 3–5% ²³⁵U. Weapons require about 95%, which is one reason power-reactor fuel can\'t simply be used as a bomb.',
+  diag:{n:'0.7% is natural uranium, before enrichment.',w:'About 95% is weapons-grade. Power reactors use far less.',h:'Power fuel is only enriched to a few percent.'},
+  generic:'Try again.',
+  solution:'<b>3–5%</b> (Lecture 7).'}
+},
+{ // 15
+ title:'Putting it together', view:'compare',
+ body:`<ul>
+ <li>Nuclear energy comes from converting mass to energy (E = mc²). Helium weighs 0.03035 amu less than its parts; one ²³⁵U fission loses about 0.2 amu.</li>
+ <li>Nuclei release energy by moving toward iron on the binding-energy curve: light nuclei by fusion, heavy nuclei like ²³⁵U by fission.</li>
+ <li>0.2 amu → 3 × 10⁻¹¹ J per fission; × 2.6 × 10²¹ atoms/gram → about 76 GJ per gram, or about 20 million kcal/gram: over a million times fossil fuel's ~10 kcal/gram.</li>
+ <li>Each fission releases neutrons that can split more ²³⁵U (a chain reaction). But ²³⁵U is only 0.7% of natural uranium, so fuel must be enriched to 3–5%.</li>
+ </ul>`,
+ cap:'Energy per gram on a log scale: hot water, fossil fuel, and ²³⁵U fission (lecture values).'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+function vlabel(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();}
+function nuc(x,y,sym,col){dot(x,y,15,col);txt(sym,x,y+1,{sz:14,b:1,c:'#fff',al:'center'});}
+const g=(k)=>done(k)||stage>k;
+
+// ---------- helium ----------
+function drawHe(){
+ nuc(90,120,'+',C.terra);nuc(140,120,'+',C.terra);nuc(90,190,'N',C.purp);nuc(140,190,'N',C.purp);
+ txt('protons: 1.00728 amu each',60,86,{sz:13.5,c:C.terra});txt('neutrons: 1.00866 amu each',60,226,{sz:13.5,c:C.purp});
+ arrow(180,155,300,155,C.slate,2.5);
+ [[350,140,'+',C.terra],[376,140,'N',C.purp],[350,166,'N',C.purp],[376,166,'+',C.terra]].forEach(a=>nuc(...a));
+ txt('helium nucleus',363,110,{sz:14,b:1,c:C.navy,al:'center'});txt('measured: 4.00153 amu',363,204,{sz:14,b:1,c:C.navy,al:'center'});
+ rrect(440,80,260,160,10);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+ txt('mass ledger',570,100,{sz:14,b:1,c:C.purp,al:'center'});
+ txt('parts:',455,135,{sz:14.5});txt(stage>=1?(g(S.HEX)?HE_EXP.toFixed(5)+' amu':'?'):'',685,135,{sz:14.5,b:1,c:g(S.HEX)?C.green:C.amber,al:'right'});
+ txt('nucleus:',455,165,{sz:14.5});txt(stage>=2?'4.00153 amu':'',685,165,{sz:14.5,b:1,c:C.slate,al:'right'});
+ line(455,183,685,183,C.line,1);
+ txt('missing:',455,205,{sz:14.5,b:1});txt(stage>=2?(g(S.HDM)?HE_DM.toFixed(5)+' amu':'?'):'',685,205,{sz:14.5,b:1,c:g(S.HDM)?C.terra:C.amber,al:'right'});
+ if(g(S.HDM))txt('missing mass → binding energy, released (E = mc²)',CW/2,300,{sz:15,b:1,c:C.terra,al:'center'});
+ if(stage===0)txt('E = mc²',CW/2,310,{sz:26,c:C.navy,serif:1,al:'center'});
+}
+
+// ---------- binding energy curve ----------
+function drawCurve(){
+ const x0=80,x1=690,y0=360,y1=50,X=a=>x0+a/250*(x1-x0),Y=v=>y0-v/10*(y0-y1);
+ axes(x0,y0,x1,y1);
+ for(let a=0;a<=250;a+=50){line(X(a),y0,X(a),y0+5,C.slate,1.5);txt(String(a),X(a),y0+16,{sz:13,c:C.mut,al:'center'});}
+ for(let v=0;v<=10;v+=2){line(x0-5,Y(v),x0,Y(v),C.slate,1.5);txt(String(v),x0-9,Y(v),{sz:13,c:C.mut,al:'right'});}
+ txt('Mass number (protons + neutrons)',(x0+x1)/2,y0+36,{sz:13.5,c:C.mut,al:'center'});vlabel('Binding energy per nucleon (MeV)',28,(y0+y1)/2);
+ ctx.beginPath();BE.forEach(([n,a,v],i)=>i?ctx.lineTo(X(a),Y(v)):ctx.moveTo(X(a),Y(v)));ctx.strokeStyle=C.steel;ctx.lineWidth=2.5;ctx.stroke();
+ BE.forEach(([n,a,v])=>{dot(X(a),Y(v),4.5,C.terra);if(['²H','⁴He','⁵⁶Fe','²³⁵U','¹²C'].includes(n))txt(n,X(a)+6,Y(v)-(n==='²³⁵U'?-14:12),{sz:13,b:1,c:C.navy});});
+ txt('peak: iron',X(56)+40,Y(8.8)-26,{sz:13.5,b:1,c:C.green});
+ if(g(S.CURVE)){arrow(X(20),Y(4.2),X(48),Y(4.2),C.amber,3);txt('fusion',X(10),Y(4.2)-18,{sz:14,b:1,c:C.amber});
+   arrow(X(225),Y(5.6),X(120),Y(5.6),C.terra,3);txt('fission releases energy',X(225),Y(5.6)-18,{sz:14,b:1,c:C.terra,al:'right'});}
+ else txt('which way can ²³⁵U go to release energy?',X(160),Y(4.8),{sz:14,b:1,c:C.amber,al:'center'});
+}
+
+// ---------- fission ledger ----------
+function drawFission(){
+ const y=90;
+ dot(40,y,8,C.purp);txt('n',40,y+22,{sz:13,c:C.purp,al:'center'});txt('+',70,y,{sz:20,b:1,al:'center'});
+ dot(125,y,34,C.steel);txt('²³⁵U',125,y,{sz:16,b:1,c:'#fff',al:'center'});arrow(170,y,230,y,C.slate,2.5);
+ dot(280,y,24,C.teal);txt('⁹⁷Rb',280,y,{sz:14,b:1,c:'#fff',al:'center'});txt('+',320,y,{sz:20,b:1,al:'center'});
+ dot(370,y,28,C.amber);txt('¹³⁷Cs',370,y,{sz:14,b:1,c:'#fff',al:'center'});txt('+',416,y,{sz:20,b:1,al:'center'});
+ const nd=g(S.NOUT);
+ if(nd){dot(445,y-10,8,C.purp);dot(465,y+8,8,C.purp);txt('2 n',490,y,{sz:15,b:1,c:C.purp});}else txt('? n',450,y,{sz:16,b:1,c:C.amber});
+ txt('nucleons: 1 + 235 = 236   →   97 + 137 + '+(nd?'2 = 236':'? = 236'),CW/2,150,{sz:14.5,c:nd?C.green:C.slate,al:'center',b:1});
+ if(stage>=S.BEF){
+  rrect(60,180,600,200,10);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+  txt('before',200,202,{sz:15,b:1,c:C.navy,al:'center'});txt('after',520,202,{sz:15,b:1,c:C.navy,al:'center'});
+  txt('n        1.00866',120,232,{sz:14});txt('²³⁵U   235.043',120,256,{sz:14});
+  txt('total: '+(g(S.BEF)?M_BEFORE.toFixed(2):'?'),120,292,{sz:15,b:1,c:g(S.BEF)?C.green:C.amber});
+  if(stage>=S.AFT){txt('⁹⁷Rb      96.937',430,232,{sz:14});txt('¹³⁷Cs   136.907',430,256,{sz:14});txt('2 n        2(1.00866)',430,280,{sz:14});
+   txt('total: '+(g(S.AFT)?M_AFTER.toFixed(2):'?'),430,310,{sz:15,b:1,c:g(S.AFT)?C.green:C.amber});}
+  line(360,190,360,370,C.line,1);
+  if(stage>=S.DM)txt('missing: '+(g(S.DM)?DM.toFixed(2)+' amu (≈ 0.2)':'?'),CW/2,352,{sz:16,b:1,c:g(S.DM)?C.terra:C.amber,al:'center'});
+ }
+}
+
+// ---------- conversion chain ----------
+function drawChain(){
+ const boxes=[['Δm','0.2 amu',true],['energy per fission',g(S.EAT)?sci(E_AT)+' J':'? J',g(S.EAT)],['atoms per gram',g(S.NG)?sci(N_G):'?',g(S.NG)],
+  ['energy per gram',g(S.EG)?(E_G/1e9).toFixed(1)+' GJ':'? GJ',g(S.EG)],['in kcal per gram',g(S.KC)?(KC_G/1e6).toFixed(1)+' million':'?',g(S.KC)],['times fossil fuel',g(S.RAT)?RATIO.toFixed(2)+' million ×':'?',g(S.RAT)]];
+ boxes.forEach(([t,v,ok],i)=>{const col=i%2, row=Math.floor(i/2), x=30+col*400, y=40+row*130;
+   rrect(x,y,260,78,10);ctx.fillStyle=ok?'#E8F3EC':C.light;ctx.fill();ctx.strokeStyle=ok?C.green:C.line;ctx.lineWidth=ok?2:1.2;ctx.stroke();
+   txt(t,x+130,y+24,{sz:14,c:C.mut,al:'center'});txt(v,x+130,y+52,{sz:18,b:1,c:ok?C.green:C.amber,al:'center'});});
+ arrow(292,79,428,79,C.slate,2);txt('× 1.66×10⁻²⁷ kg/amu',360,56,{sz:12,c:C.mut,al:'center'});txt('× c²',360,100,{sz:12,c:C.mut,al:'center'});
+ arrow(560,120,560,168,C.slate,2);
+ txt('= 6.022×10²³ / 235 g',160,262,{sz:12,c:C.mut,al:'center'});
+ arrow(292,209,428,209,C.slate,2);txt('×',360,196,{sz:14,b:1,c:C.mut,al:'center'});
+ arrow(520,250,200,298,C.slate,1.6);txt('÷ 4,184 J/kcal',440,258,{sz:12.5,c:C.mut,al:'center'});
+ arrow(292,339,428,339,C.slate,2);txt('÷ 10 kcal/g',360,322,{sz:12.5,c:C.mut,al:'center'});
+ txt('lecture: 3×10⁻¹¹ J · 2.6×10²¹ atoms/g · 76 GJ/g · ~20 million kcal/g',CW/2,428,{sz:12.5,c:C.mut,al:'center'});
+}
+
+// ---------- enrichment ----------
+function drawEnrich(){
+ const x0=180,x1=680,y0=60,Xp=p=>x0+p/100*(x1-x0);
+ const rows=[['natural uranium',0.7,C.steel,'0.7%'],['power reactor fuel',4,C.green,'3–5%'],['weapons',95,C.terra,'~95%']];
+ rows.forEach(([n,p,col,lab],i)=>{const y=y0+40+i*90;txt(n,x0-14,y+14,{sz:15,b:1,c:C.navy,al:'right'});
+   ctx.fillStyle=C.light;ctx.fillRect(x0,y,x1-x0,28);
+   const show=i!==1||g(S.ENR);
+   if(show){ctx.fillStyle=col;if(i===1){ctx.fillRect(Xp(3),y,Xp(5)-Xp(3),28);}else ctx.fillRect(x0,y,Math.max(Xp(p)-x0,3),28);
+     txt(lab,(i===1?Xp(5):Math.max(Xp(p),x0+3))+8,y+14,{sz:15,b:1,c:col});}
+   else txt('?',x0+20,y+14,{sz:20,b:1,c:C.amber});});
+ const ay=y0+300;line(x0,ay,x1,ay,C.slate,1.5);
+ for(let p=0;p<=100;p+=20){line(Xp(p),ay,Xp(p),ay+5,C.slate,1.5);txt(p+'%',Xp(p),ay+16,{sz:13,c:C.mut,al:'center'});}
+ txt('Percent ²³⁵U (the rest is mostly non-fissile ²³⁸U)',(x0+x1)/2,ay+38,{sz:13.5,c:C.mut,al:'center'});
+}
+
+// ---------- energy per gram comparison (log) ----------
+function drawCompare(){
+ const x0=200,x1=680,X=v=>x0+(Math.log10(v)+1)/9*(x1-x0);
+ const rows=[['hot water',0.5,C.steel],['fossil fuels',10,C.amber],['²³⁵U fission',2e7,C.terra]];
+ txt('Energy per gram (kcal/g, log scale)',CW/2,40,{sz:15,b:1,c:C.navy,al:'center'});
+ rows.forEach(([n,v,col],i)=>{const y=90+i*80;txt(n,x0-14,y+16,{sz:15,b:1,c:C.navy,al:'right'});ctx.fillStyle=col;ctx.fillRect(x0,y,X(v)-x0,32);
+   txt(v>=1e6?(v/1e6)+' million':String(v),X(v)+8,y+16,{sz:15,b:1,c:col});});
+ const ay=340;line(x0,ay,x1,ay,C.slate,1.5);
+ for(let e=-1;e<=8;e++){line(X(Math.pow(10,e)),ay,X(Math.pow(10,e)),ay+5,C.slate,1.5);txt('10',X(Math.pow(10,e))-4,ay+18,{sz:13,c:C.mut,al:'center'});txt(String(e).replace('-','−'),X(Math.pow(10,e))+5,ay+12,{sz:10,c:C.mut});}
+ txt('fission: over a million times fossil fuel, per gram',CW/2,400,{sz:14.5,b:1,c:C.terra,al:'center'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({he:drawHe,curve:drawCurve,fission:drawFission,chain:drawChain,enrich:drawEnrich,compare:drawCompare})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="4s">
+<meta name="lecture-title" content="Reading the Past: Dating Archives and the Oxygen-Isotope Proxy">
+<meta name="lecture-topic" content="Climate archives, radiometric dating and half-life, choosing a dating isotope, delta 18O temperature proxy">
+<title>Lecture 4s: Dating and Proxies</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Reading the Past: Dating Archives and the Oxygen-Isotope Proxy</h1>
+  <p class="sub">Self-guided review of Lecture 4 (brief intro to climatology). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 4: climate archives, dating climate records (radiometric isotopes, the table of dating isotopes, annual layering), and stable-isotope proxies (oxygen isotopes, isotopic notation, and the cold-period δ¹⁸O rule). The ice-layer δ¹⁸O values are hypothetical.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l4check.py) ----------
+const N0 = 24;                                   // parent atoms at start (lecture figure)
+const PAR = [0,1,2,3].map(n=>N0/Math.pow(2,n));  // 24, 12, 6, 3
+const DAU = PAR.map(p=>N0-p);                    // 0, 12, 18, 21
+const FRAC3 = PAR[3]/N0;                         // 0.125
+const T_TH = 75000;                              // Th-230 half-life, yr (lecture table)
+const N_CORAL = 2;                               // 1/4 remaining -> 2 half-lives
+const AGE_CORAL = N_CORAL*T_TH;                  // 150,000 yr
+const N_O18 = 18-8;                              // 10 neutrons
+const D_A = -35, D_B = -40;                      // hypothetical ice-layer delta18O values, permil
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={P1:2,P3:3,D3:4,F3:5,NH:6,AGE:7,BAS:8,WOOD:9,O18:10,EVAP:11,COLD:12,LAYER:13};
+
+const stages=[
+{ // 0
+ title:'How do we know what past climate was?', view:'grid',
+ body:`<p>Climate archives such as sediments, ice cores, reefs, and trees chronicle the history of the Earth. To use an archive you need to answer two questions:</p>
+ <ol><li><b>When</b> was this layer deposited? (dating)</li><li><b>What</b> was the climate when it formed? (proxies)</li></ol>
+ <p>This walk-through practices both: radiometric dating first, then the oxygen-isotope proxy.</p>`,
+ cap:'A sample containing radioactive parent atoms (red) among stable atoms (tan).'
+},
+{ // 1
+ title:'Radiometric dating', view:'grid',
+ body:`<p>Time is determined by measuring the gradual decay of a radioactive <b>parent</b> isotope to a stable <b>daughter</b> isotope.</p>
+ <div class="given"><b>Half-life</b> = the time needed for half of the parent to decay.<br>Each half-life, the parent that is left is cut in half, and the daughter grows by the same amount.</div>
+ <p>The sample on the left starts with 24 parent atoms and no daughter atoms, as in the lecture figure.</p>`,
+ cap:'Time zero: 24 parent atoms (red), 0 daughter atoms (blue). Right: counts versus time in half-lives.'
+},
+{ // 2
+ title:'After one half-life', view:'grid',
+ body:`<p>Start: 24 parent atoms.</p>`,
+ cap:'Counts of parent and daughter atoms. The one-half-life point appears once you answer.',
+ q:{type:'num', prompt:'How many parent atoms remain after 1 half-life?', label:'Parent atoms after one half-life', unit:'atoms',
+  // target 12 | distractors 24, 0, 6 | integer -> tol 0.01
+  answer:PAR[1], tol:0.01,
+  ok:'Correct: half of 24 is 12. The 12 that decayed are now 12 daughter atoms.',
+  diagFn:x=>{if(x===24)return 'That is the starting amount. After one half-life, half of it has decayed.';
+   if(x===0)return 'Only half decays in one half-life, not all of it.';
+   if(x===6)return 'That is after 2 half-lives. After 1 half-life, halve 24 once.';return null;},
+  generic:'Halve the starting amount once.',
+  solution:'24 / 2 = <b>12</b> parent atoms.'}
+},
+{ // 3
+ title:'After three half-lives', view:'grid',
+ body:`<p>Each half-life halves <em>what is left</em>, not the original amount.</p>`,
+ cap:'Parent atoms keep halving. The three-half-life point appears once you answer.',
+ q:{type:'num', prompt:'How many parent atoms remain after 3 half-lives?', label:'Parent atoms after three half-lives', unit:'atoms',
+  // target 3 | distractors 8 (24/3), 0 (12 lost each time), 6 (2 half-lives), 12 | integer -> tol 0.01
+  answer:PAR[3], tol:0.01,
+  ok:'Correct: 24 → 12 → 6 → 3.',
+  diagFn:x=>{if(x===8)return 'That divides 24 by 3. Instead halve three times: 24 → 12 → 6 → ?';
+   if(x===0)return 'That subtracts 12 each half-life. Each half-life halves what is left: 24 → 12 → 6 → ?';
+   if(x===6)return 'That is after 2 half-lives. Halve once more.';
+   if(x===12)return 'That is after 1 half-life. Keep halving.';return null;},
+  generic:'Halve 24 three times.',
+  solution:'24 → 12 → 6 → <b>3</b> parent atoms.'}
+},
+{ // 4
+ title:'Where did they go?', view:'grid',
+ body:`<p>Every parent atom that decays becomes one daughter atom. The total stays 24.</p>`,
+ cap:'After 3 half-lives: parent (red) and daughter (blue). The daughter count appears once you answer.',
+ q:{type:'num', prompt:'How many daughter atoms are there after 3 half-lives?', label:'Daughter atoms after three half-lives', unit:'atoms',
+  // target 21 | distractors 3 (parent), 18 (2 half-lives), 24 | integer -> tol 0.01
+  answer:DAU[3], tol:0.01,
+  ok:'Correct: 24 − 3 = 21 daughter atoms. The parent falls and the daughter rises, as in the lecture figure.',
+  diagFn:x=>{if(x===3)return 'That is the parent count. Daughter = 24 − parent.';
+   if(x===18)return 'That is after 2 half-lives. Use the parent count after 3 half-lives.';
+   if(x===24)return 'Not every parent has decayed; 3 are still parent atoms.';return null;},
+  generic:'Daughter atoms = 24 − parent atoms left.',
+  solution:'24 − 3 = <b>21</b> daughter atoms.'}
+},
+{ // 5
+ title:'As a fraction', view:'grid',
+ body:`<p>Real samples don't come with a count of the starting atoms, so we work with the fraction of parent remaining.</p>`,
+ cap:'Parent remaining after 3 half-lives, as a fraction of the start.',
+ q:{type:'num', prompt:'What fraction of the original parent remains after 3 half-lives? (decimal)', label:'Fraction of parent remaining', unit:'',
+  // target 0.125 | distractors 0.333 (1/3), 12.5 (percent), 0.875 (daughter fraction), 0.25 | nearest gap 0.125 -> tol 0.002
+  answer:FRAC3, tol:0.002,
+  ok:'Correct: 3/24 = 1/8 = 0.125. That is ½ × ½ × ½.',
+  diagFn:x=>{if(near(x,1/3,0.02))return 'That divides by 3. Each half-life multiplies by ½: ½ × ½ × ½.';
+   if(near(x,12.5,0.01))return 'That is a percent. Enter it as a decimal fraction.';
+   if(near(x,0.875,0.01))return 'That is the daughter fraction (21/24). The question asks for the parent.';
+   if(near(x,0.25,0.01))return 'That is after 2 half-lives. Multiply by ½ once more.';return null;},
+  generic:'Divide the parent remaining (3) by the start (24).',
+  solution:'3 / 24 = (½)³ = <b>0.125</b>.'}
+},
+{ // 6
+ title:'Dating a coral: count the half-lives', view:'curve',
+ body:`<p>Corals are dated with thorium-230 (²³⁰Th), half-life 75,000 years, useful for ages under about 400,000 years.</p>
+ <p>A fossil coral has <b>¼</b> of its original ²³⁰Th left.</p>`,
+ cap:'Fraction of ²³⁰Th remaining versus time. The dashed line marks ¼ remaining.',
+ q:{type:'num', prompt:'How many half-lives have passed?', label:'Number of half-lives', unit:'half-lives',
+  // target 2 | distractors 4 (1/4 -> 4), 0.25, 3 | nearest gap 1 -> tol 0.01
+  answer:N_CORAL, tol:0.01,
+  ok:'Correct: 1 → ½ → ¼ is 2 halvings.',
+  diagFn:x=>{if(x===4)return 'Remaining ¼ doesn\'t mean 4 half-lives. Count the halvings: 1 → ½ → ¼.';
+   if(near(x,0.25,0.01))return 'That is the fraction remaining. Count how many halvings get you there.';
+   if(x===3)return 'Three halvings would leave ⅛. Count: 1 → ½ → ¼.';
+   if(x===1)return 'One half-life leaves ½. Keep halving until you reach ¼.';return null;},
+  generic:'How many times do you halve 1 to reach ¼?',
+  solution:'1 → ½ → ¼: <b>2</b> half-lives.'}
+},
+{ // 7
+ title:'Dating a coral: the age', view:'curve',
+ body:`<p>Use the number of half-lives you just found and the ²³⁰Th half-life of 75,000 years.</p>`,
+ cap:'Read the age where the curve crosses ¼. The age label appears once you answer.',
+ q:{type:'num', prompt:'How old is the coral?', label:'Coral age in years', unit:'years',
+  // target 150000 | distractors 18750 (T/4), 300000 (4 x T), 75000, 225000 | nearest gap 75000 -> tol 500
+  answer:AGE_CORAL, tol:500,
+  ok:'Correct: 2 × 75,000 = 150,000 years, well inside the under-400,000-year range where ²³⁰Th is useful.',
+  diagFn:x=>{if(near(x,T_TH/4,0.01))return 'That divides the half-life by 4. Multiply the half-life by the number of half-lives.';
+   if(near(x,4*T_TH,0.01))return 'That uses 4 half-lives. Only 2 have passed (1 → ½ → ¼).';
+   if(near(x,T_TH,0.01))return 'That is one half-life. Two have passed.';
+   if(near(x,3*T_TH,0.01))return 'That is 3 half-lives. Only 2 have passed.';
+   if(near(x,150,0.01))return 'Check your units: the answer is in years, not thousands of years.';return null;},
+  generic:'Age = (number of half-lives) × (half-life).',
+  solution:'2 × 75,000 = <b>150,000 years</b>.'}
+},
+{ // 8
+ title:'Pick the right clock: a lava flow', view:'ranges',
+ body:`<p>Different radioisotopes are used for different time scales. Each works best on certain materials.</p>
+ <p>You want to date a <b>basalt</b> lava flow that is about <b>5 million years</b> old.</p>`,
+ cap:'Useful age ranges of the dating isotopes (log time axis). The marker shows the sample age.',
+ q:{type:'choice', prompt:'Which parent isotope should you use?',
+  options:[{v:'k',label:'Potassium-40 (→ argon-40)'},{v:'c',label:'Carbon-14 (→ nitrogen-14)'},{v:'th',label:'Thorium-230'},{v:'rb',label:'Rubidium-87 (→ strontium-87)'}],
+  answer:'k',
+  ok:'Correct. Potassium-40 (half-life 1.3 billion years) is useful for ages above about 100,000 years and is used for basalts.',
+  diag:{c:'Carbon-14 only works for ages under about 50,000 years, and only on things that contain carbon.',
+        th:'Thorium-230 works under about 400,000 years and is used for corals. 5 million years is too old.',
+        rb:'Rubidium-87 is for granites and very old ages (around 100 million years and up).'},
+  generic:'Try again.',
+  solution:'<b>Potassium-40.</b> Useful above ~100,000 years; used for basalts (Lecture 4).'}
+},
+{ // 9
+ title:'Pick the right clock: old wood', view:'ranges',
+ body:`<p>Now you want to date a piece of <b>wood</b> buried in a lake sediment, about <b>10,000 years</b> old.</p>`,
+ cap:'Useful age ranges of the dating isotopes. The marker shows the sample age.',
+ q:{type:'choice', prompt:'Which parent isotope should you use?',
+  options:[{v:'c',label:'Carbon-14'},{v:'k',label:'Potassium-40'},{v:'th',label:'Thorium-230'},{v:'u',label:'Uranium-238'}],
+  answer:'c',
+  ok:'Correct. Carbon-14 is useful for ages under about 50,000 years and for anything that contains carbon, like wood.',
+  diag:{k:'Potassium-40 is for ages above about 100,000 years, and for basalts. 10,000 years is too young.',
+        th:'The age fits Thorium-230\'s range, but it is used for corals. Wood contains carbon, so use the carbon clock.',
+        u:'Uranium-238 is for rocks older than about 100 million years.'},
+  generic:'Try again.',
+  solution:'<b>Carbon-14.</b> Under ~50,000 years; anything that contains carbon (Lecture 4).'}
+},
+{ // 10
+ title:'Stable isotopes of oxygen', view:'water',
+ body:`<p>Proxies tell us what the climate was. Oxygen isotopes are one of several isotopic proxies. Every oxygen atom has 8 protons; <b>¹⁶O</b> has 8 neutrons.</p>
+ <p>Unlike ¹⁴C, these isotopes are <b>stable</b>: they don't decay. What changes is their ratio.</p>`,
+ cap:'Two water molecules: H₂¹⁶O (light) and H₂¹⁸O (heavy).',
+ q:{type:'num', prompt:'How many neutrons does an ¹⁸O atom have?', label:'Neutrons in oxygen-18', unit:'neutrons',
+  // target 10 | distractors 8, 18, 9 | integer -> tol 0.01
+  answer:N_O18, tol:0.01,
+  ok:'Correct: 18 − 8 protons = 10 neutrons. H₂¹⁸O is "heavy" water.',
+  diagFn:x=>{if(x===8)return 'That is ¹⁶O (or the proton count). ¹⁸O has two more neutrons.';
+   if(x===18)return 'That is protons plus neutrons together. Subtract the 8 protons.';return null;},
+  generic:'Neutrons = 18 − 8 protons.',
+  solution:'18 − 8 = <b>10 neutrons</b>.'}
+},
+{ // 11
+ title:'Light water moves more easily', view:'water',
+ body:`<p>Heavier isotopes require more energy to evaporate and condense more readily.</p>
+ <p>The δ¹⁸O notation works like δ¹³C: positive means enriched in the heavy isotope (¹⁸O) relative to the standard, negative means depleted.</p>`,
+ cap:'Which water molecule leaves the ocean more readily as vapor?',
+ q:{type:'choice', prompt:'Which evaporates more readily?',
+  options:[{v:'l',label:'H₂¹⁶O (light water)'},{v:'h',label:'H₂¹⁸O (heavy water)'},{v:'s',label:'They evaporate equally'}],
+  answer:'l',
+  ok:'Correct. Light water evaporates more readily, and heavy water rains and snows out first.',
+  diag:{h:'Heavier isotopes require more energy to evaporate. The light molecule escapes more easily.',s:'The mass difference matters: this uneven split is the fractionation that makes the proxy work.'},
+  generic:'Try again.',
+  solution:'<b>H₂¹⁶O.</b> Light water isotopes evaporate more readily (Lecture 4).'}
+},
+{ // 12
+ title:'Cold climates, low δ¹⁸O', view:'core',
+ body:`<p>As water vapor travels toward the poles, ¹⁸O is preferentially removed by precipitation. The colder the environment, the quicker the atmospheric water vapor condenses, and the quicker the vapor is depleted in ¹⁸O.</p>`,
+ cap:'Ice core schematic: each layer is snow from one time. What does cold do to its δ¹⁸O?',
+ q:{type:'choice', prompt:'During cold periods, ice cores have ____ δ¹⁸O.',
+  options:[{v:'low',label:'Lower (more negative) δ¹⁸O'},{v:'high',label:'Higher δ¹⁸O'},{v:'same',label:'The same δ¹⁸O'}],
+  answer:'low',
+  ok:'Correct. Cold means the vapor has lost more ¹⁸O by the time it snows on the ice sheet, so the ice has a lower ¹⁸O/¹⁶O ratio (lower δ¹⁸O).',
+  diag:{high:'Cold makes vapor condense sooner, stripping ¹⁸O out earlier. The snow that finally reaches the ice sheet is poorer in ¹⁸O.',
+        same:'Temperature changes how fast ¹⁸O is stripped from the vapor, so δ¹⁸O changes. That is what makes it a proxy.'},
+  generic:'Try again.',
+  solution:'<b>Lower.</b> During cold periods, ice cores have a lower ratio of ¹⁸O to ¹⁶O (Lecture 4).'}
+},
+{ // 13
+ title:'Read an ice core', view:'core',
+ body:`<p>Two layers from an ice core (hypothetical values):</p>
+ <ul><li>Layer A: δ¹⁸O = −35 ‰</li><li>Layer B: δ¹⁸O = −40 ‰</li></ul>`,
+ cap:'Two ice-core layers with their δ¹⁸O values.',
+ q:{type:'choice', prompt:'Which layer formed during a colder period?',
+  options:[{v:'b',label:'Layer B (−40 ‰)'},{v:'a',label:'Layer A (−35 ‰)'},{v:'x',label:'Can\'t tell from δ¹⁸O'}],
+  answer:'b',
+  ok:'Correct. −40 ‰ is more negative (more depleted in ¹⁸O), which points to a colder climate.',
+  diag:{a:'−35 is the larger (less negative) number. Colder means more ¹⁸O-depleted, so look for the more negative value.',
+        x:'This is exactly what δ¹⁸O is used for: lower δ¹⁸O in ice means colder.'},
+  generic:'Try again.',
+  solution:'<b>Layer B.</b> More negative δ¹⁸O = colder.'}
+},
+{ // 14
+ title:'Putting it together', view:'core',
+ body:`<ul>
+ <li><b>When:</b> radioactive parents decay to daughters at a fixed half-life. The fraction left (½, ¼, ⅛, ...) tells you how many half-lives have passed; multiply by the half-life to get the age. Pick the isotope whose range and material fit the sample. Some archives (ice, varved lake sediments, trees, corals) also have annual layers you can simply count.</li>
+ <li><b>What:</b> stable-isotope proxies like δ¹⁸O record climate. Lower δ¹⁸O in ice means a colder climate when that snow fell.</li>
+ <li>Line up many proxy "squiggles" from sediments, shells, teeth, bones, and ice, and they agree on the state of Earth's climate at the time of deposition.</li>
+ </ul>`,
+ cap:'A dated, read ice core: each layer gives a time and a climate signal.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);
+ ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.setLineDash(dash?[6,5]:[]);ctx.stroke();ctx.setLineDash([]);arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function dot(x,y,r,col,stroke){ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+function vlabel(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();}
+
+// ---------- decay grid + counts ----------
+// fixed pseudo-random layout: 24 parent sites in a 10x10 grid, and a fixed decay order
+function rng(seed){return ()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};}
+const SITES=(()=>{const r=rng(7),all=[...Array(100).keys()];for(let i=99;i>0;i--){const j=Math.floor(r()*(i+1));[all[i],all[j]]=[all[j],all[i]];}return all.slice(0,24);})();
+// decay order: first 12 decay in half-life 1, next 6 in 2, next 3 in 3
+function shownT(){ // number of half-lives whose result has been answered and can be drawn
+ if(stage<=1) return 0;
+ if(stage===S.P1) return done(S.P1)?1:0;
+ if(stage===S.P3) return done(S.P3)?3:1;
+ return 3;}
+function drawGrid(){
+ const t=shownT(), nDec=N0-PAR[t];
+ const gx=30, gy=70, cs=26;
+ txt(t===0?'time zero':'after '+t+' half-li'+(t===1?'fe':'ves'),gx+cs*5,40,{sz:15,b:1,c:C.navy,al:'center'});
+ for(let i=0;i<100;i++){const x=gx+(i%10)*cs+cs/2,y=gy+Math.floor(i/10)*cs+cs/2;const k=SITES.indexOf(i);
+   let col='#EEDFCB'; if(k>=0) col=k<nDec?'#7FAFD6':'#E07A68'; dot(x,y,11,col,k>=0?(k<nDec?C.steel:C.terra):'#D8C6AE');}
+ dot(gx+10,gy+10*cs+24,7,'#E07A68',C.terra);txt('parent',gx+22,gy+10*cs+24,{sz:13,c:C.mut});
+ dot(gx+90,gy+10*cs+24,7,'#7FAFD6',C.steel);txt('daughter',gx+102,gy+10*cs+24,{sz:13,c:C.mut});
+ dot(gx+185,gy+10*cs+24,7,'#EEDFCB','#D8C6AE');txt('stable',gx+197,gy+10*cs+24,{sz:13,c:C.mut});
+ txt('(which atoms decay is random; the count halves)',gx+130,gy+10*cs+46,{sz:12,c:C.mut,al:'center'});
+ // counts plot
+ const x0=380,x1=690,y0=360,y1=60, px=n=>x0+20+n*(x1-x0-40)/3, py=v=>y0-v/24*(y0-y1);
+ axes(x0,y0,x1,y1);
+ for(let v=0;v<=24;v+=6){line(x0-5,py(v),x0,py(v),C.slate,1.5);txt(String(v),x0-9,py(v),{sz:13,c:C.mut,al:'right'});}
+ for(let n=0;n<=3;n++){line(px(n),y0,px(n),y0+5,C.slate,1.5);txt(String(n),px(n),y0+16,{sz:13,c:C.mut,al:'center'});}
+ txt('Time (half-lives)',(x0+x1)/2,y0+36,{sz:13.5,c:C.mut,al:'center'});vlabel('Number of atoms',x0-38,(y0+y1)/2);
+ const dT = (stage>=S.D3&&done(S.D3))||stage>S.D3 ? 3 : Math.min(t,1); // daughter points shown
+ // parent curve and points up to t
+ ctx.beginPath();for(let n=0;n<=t;n+=0.02){const v=24*Math.pow(0.5,n);n===0?ctx.moveTo(px(n),py(v)):ctx.lineTo(px(n),py(v));}ctx.strokeStyle=C.terra;ctx.lineWidth=2.5;ctx.stroke();
+ ctx.beginPath();for(let n=0;n<=dT;n+=0.02){const v=24-24*Math.pow(0.5,n);n===0?ctx.moveTo(px(n),py(v)):ctx.lineTo(px(n),py(v));}ctx.strokeStyle=C.steel;ctx.lineWidth=2.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+ for(let n=0;n<=t;n++){dot(px(n),py(PAR[n]),6,C.terra);txt(String(PAR[n]),px(n)+9,py(PAR[n])+(n===1?14:-10),{sz:13.5,b:1,c:C.terra});}
+ for(let n=1;n<=dT;n++){dot(px(n),py(DAU[n]),6,C.steel);if(n!==1)txt(String(DAU[n]),px(n)+9,py(DAU[n])-10,{sz:13.5,b:1,c:C.steel});}
+ dot(px(0),py(0),6,C.steel);
+ // pending question markers
+ const q=(n,v,col)=>txt('?',px(n),py(v),{sz:22,b:1,c:col,al:'center'});
+ if(stage===S.P1&&!done(S.P1))txt('? after 1',px(1),py(12),{sz:15,b:1,c:C.amber,al:'center'});
+ if(stage===S.P3&&!done(S.P3))txt('? after 3',px(3),py(4),{sz:15,b:1,c:C.amber,al:'center'});
+ if(stage===S.D3&&!done(S.D3))txt('daughter = ?',px(3)-4,py(21),{sz:15,b:1,c:C.amber,al:'right'});
+ if(stage>=S.F3)txt('fraction left = '+((stage>S.F3||done(S.F3))?'3/24 = '+FRAC3:'?'),(x0+x1)/2+10,y1-20,{sz:15,b:1,c:(stage>S.F3||done(S.F3))?C.green:C.amber,al:'center'});
+ if(t>=1){txt('parent',x1,py(3)+18,{sz:13,b:1,c:C.terra,al:'right'});txt('daughter',x1-60,py(22)-16,{sz:13,b:1,c:C.steel,al:'right'});}
+}
+
+// ---------- Th-230 decay curve ----------
+function drawCurve(){
+ const x0=90,x1=690,y0=360,y1=50, tmax=4*T_TH, X=t=>x0+t/tmax*(x1-x0), Y=f=>y0-f*(y0-y1);
+ axes(x0,y0,x1,y1);
+ for(let k=0;k<=4;k++){const t=k*T_TH;line(X(t),y0,X(t),y0+5,C.slate,1.5);txt(t.toLocaleString('en-US'),X(t),y0+16,{sz:13,c:C.mut,al:'center'});}
+ [0,0.25,0.5,0.75,1].forEach(f=>{line(x0-5,Y(f),x0,Y(f),C.slate,1.5);txt(f.toFixed(2),x0-9,Y(f),{sz:13,c:C.mut,al:'right'});});
+ txt('Time since the coral grew (years)',(x0+x1)/2,y0+38,{sz:13.5,c:C.mut,al:'center'});vlabel('Fraction of ²³⁰Th remaining',28,(y0+y1)/2);
+ ctx.beginPath();for(let t=0;t<=tmax;t+=500){const f=Math.pow(0.5,t/T_TH);t===0?ctx.moveTo(X(t),Y(f)):ctx.lineTo(X(t),Y(f));}ctx.strokeStyle=C.steel;ctx.lineWidth=3;ctx.stroke();
+ txt('half-life = 75,000 years',x1,y1+10,{sz:14,b:1,c:C.navy,al:'right'});
+ line(x0,Y(0.25),X(AGE_CORAL),Y(0.25),C.amber,1.8,true);txt('¼ remaining (measured)',x0+8,Y(0.25)-12,{sz:13.5,b:1,c:C.amber});
+ dot(X(AGE_CORAL),Y(0.25),6,C.terra);
+ const nd=done(S.NH)||stage>S.NH, ad=stage>=S.AGE&&done(S.AGE);
+ if(nd){[1,2].forEach(k=>{dot(X(k*T_TH),Y(Math.pow(0.5,k)),5,C.green);});
+   txt('1 → ½ → ¼: 2 half-lives',X(T_TH)+14,Y(0.5)-14,{sz:14,b:1,c:C.green});}
+ else txt('how many halvings?',X(AGE_CORAL)+12,Y(0.25)-14,{sz:14,b:1,c:C.terra});
+ if(stage>=S.AGE){line(X(AGE_CORAL),Y(0.25),X(AGE_CORAL),y0,C.amber,1.8,true);
+   txt(ad?'age = '+AGE_CORAL.toLocaleString('en-US')+' yr':'age = ? ↓',X(AGE_CORAL)+8,y0-22,{sz:14,b:1,c:ad?C.green:C.terra});}
+}
+
+// ---------- useful dating ranges (log axis) ----------
+function drawRanges(){
+ const x0=200,x1=700,lmin=2,lmax=10, X=a=>x0+(Math.log10(a)-lmin)/(lmax-lmin)*(x1-x0);
+ const rows=[['Carbon-14','5,780 yr','carbon',1e2,5e4,'c'],['Thorium-230','75,000 yr','corals',1e3,4e5,'th'],['Potassium-40','1.3 Byr','basalts',1e5,1e10,'k'],
+             ['Uranium-235/238','0.7/4.5 Byr','many rocks',1e8,1e10,'u'],['Rubidium-87','47 Byr','granites',1e8,1e10,'rb']];
+ const pick = stage===S.BAS?(done(S.BAS)?'k':null):stage===S.WOOD?(done(S.WOOD)?'c':null):null;
+ txt('parent (half-life)',16,34,{sz:13,b:1,c:C.mut});txt('used for',x0-44,34,{sz:13,b:1,c:C.mut,al:'center'});
+ rows.forEach(([n,h,m,a,b,k],i)=>{const y=70+i*56;const hl=k===pick;
+   txt(n,16,y-7,{sz:13.5,b:1,c:hl?C.green:C.navy});txt('('+h+')',16,y+11,{sz:12.5,c:C.mut});txt(m,x0-44,y,{sz:13,c:C.slate,al:'center'});
+   rrect(X(a),y-10,X(b)-X(a),20,6);ctx.fillStyle=hl?C.green:'rgba(46,84,150,0.55)';ctx.fill();
+   const la=a<=1e2?'':'', lb=b>=1e10?'':'';});
+ const y0=70+5*56-10;line(x0,y0,x1,y0,C.slate,1.5);
+ for(let e=2;e<=10;e++){line(X(Math.pow(10,e)),y0,X(Math.pow(10,e)),y0+5,C.slate,1.5);txt('10',X(Math.pow(10,e))-4,y0+18,{sz:13,c:C.mut,al:'center'});txt(String(e),X(Math.pow(10,e))+5,y0+12,{sz:10,c:C.mut});}
+ txt('Age of sample (years, log scale)',(x0+x1)/2,y0+40,{sz:13.5,c:C.mut,al:'center'});
+ const age=stage===S.BAS?5e6:stage===S.WOOD?1e4:null;
+ if(age){line(X(age),44,X(age),y0,C.terra,2.5,true);txt((stage===S.BAS?'basalt ≈ 5 Myr':'wood ≈ 10,000 yr'),X(age),30,{sz:14,b:1,c:C.terra,al:'center'});}
+ txt('bars: useful age ranges from the lecture table (approximate ends)',CW-12,432,{sz:12,c:C.mut,al:'right'});
+}
+
+// ---------- water molecules ----------
+function water(cx,cy,heavy,known){
+ dot(cx,cy,30,heavy?C.terra:'#D26A55');txt('O',cx,cy+1,{sz:22,b:1,c:'#fff',al:'center'});
+ dot(cx-30,cy+34,17,C.teal);txt('H',cx-30,cy+35,{sz:16,b:1,c:'#fff',al:'center'});dot(cx+30,cy+34,17,C.teal);txt('H',cx+30,cy+35,{sz:16,b:1,c:'#fff',al:'center'});
+ txt(heavy?'H₂¹⁸O  (heavy)':'H₂¹⁶O  (light)',cx,cy+74,{sz:15,b:1,c:C.navy,al:'center'});
+ txt('8 protons',cx+44,cy-14,{sz:14,c:C.terra});
+ txt((heavy&&!known)?'? neutrons':(heavy?N_O18:8)+' neutrons',cx+44,cy+6,{sz:14,b:1,c:(heavy&&!known)?C.amber:C.steel});}
+function drawWater(){
+ const kn=done(S.O18)||stage>S.O18, ev=stage>=S.EVAP&&done(S.EVAP);
+ ctx.fillStyle='#D9E1F2';ctx.fillRect(0,300,CW,140);txt('ocean',20,420,{sz:14,b:1,c:C.steel});
+ water(180,200,false,kn);water(480,200,true,kn);
+ if(stage>=S.EVAP){
+   if(ev){arrow(180,110,180,40,C.green,3);txt('evaporates more readily',200,56,{sz:14,b:1,c:C.green});
+     arrow(530,40,530,110,C.terra,3);txt('rains / snows out first',515,56,{sz:14,b:1,c:C.terra,al:'right'});}
+   else txt('which one leaves the ocean more easily? ↑',CW/2,50,{sz:15,b:1,c:C.amber,al:'center'});}
+}
+
+// ---------- ice core ----------
+function drawCore(){
+ const cx=250,w=120,top=40,bot=400;
+ rrect(cx-w/2,top,w,bot-top,10);ctx.fillStyle='#EEF3FA';ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.5;ctx.stroke();
+ for(let y=top+14;y<bot;y+=14)line(cx-w/2+4,y,cx+w/2-4,y,'#D5DEEA',1);
+ txt('ice core',cx,top-14+6,{sz:14,b:1,c:C.navy,al:'center'});txt('younger ↑',cx-w/2-12,top+20,{sz:13,c:C.mut,al:'right'});txt('older ↓',cx-w/2-12,bot-10,{sz:13,c:C.mut,al:'right'});
+ const showLayers=stage>=S.LAYER, lk=stage>=S.LAYER&&done(S.LAYER);
+ const cold=done(S.COLD)||stage>S.COLD;
+ if(showLayers){[[150,'A',D_A,false],[290,'B',D_B,true]].forEach(([y,n,d,isCold])=>{
+   ctx.fillStyle=isCold&&lk?'rgba(46,84,150,0.35)':'rgba(232,137,12,0.28)';ctx.fillRect(cx-w/2+2,y-18,w-4,36);
+   txt('Layer '+n,cx,y,{sz:15,b:1,c:C.navy,al:'center'});
+   txt('δ¹⁸O = '+d+' ‰',cx+w/2+14,y-8,{sz:15,b:1,c:C.slate});
+   if(lk)txt(isCold?'colder':'warmer',cx+w/2+14,y+12,{sz:14,b:1,c:isCold?C.steel:C.terra});});}
+ // rule box
+ rrect(420,70,280,110,8);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+ txt('Proxy rule',434,90,{sz:14,b:1,c:C.purp});
+ if(cold){txt('colder climate → vapor condenses',434,116,{sz:13.5,c:C.slate});txt('sooner → less ¹⁸O reaches the ice',434,136,{sz:13.5,c:C.slate});txt('→ lower (more negative) δ¹⁸O',434,158,{sz:14,b:1,c:C.green});}
+ else txt('cold climate → δ¹⁸O = ?',434,125,{sz:15,b:1,c:C.amber});
+ if(stage===14){txt('each layer: a date + a climate signal',560,240,{sz:14,b:1,c:C.navy,al:'center'});
+   txt('date: count annual layers or',560,268,{sz:13.5,c:C.slate,al:'center'});txt('use radiometric clocks',560,288,{sz:13.5,c:C.slate,al:'center'});
+   txt('climate: δ¹⁸O and other proxies',560,316,{sz:13.5,c:C.slate,al:'center'});}
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({grid:drawGrid,curve:drawCurve,ranges:drawRanges,water:drawWater,core:drawCore})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

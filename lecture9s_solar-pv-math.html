@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="9s">
+<meta name="lecture-title" content="Solar PV: How Big a Panel?">
+<meta name="lecture-topic" content="Solar thermal vs PV, intensity, cosine angle factor, efficiency, unit conversion, panel area, latitude and season">
+<title>Lecture 9s: Solar PV Math</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Solar PV: How Big a Panel?</h1>
+  <p class="sub">Self-guided review of Lecture 9 (solar). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 9: two types of solar power, the photovoltaic effect, turning sand into silicon, intensity and the cosine factor (200 W/m² at 30°), the worked panel-size problem (240 W/m², 15%, 10°, 766 kJ/h), and the latitude and season implications. The 40° repeat of the worked problem is added for practice.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l9check.py) ----------
+const DEG=Math.PI/180, cosd=d=>Math.cos(d*DEG);
+const I0=240, EFF=0.15, TH=10, TH2=40, NEED=766000;   // W/m^2, -, deg from normal, J per hour (766 kJ)
+const EX_I=200, EX_TH=30, EX_N=EX_I*cosd(EX_TH);        // 173.2 W/m^2 (lecture example)
+const IN10 = I0*cosd(TH);                               // 236.35 W/m^2
+const OUT10 = IN10*EFF;                                 // 35.45 W/m^2 (lecture: 35.5)
+const JH10 = OUT10*3600;                                // 127,631 J/(h m^2) (lecture: 128,000)
+const A10 = NEED/JH10;                                  // 6.00 m^2
+const OUT40 = I0*cosd(TH2)*EFF;                         // 27.58 W/m^2
+const A40 = NEED/(OUT40*3600);                          // 7.72 m^2
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={TYPE:1,EX:3,IN:5,OUT:6,JH:7,AREA:8,OUT40:9,A40:10,POLE:11,SEAS:12,SI:13};
+const fmtN=v=>Math.round(v).toLocaleString('en-US');
+const radMsg='Check that your calculator is in degree mode, not radians.';
+
+const stages=[
+{ // 0
+ title:'Solar power', view:'types',
+ body:`<p>There are two types of solar power:</p>
+ <ul><li><b>Solar thermal:</b> radiant energy from the sun heats a heat-transfer material, which heats water, which spins turbines to generate electricity.</li>
+ <li><b>Photovoltaic (PV) panels:</b> transform radiant energy directly into electricity. When sunlight hits a semiconductor material (usually silicon, about 95% of modules sold), it frees electrons: electricity.</li></ul>
+ <p>This walk-through focuses on the lecture's PV math: how much panel area you need.</p>`,
+ cap:'Energy changes in solar thermal and in photovoltaic power.'
+},
+{ // 1
+ title:'Energy changes', view:'types',
+ body:`<p>Compare the chains of energy changes for the two types of solar power.</p>`,
+ cap:'Which chain belongs to photovoltaic panels?',
+ q:{type:'choice', prompt:'Which chain of energy changes describes a PV panel?',
+  options:[{v:'pv',label:'Radiant → electrical'},{v:'th',label:'Radiant → thermal → kinetic → electrical'},{v:'ch',label:'Chemical → electrical'},{v:'k',label:'Radiant → kinetic → electrical'}],
+  answer:'pv',
+  ok:'Correct. PV transforms radiant energy directly into electricity, with no heat or turbine in between.',
+  diag:{th:'That is solar thermal: heat, then a spinning turbine, then electricity.',ch:'Chemical → electrical is a battery, not a solar panel.',k:'PV panels have no moving parts; there is no kinetic step.'},
+  generic:'Try again.',
+  solution:'<b>Radiant → electrical</b> (Lecture 9).'}
+},
+{ // 2
+ title:'Intensity and power', view:'angle',
+ body:`<span class="eq">Intensity = power / area</span>
+ <div class="given"><b>Intensity</b> in W/m² (watts per square meter)<br><b>Power</b> in W (watts = joules per second)<br><b>E = P × t</b>: energy (J) = power (W) × time (s)</div>
+ <p>Sunlight at 240 W/m² means every square meter of panel receives 240 J of radiant energy every second.</p>
+ <p>Intensity is a vector. Only the part <b>normal</b> to the surface (at 90° to it) delivers power. If the rays come in at angle θ from the normal, the delivered intensity is:</p>
+ <span class="eq">I<sub>delivered</sub> = I × cos θ</span>`,
+ cap:'Sunlight arriving at angle θ from the panel\'s normal. Only the normal component delivers power.'
+},
+{ // 3
+ title:'The lecture\'s example', view:'angle',
+ body:`<p>Sunlight of 200 W/m² strikes a panel at 30° from the normal.</p>`,
+ cap:'200 W/m² arriving 30° from the normal.',
+ q:{type:'num', prompt:'Intensity delivered to the panel (W/m²)?', label:'Delivered intensity', unit:'W/m²',
+  // target 173.2 | distractors 100 (sin), 200 (no cos), 30.8 (radians: 200cos(30 rad)) | nearest gap 26.8 -> tol 0.3
+  answer:EX_N, tol:0.3,
+  ok:`Correct: 200 × cos 30° = ${EX_N.toFixed(1)} W/m². Tilting away from the sun costs about 13% of the power.`,
+  diagFn:x=>{if(near(x,100,0.01))return 'That uses sin 30°. The normal component uses cos θ, with θ measured from the normal.';
+   if(near(x,200,0.001))return 'Only the component normal to the panel counts: multiply by cos 30°.';
+   if(near(x,200*Math.cos(30),0.02))return radMsg;return null;},
+  generic:'Multiply 200 by cos 30°.',
+  solution:`200 × cos 30° = 200 × 0.866 = <b>${EX_N.toFixed(1)} W/m²</b>.`}
+},
+{ // 4
+ title:'How big a panel?', view:'calc',
+ body:`<p>The lecture's worked problem:</p>
+ <div class="given">Sunlight with intensity <b>240 W/m²</b> strikes a <b>15% efficient</b> solar panel at <b>10° from the normal</b>. The panel needs to generate <b>766 kJ every hour</b>. What size does the panel need to be?</div>
+ <p>You'll solve it in four steps: angle, efficiency, units, area.</p>`,
+ cap:'The calculation chain for the worked problem.'
+},
+{ // 5
+ title:'Step 1: the angle', view:'calc',
+ body:`<p>First, how much intensity actually reaches the panel at 10° from the normal?</p>`,
+ cap:'Step 1 of the chain: intensity delivered at 10°.',
+ q:{type:'num', prompt:'240 W/m² × cos 10° = ? (W/m²)', label:'Delivered intensity', unit:'W/m²',
+  // target 236.35 | distractors 41.7 (sin), 240 (no cos), -201.4 (radians) | nearest gap 3.65 -> tol 1.0
+  answer:IN10, tol:1.0,
+  ok:`Correct: 240 × cos 10° ≈ ${IN10.toFixed(1)} W/m². At only 10° from the normal, almost all of it gets through.`,
+  diagFn:x=>{if(near(x,I0*Math.sin(TH*DEG),0.01))return 'That uses sin 10°. Use cos θ for the normal component.';
+   if(near(x,I0,0.001))return 'Multiply by cos 10° for the part that is normal to the panel.';
+   if(near(x,I0*Math.cos(TH),0.01))return radMsg;return null;},
+  generic:'Multiply 240 by cos 10°.',
+  solution:`240 × 0.985 = <b>${IN10.toFixed(1)} W/m²</b>.`}
+},
+{ // 6
+ title:'Step 2: efficiency', view:'calc',
+ body:`<p>The panel converts only 15% of the delivered radiant power into electricity.</p>
+ <span class="eq">electrical output per m² = (your delivered intensity) × 0.15</span>`,
+ cap:'Step 2 of the chain: electrical power per square meter.',
+ q:{type:'num', prompt:'Electrical power produced per square meter of panel (W/m²)?', label:'Electrical output per square meter', unit:'W/m²',
+  // target 35.45 (lecture 35.5) | distractors 36.0 (no cos), 6.25 (sin), 1575.7 (divided), 3545 (x15) | nearest gap 0.55 -> tol 0.15
+  answer:OUT10, tol:0.15,
+  ok:`Correct: ≈ ${OUT10.toFixed(1)} W/m² of electricity, the lecture's 35.5 W/m².`,
+  diagFn:x=>{if(near(x,I0*EFF,0.003))return 'That skips the angle. Use your delivered intensity from Step 1, not 240.';
+   if(near(x,IN10/EFF,0.01))return 'Multiply by 0.15; don\'t divide.';
+   if(near(x,IN10*15,0.01))return '15% is 0.15, not 15.';
+   if(near(x,I0*Math.sin(TH*DEG)*EFF,0.01))return 'That used sin 10°. Go back and use cos 10°.';return null;},
+  generic:'Multiply your Step 1 answer by 0.15.',
+  solution:`${IN10.toFixed(2)} × 0.15 = <b>${OUT10.toFixed(1)} W/m²</b>.`}
+},
+{ // 7
+ title:'Step 3: watts to joules per hour', view:'calc',
+ body:`<p>The requirement is in joules per hour, so convert. A watt is a joule per second, and 1 hour = 60 min × 60 s = 3,600 s.</p>
+ <span class="eq">W/m² = J/(s·m²) → × 60 s/min × 60 min/h → J/(h·m²)</span>`,
+ cap:'Step 3 of the chain: energy per square meter per hour.',
+ q:{type:'num', prompt:'Energy produced per square meter per hour (J/(h·m²))?', label:'Joules per hour per square meter', unit:'J/(h·m²)',
+  // target 127,631 (lecture 128,000; 127,800 from 35.5) | distractors 2127 (x60 only), 0.00985 (/3600) | tol 900
+  answer:JH10, tol:900,
+  ok:`Correct: ${OUT10.toFixed(1)} × 3,600 ≈ ${fmtN(JH10)} J per hour per m², the lecture's ≈ 128,000.`,
+  diagFn:x=>{if(near(x,OUT10*60,0.02))return 'That is only × 60 (per minute). An hour is 60 × 60 = 3,600 s.';
+   if(near(x,OUT10/3600,0.02))return 'Multiply by 3,600 s/h; don\'t divide. More time means more joules.';
+   if(near(x,IN10*3600,0.02))return 'That skips the 15% efficiency. Use your Step 2 answer.';return null;},
+  generic:'Multiply your Step 2 answer by 3,600.',
+  solution:`${OUT10.toFixed(2)} × 3,600 = <b>${fmtN(JH10)} J/(h·m²)</b> (≈ 128,000).`}
+},
+{ // 8
+ title:'Step 4: the area', view:'calc',
+ body:`<p>Write the equation with the unknown explicit, then solve:</p>
+ <span class="eq">(J per hour per m²) × area = 766,000 J per hour</span>`,
+ cap:'Step 4 of the chain: panel area.',
+ q:{type:'num', prompt:'How large must the panel be (m²)?', label:'Panel area in square meters', unit:'m²',
+  // target 6.00 (lecture 6; 5.98 using 128,000) | distractors 0.167 (inverted), 21606 (skipped 3600), 5.98? accepted | tol 0.1
+  answer:A10, tol:0.1,
+  ok:`Correct: 766,000 / ${fmtN(JH10)} ≈ ${A10.toFixed(1)} m². A 6 m² panel does the job.`,
+  diagFn:x=>{if(near(x,1/A10,0.02))return 'That is upside down. area = 766,000 / (J per hour per m²).';
+   if(near(x,NEED/OUT10,0.02))return 'That divides J/h by W/m² (J/s per m²). Use your J/(h·m²) value so the units cancel.';
+   if(near(x,766/ (JH10),0.05)||near(x,A10/1000,0.02))return '766 kJ = 766,000 J. Convert kJ to J before dividing.';return null;},
+  generic:'Divide 766,000 J/h by your Step 3 answer.',
+  solution:`766,000 / ${fmtN(JH10)} = <b>${A10.toFixed(1)} m²</b>.`}
+},
+{ // 9
+ title:'Again, at a steeper angle', view:'calc',
+ body:`<p>Same sun (240 W/m²), same 15% efficient panel, same 766 kJ per hour, but now the panel is <b>40° from the normal</b>. Steps 1 and 2 together:</p>
+ <span class="eq">240 × cos 40° × 0.15 = ?</span>`,
+ cap:'Repeat the chain with θ = 40°.',
+ q:{type:'num', prompt:'Electrical power produced per square meter at 40° (W/m²)?', label:'Electrical output per square meter', unit:'W/m²',
+  // target 27.58 | distractors 23.14 (sin), 36 (no cos), 35.45 (10 deg), -24.0 (radians) | nearest gap 4.4 -> tol 0.15
+  answer:OUT40, tol:0.15,
+  ok:`Correct: 240 × 0.766 × 0.15 ≈ ${OUT40.toFixed(1)} W/m², down from ${OUT10.toFixed(1)} W/m² at 10°.`,
+  diagFn:x=>{if(near(x,I0*Math.sin(TH2*DEG)*EFF,0.01))return 'That uses sin 40°. Use cos θ.';
+   if(near(x,I0*EFF,0.003))return 'Include the angle: × cos 40°.';
+   if(near(x,OUT10,0.005))return 'That is the 10° answer. Use cos 40°.';
+   if(near(x,I0*Math.cos(TH2)*EFF,0.02))return radMsg;return null;},
+  generic:'Multiply 240 × cos 40° × 0.15.',
+  solution:`240 × cos 40° × 0.15 = <b>${OUT40.toFixed(1)} W/m²</b>.`}
+},
+{ // 10
+ title:'The area at 40°', view:'calc',
+ body:`<p>Finish the problem: convert to J/(h·m²), then solve for the area that supplies 766,000 J per hour.</p>`,
+ cap:'Panel area needed at 40° versus 10°.',
+ q:{type:'num', prompt:'How large must the panel be at 40° (m²)?', label:'Panel area in square meters', unit:'m²',
+  // target 7.72 | distractors 6.0 (10 deg), 0.13 (inverted), 27776 (skipped 3600) | nearest gap 1.7 -> tol 0.08
+  answer:A40, tol:0.08,
+  ok:`Correct: 766,000 / (${OUT40.toFixed(2)} × 3,600) ≈ ${A40.toFixed(1)} m². The steeper angle means about ${Math.round(100*(A40/A10-1))}% more panel for the same energy.`,
+  diagFn:x=>{if(near(x,A10,0.02))return 'That is the 10° area. Use your 40° output.';
+   if(near(x,1/A40,0.03))return 'Upside down: area = 766,000 / (J per hour per m²).';
+   if(near(x,NEED/OUT40,0.02))return 'Convert W/m² to J/(h·m²) first (× 3,600).';return null;},
+  generic:'area = 766,000 / (your 40° output × 3,600).',
+  solution:`${OUT40.toFixed(2)} × 3,600 = ${fmtN(OUT40*3600)} J/(h·m²); 766,000 / ${fmtN(OUT40*3600)} = <b>${A40.toFixed(2)} m²</b>.`}
+},
+{ // 11
+ title:'Implication 1: latitude', view:'globe',
+ body:`<p>At and near the equator, sunlight strikes Earth at a steep angle, delivering more heat and light per unit area. Toward the poles, it strikes at a shallow angle and is spread over a larger area.</p>`,
+ cap:'Sun rays reaching Earth at different latitudes, with panels.',
+ q:{type:'choice', prompt:'The closer you are to the poles, the more you must:',
+  options:[{v:'tilt',label:'Angle the panels to get them normal to the sun\'s rays'},{v:'flat',label:'Lay the panels flat on the ground'},{v:'none',label:'Nothing: location doesn\'t affect the angle'}],
+  answer:'tilt',
+  ok:'Correct. At high latitudes the rays come in at a shallow angle, so a flat panel sits far from the normal (big θ, small cos θ). Tilting the panel toward the sun shrinks θ.',
+  diag:{flat:'Near the poles, flat panels are far from normal to the shallow rays, so cos θ is small. Tilt them.',none:'Latitude changes the angle of the sun\'s rays, so it changes the panel angle you need.'},
+  generic:'Try again.',
+  solution:'<b>Angle the panels toward the sun</b> (Lecture 9).'}
+},
+{ // 12
+ title:'Implication 2: seasons', view:'globe',
+ body:`<p>Earth's tilt means the sun's angle at a given place changes through the year.</p>`,
+ cap:'The best panel angle depends on latitude and season.',
+ q:{type:'choice', prompt:'To produce the most power over the year, panel angles should be:',
+  options:[{v:'seas',label:'Adjusted seasonally'},{v:'fixed',label:'Fixed at one angle forever gives the most power'},{v:'noon',label:'Pointed straight up everywhere'}],
+  answer:'seas',
+  ok:'Correct. Because of seasonal changes in the sun\'s angle, adjusting the panel angle keeps θ small and cos θ close to 1.',
+  diag:{fixed:'A fixed panel can be optimal for only part of the year; the sun\'s angle shifts with the seasons.',noon:'Straight up is only normal to the rays when the sun is directly overhead.'},
+  generic:'Try again.',
+  solution:'<b>Adjusted seasonally</b> (Lecture 9).'}
+},
+{ // 13
+ title:'Where the silicon comes from', view:'si',
+ body:`<p>Metallurgical-grade silicon for panels starts with sand (silicon dioxide, SiO₂) heated with carbon:</p>
+ <span class="eq">SiO₂ + 2 C → Si + 2 ?</span>
+ <p>Count the oxygen atoms: they must all end up in the carbon product.</p>`,
+ cap:'Atom bookkeeping for turning sand into silicon.',
+ q:{type:'choice', prompt:'What is the carbon product?',
+  options:[{v:'co',label:'2 CO (carbon monoxide)'},{v:'co2',label:'2 CO₂ (carbon dioxide)'},{v:'c',label:'2 C (unchanged carbon)'}],
+  answer:'co',
+  ok:'Correct. SiO₂ has 2 O atoms; 2 CO carries exactly 2 O and uses both carbons. (Energy is needed: the mixture is heated.)',
+  diag:{co2:'2 CO₂ would need 4 oxygen atoms, but SiO₂ only supplies 2.',c:'Then the oxygen would have nowhere to go. It leaves bonded to the carbon.'},
+  generic:'Try again.',
+  solution:'<b>2 CO.</b> O: 2 = 2; C: 2 = 2; Si: 1 = 1.'}
+},
+{ // 14
+ title:'Putting it together', view:'calc',
+ body:`<ul>
+ <li>PV panels transfer radiant energy directly to electrical energy; photons hitting the semiconductor liberate free electrons.</li>
+ <li>More sunlight on the panel means more electricity: intensity = power / area.</li>
+ <li>Only the normal component delivers power: I × cos θ. Then multiply by efficiency, convert W to J/h (× 3,600), and solve for area.</li>
+ <li>240 W/m², 15%, 10°, 766 kJ/h → about 6 m². At 40°, about 7.7 m².</li>
+ <li>So location on Earth and season affect the angle, and the size needed to optimize your setup.</li>
+ </ul>`,
+ cap:'Panel areas needed at 10° and 40° for the same 766 kJ per hour.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+const g_=(k)=>done(k)||stage>k;
+
+// ---------- energy chains ----------
+function chain(y,title,steps,col,hl){txt(title,30,y-34,{sz:16,b:1,c:C.navy});
+ const w=130,gap=40;steps.forEach((s,i)=>{const x=30+i*(w+gap);rrect(x,y-24,w,48,8);ctx.fillStyle=hl?'#E8F3EC':C.light;ctx.fill();ctx.strokeStyle=hl?C.green:col;ctx.lineWidth=2;ctx.stroke();
+   txt(s,x+w/2,y,{sz:15,b:1,c:hl?C.green:col,al:'center'});if(i<steps.length-1)arrow(x+w+4,y,x+w+gap-4,y,C.slate,2);});}
+function drawTypes(){
+ const pvOk=g_(S.TYPE)&&stage>=S.TYPE;
+ chain(110,'Solar thermal',['radiant','thermal','kinetic','electrical'],C.terra,false);
+ txt('heat-transfer material → water → spinning turbine',30,150,{sz:13,c:C.mut});
+ chain(270,'Photovoltaic (PV) panel',stage===S.TYPE&&!pvOk?['radiant','?']:['radiant','electrical'],C.steel,pvOk);
+ txt('photons free electrons in a semiconductor (usually silicon)',30,310,{sz:13,c:C.mut});
+ txt('semiconductors conduct better than an insulator, but not as well as a conductor',30,400,{sz:13,c:C.mut});
+}
+
+// ---------- angle diagram ----------
+function drawAngle(){
+ const cx=250,cy=330;
+ ctx.fillStyle='#3F7FD0';ctx.save();ctx.translate(cx,cy);ctx.fillRect(-150,-6,300,12);ctx.restore();
+ txt('panel',cx+160,cy,{sz:14,b:1,c:C.steel});
+ line(cx,cy,cx,70,C.slate,1.5,true);txt('normal',cx+6,66,{sz:13,c:C.mut});
+ const th=(stage===S.EX||stage===2)?EX_TH:EX_TH, L=230, sx=cx+L*Math.sin(th*DEG), sy=cy-L*Math.cos(th*DEG);
+ arrow(sx,sy,cx+4,cy-8,C.amber,4);txt('200 W/m²',sx+8,sy-6,{sz:15,b:1,c:C.amber});
+ ctx.beginPath();ctx.arc(cx,cy,70,-Math.PI/2,-Math.PI/2+th*DEG);ctx.strokeStyle=C.terra;ctx.lineWidth=2;ctx.stroke();
+ txt('θ = '+th+'°',cx-8,cy-92,{sz:15,b:1,c:C.terra,al:'right'});
+ // normal component
+ const nd=g_(S.EX)&&stage>=S.EX;
+ arrow(cx-110,cy-L*Math.cos(th*DEG),cx-110,cy-8,C.green,4);
+ txt('normal part: I cos θ',cx-118,cy-L*Math.cos(th*DEG)+30,{sz:14,b:1,c:C.green,al:'right'});
+ txt(stage>=S.EX?(nd?'= '+EX_N.toFixed(1)+' W/m²':'= ?'):'',cx-118,cy-L*Math.cos(th*DEG)+50,{sz:15,b:1,c:nd?C.green:C.amber,al:'right'});
+ rrect(470,60,230,120,10);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+ txt('Intensity = power / area',585,86,{sz:14,b:1,c:C.navy,al:'center'});txt('units: W/m²',585,110,{sz:13.5,c:C.slate,al:'center'});
+ txt('E = P × t   (J = W × s)',585,134,{sz:13.5,c:C.slate,al:'center'});txt('I delivered = I × cos θ',585,158,{sz:14,b:1,c:C.green,al:'center'});
+}
+
+// ---------- calculation chain ----------
+function drawCalc(){
+ const pay=stage>=S.OUT40;
+ const rows=pay?[['θ = 10°',[['× cos 10°',IN10.toFixed(1)+' W/m²',S.IN],['× 0.15',OUT10.toFixed(1)+' W/m²',S.OUT],['× 3,600',fmtN(JH10)+' J/(h·m²)',S.JH],['766,000 ÷',A10.toFixed(1)+' m²',S.AREA]]],
+   ['θ = 40°',[['× cos 40° × 0.15',OUT40.toFixed(1)+' W/m²',S.OUT40],['× 3,600 ; 766,000 ÷',A40.toFixed(1)+' m²',S.A40]]]]
+   :[['θ = 10°',[['× cos 10°',IN10.toFixed(1)+' W/m²',S.IN],['× 0.15',OUT10.toFixed(1)+' W/m²',S.OUT],['× 3,600',fmtN(JH10)+' J/(h·m²)',S.JH],['766,000 ÷',A10.toFixed(1)+' m²',S.AREA]]]];
+ txt('240 W/m² in',20,40,{sz:15,b:1,c:C.amber});
+ rows.forEach(([lab,steps],r)=>{const y=80+r*110;txt(lab,20,y+24,{sz:14,b:1,c:C.navy});
+   steps.forEach(([op,val,k],i)=>{const x=90+i*155;const d=g_(k)&&stage>=k, cur=stage===k;
+     txt(op,x+70,y,{sz:12.5,c:C.mut,al:'center'});rrect(x,y+8,140,36,8);ctx.fillStyle=d?'#E8F3EC':C.light;ctx.fill();ctx.strokeStyle=d?C.green:(cur?C.amber:C.line);ctx.lineWidth=d||cur?2:1.2;ctx.stroke();
+     txt(d?val:'?',x+70,y+26,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+     if(i<steps.length-1)arrow(x+142,y+26,x+153,y+26,C.slate,1.5);});});
+ // panels to scale (1 m = 18 px)
+ const py=pay?270:230, s=30;
+ if(g_(S.AREA)&&stage>=S.AREA){const side=Math.sqrt(A10)*s;ctx.fillStyle='#3F7FD0';ctx.fillRect(100,py,side,side);txt(A10.toFixed(1)+' m² (10°)',100+side/2,py+side+14,{sz:13,b:1,c:C.steel,al:'center'});}
+ if(g_(S.A40)&&stage>=S.A40){const side=Math.sqrt(A40)*s;ctx.fillStyle='#6D4C7D';ctx.fillRect(240,py,side,side);txt(A40.toFixed(1)+' m² (40°)',240+side/2,py+side+14,{sz:13,b:1,c:C.purp,al:'center'});}
+ if(stage>=S.AREA)txt('panels drawn to scale (square)',CW-16,py+10,{sz:12.5,c:C.mut,al:'right'});
+ txt('goal: 766 kJ = 766,000 J every hour',CW-16,40,{sz:14,b:1,c:C.navy,al:'right'});
+}
+
+// ---------- globe / latitude ----------
+function drawGlobe(){
+ const cx=470,cy=230,R=150;
+ ctx.beginPath();ctx.arc(cx,cy,R,0,2*Math.PI);ctx.fillStyle='#D9E1F2';ctx.fill();ctx.strokeStyle=C.steel;ctx.lineWidth=2;ctx.stroke();
+ line(cx-R,cy,cx+R,cy,C.mut,1,true);txt('equator',cx+R+8,cy,{sz:13,c:C.mut});
+ [cy-110,cy,cy+110].forEach(y=>arrow(30,y,cx-Math.sqrt(R*R-(y-cy)*(y-cy))-4,y,C.amber,3));
+ txt('sunlight',40,cy-126,{sz:14,b:1,c:C.amber});
+ const tilt=g_(S.POLE)&&stage>=S.POLE;
+ // panels: at equator (normal to rays), at 50N
+ const pan=(latDeg,tiltToSun)=>{const a=latDeg*DEG, px=cx-R*Math.cos(a), py=cy-R*Math.sin(a);
+   const surf=a; // local vertical direction angle: outward normal at angle (pi + a) from +x
+   const ang=tiltToSun? Math.PI/2 : Math.PI/2 - a; // panel orientation: tiltToSun -> vertical (normal horizontal to sun)
+   ctx.save();ctx.translate(px,py);ctx.rotate(tiltToSun?Math.PI/2:Math.PI/2-a);ctx.fillStyle='#1F3864';ctx.fillRect(-24,-4,48,8);ctx.restore();};
+ pan(0,true);pan(55,tilt);
+ txt('equator: rays steep',cx-R-10,cy+22,{sz:13,b:1,c:C.green,al:'right'});
+ txt(tilt?'high latitude: tilt panel toward the sun':'high latitude: flat panel, shallow rays',cx-R*Math.cos(55*DEG)-30,cy-R*Math.sin(55*DEG)-26,{sz:13,b:1,c:tilt?C.green:C.terra,al:'right'});
+ if(stage>=S.SEAS){const d=g_(S.SEAS)&&stage>=S.SEAS;txt(d?'seasons shift the sun\'s angle → adjust tilt seasonally':'seasons: fixed or adjusted tilt?',CW/2,420,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});}
+}
+
+// ---------- silicon reaction ----------
+function drawSi(){
+ const d=g_(S.SI);
+ txt('SiO₂  +  2 C  →  Si  +  2 '+(d?'CO':'?'),CW/2,70,{sz:24,c:C.navy,serif:1,al:'center'});
+ const rows=[['Si',1,1],['O',2,d?2:'?'],['C',2,d?2:'?']];
+ txt('atom',200,130,{sz:14,b:1,c:C.mut,al:'center'});txt('reactants',340,130,{sz:14,b:1,c:C.mut,al:'center'});txt('products',500,130,{sz:14,b:1,c:C.mut,al:'center'});
+ rows.forEach(([a,l,r],i)=>{const y=170+i*50;rrect(150,y-20,420,40,8);ctx.fillStyle=C.light;ctx.fill();
+   txt(a,200,y,{sz:18,b:1,c:C.navy,al:'center'});txt(String(l),340,y,{sz:18,b:1,al:'center'});txt(String(r),500,y,{sz:18,b:1,c:r==='?'?C.amber:C.green,al:'center'});});
+ txt('sand (SiO₂) + carbon, heated → metallurgical-grade silicon',CW/2,360,{sz:14,c:C.slate,al:'center'});
+ txt('next: silicon → high-purity polysilicon (via trichlorosilane, HSiCl₃)',CW/2,388,{sz:13,c:C.mut,al:'center'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({types:drawTypes,angle:drawAngle,calc:drawCalc,globe:drawGlobe,si:drawSi})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

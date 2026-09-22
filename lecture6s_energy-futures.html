@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="6s">
+<meta name="lecture-title" content="Energy Futures to 2050: Scenarios and Demand Drivers">
+<meta name="lecture-topic" content="Scenario planning, BP Energy Outlook scenarios, motorization, vehicle efficiency, hydrogen colors">
+<title>Lecture 6s: Energy Futures</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Energy Futures to 2050: Scenarios and Demand Drivers</h1>
+  <p class="sub">Self-guided review of Lecture 6 (forecast for energy supply and demand to 2050). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 6: scenario planning, the BP Energy Outlook 2022 scenarios and common themes, the EIA light-duty vehicle projections, OECD car ownership and fuel demand, and low-carbon hydrogen. The emissions curves are an approximate redrawing of the lecture's BP chart. The constant-population assumption in the fuel-per-car questions is added for the calculation.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l6check.py) ----------
+const M20=92, M50=173, MOECD=530;       // vehicles per 1000 people (EIA, lecture)
+const MF = M50/M20;                     // 1.880
+const MO = M50/MOECD;                   // 0.326
+const CARS=1.10, FUEL=0.70;             // OECD: cars per 1000 +10%, passenger vehicle fuel demand -30%
+const FPC = FUEL/CARS;                  // 0.636 (population held constant)
+const FPC_DROP = 100*(1-FPC);           // 36.4 %
+// approximate readings of the lecture's BP carbon-emissions chart (Gt CO2e), for drawing only
+const EM={hist:[[2000,27],[2005,31],[2010,35],[2015,38.5],[2019,40]],
+ NM:[[2019,40],[2025,40],[2030,39],[2035,37.5],[2040,35.5],[2045,33.5],[2050,31]],
+ ACC:[[2019,40],[2025,38],[2030,33.5],[2035,28],[2040,22],[2045,15.5],[2050,10]],
+ NZ:[[2019,40],[2025,36],[2030,28.5],[2035,21],[2040,13.5],[2045,7],[2050,2.5]]};
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={WHAT:1,NM:2,NZ:3,MF:5,MO:6,FPC:8,DROP:9,BLUE:10,BROWN:11,COMMON:12};
+
+const stages=[
+{ // 0
+ title:'Looking ahead to 2050', view:'scen',
+ body:`<p><b>Scenario planning</b> is a tool for strategic thinking: it uses assumptions about what the future could be, and how the environment will change over time, to explore a wide range of possible futures.</p>
+ <p>This walk-through covers the BP Energy Outlook 2022 scenarios, two demand drivers (personal mobility and vehicle efficiency) with numbers from the lecture, and the colors of hydrogen.</p>`,
+ cap:'Carbon emissions to 2050 in the three BP scenarios (approximate redrawing of the lecture chart), in Gt CO₂e.'
+},
+{ // 1
+ title:'What a scenario is (and isn\'t)', view:'scen',
+ body:`<p>The BP Energy Outlook explores forces shaping the energy transition out to 2050, using three scenarios.</p>`,
+ cap:'Three scenarios, three very different emissions paths.',
+ q:{type:'choice', prompt:'How does BP describe its three scenarios?',
+  options:[{v:'explore',label:'Explorations of the implications of different assumptions, not predictions'},
+           {v:'pred',label:'Predictions of what is most likely to happen'},
+           {v:'want',label:'What BP would like to happen'},
+           {v:'one',label:'One of them will almost certainly come true exactly as described'}],
+  answer:'explore',
+  ok:'Correct. They explore the implications of different judgments and assumptions. The probability of any one materializing exactly as described is negligible, but together they span a wide range of possible outcomes.',
+  diag:{pred:'BP says explicitly they are not predictions of what is likely to happen.',
+        want:'BP says explicitly they are not what BP would like to happen.',
+        one:'Because of the many uncertainties, the probability of any one scenario materializing exactly as described is negligible.'},
+  generic:'Try again.',
+  solution:'<b>Explorations, not predictions</b> (Lecture 6).'}
+},
+{ // 2
+ title:'New Momentum', view:'scen',
+ body:`<p>The scenarios differ in their assumptions about <b>policies</b> and <b>societal preferences</b>.</p>`,
+ cap:'Which curve continues the energy system along its current trajectory?',
+ q:{type:'choice', prompt:'Which scenario captures the broad trajectory the global energy system is currently on?',
+  options:[{v:'nm',label:'New Momentum'},{v:'acc',label:'Accelerated'},{v:'nz',label:'Net Zero'}],
+  answer:'nm',
+  ok:'Correct. New Momentum weighs recent ambitions for decarbonization against the manner and speed of progress seen over the recent past. Its emissions fall the least by 2050.',
+  diag:{acc:'Accelerated assumes significant tightening of climate policy, beyond the current trajectory.',nz:'Net Zero assumes tighter policy plus a shift in societal behavior, well beyond the current trajectory.'},
+  generic:'Try again.',
+  solution:'<b>New Momentum</b> (Lecture 6).'}
+},
+{ // 3
+ title:'Accelerated versus Net Zero', view:'scen',
+ body:`<p>Accelerated and Net Zero both assume a significant tightening of climate policies, leading to a sustained fall in CO₂-equivalent (CO₂e) emissions, broadly in line with "Paris consistent" IPCC (Intergovernmental Panel on Climate Change) scenarios.</p>`,
+ cap:'Accelerated and Net Zero both fall steeply; one falls further.',
+ q:{type:'choice', prompt:'What does Net Zero add on top of Accelerated\'s policy assumptions?',
+  options:[{v:'soc',label:'A shift in societal behaviors and preferences that supports efficiency and low-carbon energy'},
+           {v:'tech',label:'Entirely new technologies not known today'},
+           {v:'war',label:'The effects of the military action in Ukraine'},
+           {v:'none',label:'Nothing: they are the same scenario'}],
+  answer:'soc',
+  ok:'Correct. In Net Zero, societal behaviors and preferences also shift, further supporting energy efficiency and the adoption of low-carbon energy sources.',
+  diag:{tech:'All three scenarios use only technologies known about today; none assumes entirely new ones.',
+        war:'The scenarios were prepared before the military action in Ukraine and don\'t include its implications.',
+        none:'Their emissions paths differ: Net Zero falls furthest.'},
+  generic:'Try again.',
+  solution:'<b>A shift in societal behaviors and preferences</b> (Lecture 6).'}
+},
+{ // 4
+ title:'A demand driver: personal mobility', view:'motor',
+ body:`<p>When purchasing power increases, access to personal mobility also increases. The U.S. Energy Information Administration (EIA) projects, for 2020 to 2050:</p>
+ <ul><li>Non-OECD motorization rate: <b>92</b> → <b>173</b> vehicles per 1,000 people</li>
+ <li>OECD motorization rate: about <b>530</b> vehicles per 1,000 people throughout</li></ul>
+ <p>(OECD = Organisation for Economic Co-operation and Development.)</p>`,
+ cap:'Vehicles per 1,000 people: non-OECD in 2020 and 2050, and the OECD.'
+},
+{ // 5
+ title:'How fast does non-OECD motorization grow?', view:'motor',
+ body:`<span class="eq">growth factor = rate in 2050 / rate in 2020</span>`,
+ cap:'Compare the two non-OECD bars.',
+ q:{type:'num', prompt:'By what factor does the non-OECD motorization rate grow from 2020 to 2050? (two decimal places)', label:'Growth factor', unit:'×',
+  // target 1.880 | distractors 0.532 (inverted), 81 (difference), 88 (percent) | nearest gap 1.35 -> tol 0.01
+  answer:MF, tol:0.01,
+  ok:`Correct: 173 / 92 ≈ ${MF.toFixed(2)}. The motorization rate nearly doubles (an 88% increase).`,
+  diagFn:x=>{if(near(x,1/MF,0.01))return 'That is 92/173. Put the 2050 value on top.';
+   if(Math.abs(x-81)<0.5)return 'That is the difference (173 − 92). The question asks for the factor: divide.';
+   if(Math.abs(x-88)<0.5)return 'That is the percent increase. Enter the factor (2050 ÷ 2020).';return null;},
+  generic:'Divide 173 by 92.',
+  solution:`173 / 92 = <b>${MF.toFixed(2)}</b>.`}
+},
+{ // 6
+ title:'Still far below the OECD', view:'motor',
+ body:`<p>Compare the non-OECD rate in 2050 with the OECD rate.</p>`,
+ cap:'Non-OECD in 2050 versus the OECD.',
+ q:{type:'num', prompt:'In 2050, the non-OECD motorization rate is what fraction of the OECD rate? (decimal)', label:'Fraction of OECD rate', unit:'',
+  // target 0.326 | distractors 0.174 (2020 value), 3.06 (inverted), 0.532 | nearest gap 0.152 -> tol 0.005
+  answer:MO, tol:0.005,
+  ok:`Correct: 173 / 530 ≈ ${MO.toFixed(2)}, about one-third. Even after nearly doubling, non-OECD motorization stays far below the OECD, which is why demand from this driver keeps growing.`,
+  diagFn:x=>{if(near(x,M20/MOECD,0.02))return 'That uses the 2020 rate (92). Use the 2050 rate, 173.';
+   if(near(x,MOECD/M50,0.01))return 'That is 530/173. Put the non-OECD rate on top.';
+   if(near(x,M20/M50,0.01))return 'That compares non-OECD 2020 with 2050. Compare non-OECD 2050 with the OECD (530).';return null;},
+  generic:'Divide 173 by 530.',
+  solution:`173 / 530 = <b>${MO.toFixed(3)}</b>.`}
+},
+{ // 7
+ title:'A counter-force: efficiency', view:'oecd',
+ body:`<p>In the OECD (such as the U.S. and Europe), the lecture's projection is:</p>
+ <ul><li>cars per 1,000 people <b>increase by about 10%</b></li><li>passenger vehicle fuel demand <b>declines by about 30%</b>, from efficiency gains and powertrain diversification</li></ul>
+ <p>For the next two questions, assume OECD population stays about constant, so the number of cars also grows by 10%.</p>`,
+ cap:'OECD indexes (today = 100): number of cars and total passenger fuel demand.'
+},
+{ // 8
+ title:'Fuel per car', view:'oecd',
+ body:`<p>Write each change as a multiplier: +10% → × 1.10, −30% → × 0.70.</p>
+ <span class="eq">fuel per car (new/old) = (fuel multiplier) / (car multiplier)</span>`,
+ cap:'Fuel per car = total fuel ÷ number of cars. Its bar appears once you answer.',
+ q:{type:'num', prompt:'Fuel used per car, new relative to old? (decimal, two or three places)', label:'Fuel per car ratio', unit:'',
+  // target 0.636 | distractors 0.60 (subtracted), 0.77 (multiplied), 0.70 (ignored cars), 1.571 (inverted) | nearest gap 0.036 -> tol 0.01
+  answer:FPC, tol:0.01,
+  ok:`Correct: 0.70 / 1.10 ≈ ${FPC.toFixed(3)}.`,
+  diagFn:x=>{if(near(x,0.6,0.005))return 'Percent changes don\'t simply subtract. Divide the multipliers: 0.70 / 1.10.';
+   if(near(x,0.77,0.005))return 'You multiplied. Fuel per car is fuel divided by cars: 0.70 / 1.10.';
+   if(near(x,0.70,0.005))return 'That is the total fuel change. More cars share that fuel, so divide by 1.10.';
+   if(near(x,1/FPC,0.01))return 'That is cars ÷ fuel. Put fuel on top.';return null;},
+  generic:'Divide 0.70 by 1.10.',
+  solution:`0.70 / 1.10 = <b>${FPC.toFixed(3)}</b>.`}
+},
+{ // 9
+ title:'How big is the efficiency gain?', view:'oecd',
+ body:`<span class="eq">% drop = 100 × (1 − new/old)</span>`,
+ cap:'The drop in fuel per car.',
+ q:{type:'num', prompt:'By what percent does fuel use per car fall?', label:'Percent drop in fuel per car', unit:'%',
+  // target 36.4 | distractors 40 (added percents), 30 (total fuel only), 63.6 (remaining), 23 (from multiplying) | nearest gap 3.6 -> tol 0.6
+  answer:FPC_DROP, tol:0.6,
+  ok:`Correct: 100 × (1 − 0.636) ≈ ${FPC_DROP.toFixed(0)}%. Each car uses about a third less fuel, so total fuel falls even though there are more cars.`,
+  diagFn:x=>{if(Math.abs(x-40)<0.3)return 'Percent changes don\'t add. Use your fuel-per-car ratio: 100 × (1 − ratio).';
+   if(Math.abs(x-30)<0.3)return 'That is the drop in total fuel. Per car, the drop is bigger because the fuel is shared by 10% more cars.';
+   if(near(x,100*FPC,0.01))return 'That is what remains (as a percent). The drop is 100 minus that.';
+   if(Math.abs(x-23)<0.5)return 'That comes from multiplying 0.70 × 1.10. Fuel per car divides: 0.70 / 1.10.';return null;},
+  generic:'Use 100 × (1 − your ratio from the previous screen).',
+  solution:`100 × (1 − ${FPC.toFixed(3)}) = <b>${FPC_DROP.toFixed(1)}%</b>.`}
+},
+{ // 10
+ title:'The colors of hydrogen', view:'h2',
+ body:`<p>Low-carbon hydrogen grows in importance in Accelerated and Net Zero. Hydrogen is named by a color that says how it was made:</p>
+ <ul><li><b>Green:</b> electrolysis using renewable power</li><li><b>Blue:</b> from natural gas (or coal) with carbon capture and storage</li>
+ <li><b>Grey</b> and <b>brown:</b> from natural gas and coal <em>without</em> carbon capture and storage</li></ul>`,
+ cap:'Hydrogen colors by feedstock and whether carbon is captured.',
+ q:{type:'choice', prompt:'Hydrogen made from natural gas, with the CO₂ captured and stored, is:',
+  options:[{v:'blue',label:'Blue'},{v:'green',label:'Green'},{v:'grey',label:'Grey'},{v:'brown',label:'Brown'}],
+  answer:'blue',
+  ok:'Correct. Blue hydrogen = natural gas (or coal) + carbon capture and storage. It counts as low-carbon hydrogen.',
+  diag:{green:'Green hydrogen is made by electrolysis using renewable power, not from natural gas.',grey:'Grey is natural gas without capture. Here the CO₂ is captured and stored.',brown:'Brown is from coal without capture.'},
+  generic:'Try again.',
+  solution:'<b>Blue</b> (Lecture 6).'}
+},
+{ // 11
+ title:'Which hydrogen gets crowded out?', view:'h2',
+ body:`<p>In Accelerated and Net Zero, low-carbon hydrogen accounts for virtually all hydrogen production by 2050, dominated by green and blue.</p>`,
+ cap:'Which cells of the table lose out?',
+ q:{type:'choice', prompt:'Hydrogen made from coal without carbon capture and storage is:',
+  options:[{v:'brown',label:'Brown'},{v:'blue',label:'Blue'},{v:'green',label:'Green'},{v:'grey',label:'Grey'}],
+  answer:'brown',
+  ok:'Correct. Brown = coal without capture. Grey and brown hydrogen (no carbon capture) are crowded out as low-carbon green and blue hydrogen grow.',
+  diag:{blue:'Blue requires carbon capture and storage. This coal-based hydrogen has none.',green:'Green comes from electrolysis with renewable power, not coal.',grey:'Grey is the natural-gas version without capture. This one is made from coal.'},
+  generic:'Try again.',
+  solution:'<b>Brown.</b> Grey and brown hydrogen are crowded out by green and blue (Lecture 6).'}
+},
+{ // 12
+ title:'What all three scenarios share', view:'scen',
+ body:`<p>The scenarios differ a lot in emissions, but the lecture listed common themes across all three.</p>`,
+ cap:'Three different emissions paths; some themes are common to all.',
+ q:{type:'choice', prompt:'Which is a common theme across all three BP scenarios?',
+  options:[{v:'og',label:'Oil and gas continue to play a critical role for decades, at lower volumes'},
+           {v:'gone',label:'Oil and gas are phased out entirely by 2030'},
+           {v:'single',label:'The energy mix becomes dominated by a single source again'},
+           {v:'elec',label:'Electrification of the world slows down'}],
+  answer:'og',
+  ok:'Correct. The other common themes: wind and solar expand rapidly with increasing electrification; a range of technologies (EVs, blue and green hydrogen, bioenergy, carbon capture) is needed; and the energy mix becomes more diverse.',
+  diag:{gone:'Even in the fastest scenario, oil and gas play a critical role for decades, just at lower volumes.',
+        single:'The opposite: the mix becomes more diverse, with more competition and customer choice. Coal and then oil dominated the past 100 years.',
+        elec:'Electrification increases in all three scenarios, supporting the expansion of wind and solar.'},
+  generic:'Try again.',
+  solution:'<b>Oil and gas continue to play a critical role for decades, at lower volumes</b> (Lecture 6).'}
+},
+{ // 13
+ title:'Putting it together', view:'scen',
+ body:`<ul>
+ <li>Scenarios are tools for strategic thinking, not predictions. BP's three span a wide range: New Momentum (current trajectory), Accelerated (tighter policy), and Net Zero (tighter policy plus shifts in societal behavior).</li>
+ <li>Demand drivers pull in opposite directions. Non-OECD motorization nearly doubles (×${MF.toFixed(2)}) yet stays about a third of the OECD's; in the OECD, efficiency cuts fuel per car by about ${FPC_DROP.toFixed(0)}% even as car ownership rises.</li>
+ <li>Low-carbon (green and blue) hydrogen crowds out grey and brown hydrogen in the transition scenarios.</li>
+ <li>Across all three, oil and gas remain important for decades at lower volumes, wind and solar grow rapidly with electrification, and the mix becomes more diverse.</li>
+ </ul>`,
+ cap:'Three possible futures for carbon emissions to 2050 (approximate redrawing).'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+function vlabel(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();}
+
+// ---------- scenarios chart ----------
+function drawScen(){
+ const x0=80,x1=560,y0=370,y1=50,X=t=>x0+(t-2000)/50*(x1-x0),Y=v=>y0-v/45*(y0-y1);
+ axes(x0,y0,x1,y1);
+ for(let t=2000;t<=2050;t+=10){line(X(t),y0,X(t),y0+5,C.slate,1.5);txt(String(t),X(t),y0+16,{sz:13,c:C.mut,al:'center'});}
+ for(let v=0;v<=45;v+=10){line(x0-5,Y(v),x0,Y(v),C.slate,1.5);txt(String(v),x0-9,Y(v),{sz:13,c:C.mut,al:'right'});}
+ vlabel('Carbon emissions (Gt CO₂e)',28,(y0+y1)/2);txt('Year',(x0+x1)/2,y0+36,{sz:13.5,c:C.mut,al:'center'});
+ line(X(2020),y1,X(2020),y0,C.line,1,true);txt('projections →',X(2020)+6,y1+10,{sz:12.5,c:C.mut});
+ const path=(pts,col,w)=>{ctx.beginPath();pts.forEach(([t,v],i)=>i?ctx.lineTo(X(t),Y(v)):ctx.moveTo(X(t),Y(v)));ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke();};
+ path(EM.hist,C.navy,2.5);
+ const hl=stage===S.NM&&done(S.NM)?'NM':stage===S.NZ&&done(S.NZ)?'NZ':null;
+ [['NM','New Momentum','#6B9E3A'],['ACC','Accelerated','#E8890C'],['NZ','Net Zero','#3FA0DF']].forEach(([k,n,col])=>{
+   path(EM[k],col,hl===k?4.5:2.5);const last=EM[k][EM[k].length-1];
+   txt(n,X(2050)+10,Y(last[1]),{sz:14,b:1,c:col});});
+ txt('shapes read approximately from the lecture chart',x1,y1-22,{sz:12,c:C.mut,al:'right'});
+ if(stage===S.WHAT&&done(S.WHAT))txt('not predictions: a range of possible futures',(x0+x1)/2,y1+34,{sz:14,b:1,c:C.green,al:'center'});
+ if(stage===S.NZ&&done(S.NZ))txt('+ societal shift',X(2050)+10,Y(2.5)+18,{sz:13,b:1,c:C.green});
+}
+
+// ---------- motorization bars ----------
+function drawMotor(){
+ const x0=100,x1=690,y0=370,y1=60,Y=v=>y0-v/600*(y0-y1);
+ axes(x0,y0,x1,y1);
+ for(let v=0;v<=600;v+=100){line(x0-5,Y(v),x0,Y(v),C.slate,1.5);txt(String(v),x0-9,Y(v),{sz:13,c:C.mut,al:'right'});}
+ vlabel('Vehicles per 1,000 people',36,(y0+y1)/2);
+ const bars=[['non-OECD 2020',M20,C.amber],['non-OECD 2050',M50,C.terra],['OECD (2020–2050)',MOECD,C.steel]];
+ bars.forEach(([n,v,col],i)=>{const x=x0+40+i*190;ctx.fillStyle=col;ctx.fillRect(x,Y(v),110,y0-Y(v));
+   txt(String(v),x+55,Y(v)-12,{sz:15,b:1,c:col,al:'center'});txt(n,x+55,y0+18,{sz:13.5,c:C.slate,al:'center'});});
+ if(stage>=S.MF){const d=done(S.MF)||stage>S.MF;txt('2020 → 2050: × '+(d?MF.toFixed(2):'?'),x0+40+190-40,Y(M50)-44,{sz:15,b:1,c:d?C.green:C.amber,al:'center'});}
+ if(stage>=S.MO){const d=done(S.MO)||stage>S.MO;txt('2050 non-OECD / OECD = '+(d?MO.toFixed(2)+' ≈ ⅓':'?'),x0+40+380+55,Y(MOECD)-44,{sz:15,b:1,c:d?C.green:C.amber,al:'center'});}
+}
+
+// ---------- OECD index bars ----------
+function drawOecd(){
+ const x0=100,x1=690,y0=360,y1=60,Y=v=>y0-v/130*(y0-y1);
+ axes(x0,y0,x1,y1);
+ for(let v=0;v<=120;v+=20){line(x0-5,Y(v),x0,Y(v),C.slate,1.5);txt(String(v),x0-9,Y(v),{sz:13,c:C.mut,al:'right'});}
+ vlabel('Index (today = 100)',36,(y0+y1)/2);line(x0,Y(100),x1,Y(100),C.line,1,true);
+ const fd=done(S.FPC)||stage>S.FPC, dd=done(S.DROP)||stage>S.DROP;
+ const bars=[['cars',110,C.steel,'+10%'],['total fuel',70,C.amber,'−30%'],['fuel per car',fd?100*FPC:null,C.green,dd?'−'+FPC_DROP.toFixed(0)+'%':'']];
+ bars.forEach(([n,v,col,lab],i)=>{const x=x0+50+i*190;
+   if(v===null){if(stage>=S.FPC){ctx.strokeStyle=C.amber;ctx.setLineDash([5,4]);ctx.lineWidth=2;ctx.strokeRect(x,Y(100),110,y0-Y(100));ctx.setLineDash([]);txt('?',x+55,Y(50),{sz:30,b:1,c:C.amber,al:'center'});}}
+   else{ctx.fillStyle=col;ctx.fillRect(x,Y(v),110,y0-Y(v));txt(v.toFixed(v%1?1:0)+(lab?'  ('+lab+')':''),x+55,Y(v)-12,{sz:14.5,b:1,c:col,al:'center'});}
+   if(v!==null||stage>=S.FPC)txt(n,x+55,y0+18,{sz:14,c:C.slate,al:'center'});});
+ txt('OECD passenger vehicles; population assumed constant',CW-12,32,{sz:12.5,c:C.mut,al:'right'});
+}
+
+// ---------- hydrogen colors ----------
+function drawH2(){
+ const gx=220,gy=110,cw=220,ch=110;
+ txt('Carbon capture and storage?',gx+cw,60,{sz:15,b:1,c:C.navy,al:'center'});
+ txt('no',gx+cw/2,88,{sz:14,b:1,c:C.mut,al:'center'});txt('yes',gx+cw*1.5,88,{sz:14,b:1,c:C.mut,al:'center'});
+ const rows=['natural gas','coal'];
+ rows.forEach((r,i)=>txt(r,gx-14,gy+ch*i+ch/2,{sz:15,b:1,c:C.slate,al:'right'}));
+ const cells=[[0,0,'grey','#9AA3AE',true],[0,1,'blue','#3F7FD0',stage!==S.BLUE||done(S.BLUE)],[1,0,'brown','#8B5A2B',stage!==S.BROWN||done(S.BROWN)],[1,1,'blue','#3F7FD0',stage!==S.BLUE||done(S.BLUE)]];
+ cells.forEach(([r,c,n,col,show])=>{const x=gx+c*cw,y=gy+r*ch;rrect(x+4,y+4,cw-8,ch-8,8);ctx.fillStyle=show?col:C.light;ctx.fill();
+   ctx.strokeStyle=C.line;ctx.lineWidth=1;ctx.stroke();txt(show?n:'?',x+cw/2,y+ch/2,{sz:show?20:28,b:1,c:show?'#fff':C.amber,al:'center'});});
+ rrect(gx+4,gy+2*ch+10,2*cw-8,54,8);ctx.fillStyle='#4E9A4E';ctx.fill();
+ txt('green: electrolysis using renewable power',gx+cw,gy+2*ch+37,{sz:16,b:1,c:'#fff',al:'center'});
+ if((stage===S.BROWN&&done(S.BROWN))||stage>S.BROWN)txt('grey + brown crowded out; green + blue grow',CW/2,420,{sz:14,b:1,c:C.green,al:'center'});
+ else txt('low-carbon hydrogen = green + blue',CW/2,420,{sz:14,b:1,c:C.navy,al:'center'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({scen:drawScen,motor:drawMotor,oecd:drawOecd,h2:drawH2})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

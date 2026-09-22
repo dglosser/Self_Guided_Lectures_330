@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="12s">
+<meta name="lecture-title" content="Rare Earth Elements: Structure, Magnets, and Supply">
+<meta name="lecture-topic" content="Shell capacity 2n2, n+l filling order, lanthanide contraction, REE magnetism, NdFeB in wind turbines, radioactive waste, ppm and enrichment">
+<title>Lecture 12s: Rare Earth Elements</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Rare Earth Elements: Structure, Magnets, and Supply</h1>
+  <p class="sub">Self-guided review of Lecture 12 (rare earth elements). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 12: atomic structure (2n², n + l), lanthanides and the lanthanide contraction, oxidation state, magnetic properties, REE magnet content of wind turbines, radioactive waste from extraction, and REEs from acid mine drainage. The 3 MW turbine size and the 100 t of oxide are added for the exercises.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l12check.py) ----------
+const cap = n => 2*n*n;                 // electrons per shell
+const NL_4F = 4+3;                      // n + l for 4f
+const MW=3, DD=650, GR=80, ND=0.29;     // turbine MW; magnet kg/MW (direct-drive, geared); Nd mass fraction of NdFeB
+const MAG_DD = DD*MW;                   // 1,950 kg
+const ND_DD = MAG_DD*ND;                // 565.5 kg
+const ND_GR = GR*MW*ND;                 // 69.6 kg
+const WASTE = 1.4*100;                  // t radioactive waste per 100 t rare earth oxide
+const PPM_HI = 900000, PPM_ORE = 200;
+const PCT_HI = PPM_HI/1e4;              // 90 %
+const FACT = PPM_HI/PPM_ORE;            // 4,500
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={CAP:1,NL:2,FILL:3,CONT:4,OX:5,MDD:7,NDD:8,NGR:9,WASTE:10,PCT:11,FACT:12};
+const fmtN=v=>(Math.round(v*10)/10).toLocaleString('en-US');
+
+const stages=[
+{ // 0
+ title:'Why rare earth elements are special', view:'shells',
+ body:`<p>Rare earth elements (REEs) are the lanthanides (plus scandium and yttrium). Three things make them special: their <b>atomic radii</b>, an electron configuration in the <b>4f orbitals</b> that leads to a typical <b>3+ oxidation state</b>, and their <b>magnetic properties</b>.</p>
+ <p>This walk-through starts with the electron structure, then puts numbers on REEs in wind turbines and on where the supply comes from.</p>`,
+ cap:'Electron shells around a nucleus, labeled by principal quantum number n.'
+},
+{ // 1
+ title:'How many electrons fit in a shell?', view:'shells',
+ body:`<p>The principal quantum number <b>n</b> represents the distance of the electrons from the nucleus and determines their energy. Each shell holds at most:</p>
+ <span class="eq">maximum electrons = 2n²</span>
+ <p>Shell 1 holds 2, shell 2 holds 8, shell 3 holds 18.</p>`,
+ cap:'Shell capacities for n = 1 to 4. The n = 4 value appears once you answer.',
+ q:{type:'num', prompt:'How many electrons can the n = 4 shell hold?', label:'Electrons in shell 4', unit:'electrons',
+  // target 32 | distractors 16 (2n), 8 (n^2 x... ), 64 ((2n)^2), 18 | integer
+  answer:cap(4), tol:0.01,
+  ok:'Correct: 2 × 4² = 2 × 16 = 32 electrons.',
+  diagFn:x=>{if(x===16)return 'That is n². Multiply by 2: 2n².';if(x===8)return 'That is 2n. The rule squares n: 2n².';if(x===64)return 'That is (2n)². Square n first, then multiply by 2.';if(x===18)return 'That is shell 3. Use n = 4.';return null;},
+  generic:'Compute 2 × 4².', solution:'2 × 4² = <b>32 electrons</b>.'}
+},
+{ // 2
+ title:'Which orbital fills first?', view:'aufbau',
+ body:`<p>Electrons are added starting at the lowest-energy orbital and "build up" from there. Orbital energy is ranked by <b>n + l</b>:</p>
+ <div class="given"><b>n</b> = principal quantum number (shell)<br><b>l</b> = orbital angular momentum quantum number: s = 0, p = 1, d = 2, f = 3</div>
+ <p>Lower n + l fills first. For identical n + l, energy increases with increasing n. So outer orbitals can be filled before inner ones.</p>`,
+ cap:'n + l for three orbitals involved in the lanthanides. The 4f value appears once you answer.',
+ q:{type:'num', prompt:'What is n + l for the 4f orbital?', label:'n plus l for 4f', unit:'',
+  // target 7 | distractors 4 (n only), 3 (l only), 8 | integer
+  answer:NL_4F, tol:0.01,
+  ok:'Correct: n = 4 and f means l = 3, so n + l = 7.',
+  diagFn:x=>{if(x===4)return 'That is n alone. Add l for an f orbital (l = 3).';if(x===3)return 'That is l alone. Add n = 4.';if(x===8)return 'f corresponds to l = 3, not 4.';return null;},
+  generic:'n = 4; f means l = 3.', solution:'4 + 3 = <b>7</b>.'}
+},
+{ // 3
+ title:'Filling order', view:'aufbau',
+ body:`<p>Compare: 4f (n + l = 7), 5p (5 + 1 = 6), and 6s (6 + 0 = 6).</p>`,
+ cap:'Lower n + l fills first; ties go to the lower n.',
+ q:{type:'choice', prompt:'In what order do these orbitals fill?',
+  options:[{v:'ok',label:'5p, then 6s, then 4f'},{v:'f',label:'4f, then 5p, then 6s'},{v:'s',label:'6s, then 5p, then 4f'},{v:'n',label:'4f, then 6s, then 5p'}],
+  answer:'ok',
+  ok:'Correct. 5p and 6s (n + l = 6) fill before 4f (n + l = 7), and 5p beats 6s because it has the lower n. The lanthanides are where the inner 4f orbitals then fill.',
+  diag:{f:'4f has a lower n, but its n + l is 7, higher than 6. Rank by n + l first.',s:'5p and 6s tie at n + l = 6; the tie goes to the lower n, which is 5p.',n:'4f has the highest n + l (7), so it fills last of the three.'},
+  generic:'Try again.', solution:'<b>5p → 6s → 4f</b> (Lecture 12).'}
+},
+{ // 4
+ title:'The lanthanide contraction', view:'contract',
+ body:`<p>Across the lanthanides, each element adds a 4f electron (and a proton).</p>`,
+ cap:'Atomic size across the lanthanide series (schematic). The trend appears once you answer.',
+ q:{type:'choice', prompt:'As the lanthanides gain 4f electrons, atomic size:',
+  options:[{v:'dec',label:'Decreases'},{v:'inc',label:'Increases'},{v:'same',label:'Stays the same'}],
+  answer:'dec',
+  ok:'Correct: the lanthanide contraction. Attraction to the protons in the nucleus increases and electronegativity increases, so the atoms get smaller.',
+  diag:{inc:'Adding electrons might seem to make atoms bigger, but the growing pull of the nucleus wins: atoms shrink.',same:'Size changes steadily across the series: the lanthanide contraction.'},
+  generic:'Try again.', solution:'<b>Decreases</b>: the lanthanide contraction (Lecture 12).'}
+},
+{ // 5
+ title:'Oxidation state and magnetism', view:'contract',
+ body:`<p>REE oxidation states are generally 3+. They are also magnetic in an unusual way: normally you need to apply an external magnetic field to change the angular momentum of orbiting electrons.</p>`,
+ cap:'Lanthanides: typical oxidation state and magnetic behavior.',
+ q:{type:'choice', prompt:'Why can REEs generate their own magnetic fields?',
+  options:[{v:'unp',label:'They have unpaired electrons that spin in the same direction'},{v:'paired',label:'All their electrons are paired'},{v:'charge',label:'Their typical 3+ charge makes them magnetic by itself'},{v:'rad',label:'They are radioactive'}],
+  answer:'unp',
+  ok:'Correct. Unpaired electrons spinning the same way give REEs their own magnetic fields, which is why they make such powerful permanent magnets.',
+  diag:{paired:'Paired electrons cancel each other\'s spins. The key is unpaired electrons.',charge:'Charge alone doesn\'t make a magnet; the unpaired electron spins do.',rad:'Radioactivity (a side effect of processing) has nothing to do with REE magnetism.'},
+  generic:'Try again.', solution:'<b>Unpaired electrons spinning in the same direction</b> (Lecture 12).'}
+},
+{ // 6
+ title:'REEs in wind turbines', view:'turbine',
+ body:`<p>Wind turbine generators use NdFeB (neodymium–iron–boron) permanent magnets. From the lecture (EU Joint Research Centre and WindEurope):</p>
+ <div class="given">Magnet content of generators:<br>• low-speed direct-drive: <b>~650 kg per MW</b><br>• high-speed geared drivetrain: <b>~80 kg per MW</b><br>
+ NdFeB magnet composition: neodymium (Nd) <b>29%</b>, dysprosium 2–4%, praseodymium &lt; 1%, iron, boron, and other metals 66–68%</div>
+ <p>(MW = megawatt of generating capacity.)</p>`,
+ cap:'Magnet content per MW for the two turbine designs.'
+},
+{ // 7
+ title:'How much magnet?', view:'turbine',
+ body:`<p>Consider a <b>3 MW</b> direct-drive turbine.</p>`,
+ cap:'A 3 MW direct-drive turbine. The magnet mass appears once you answer.',
+ q:{type:'num', prompt:'Mass of NdFeB magnet in the generator (kg)?', label:'Magnet mass in kilograms', unit:'kg',
+  // target 1950 | distractors 216.7 (divided), 240 (geared), 650 | tol 5
+  answer:MAG_DD, tol:5,
+  ok:'Correct: 650 kg/MW × 3 MW = 1,950 kg of magnet: nearly 2 tonnes.',
+  diagFn:x=>{if(near(x,DD/MW,0.01))return 'Multiply by the capacity; don\'t divide.';if(near(x,GR*MW,0.005))return 'That uses the geared value (80 kg/MW). This turbine is direct-drive.';if(near(x,DD,0.001))return 'That is per MW. The turbine is 3 MW.';return null;},
+  generic:'Multiply 650 kg/MW by 3 MW.', solution:'650 × 3 = <b>1,950 kg</b>.'}
+},
+{ // 8
+ title:'How much neodymium?', view:'turbine',
+ body:`<p>Neodymium is 29% of the NdFeB magnet by mass.</p>`,
+ cap:'Neodymium share of the direct-drive magnet.',
+ q:{type:'num', prompt:'Mass of neodymium in that 3 MW direct-drive generator (kg)?', label:'Neodymium mass in kilograms', unit:'kg',
+  // target 565.5 | distractors 56,550 (x29), 1384.5 (remaining 71%), 188.5 (29% of 650) | tol 3
+  answer:ND_DD, tol:3,
+  ok:`Correct: 1,950 × 0.29 ≈ ${fmtN(ND_DD)} kg of neodymium.`,
+  diagFn:x=>{if(near(x,MAG_DD*29,0.01))return '29% is 0.29, not 29.';if(near(x,MAG_DD*0.71,0.01))return 'That is the other 71%. Neodymium is 29%.';if(near(x,DD*ND,0.01))return 'That is for 1 MW. Use your 3 MW magnet mass.';return null;},
+  generic:'Multiply your magnet mass by 0.29.', solution:`1,950 × 0.29 = <b>${fmtN(ND_DD)} kg</b>.`}
+},
+{ // 9
+ title:'Geared turbines', view:'turbine',
+ body:`<p>Now a 3 MW turbine with a high-speed geared drivetrain (~80 kg magnet per MW). Do both steps: magnet mass, then 29% neodymium.</p>`,
+ cap:'Direct-drive versus geared: neodymium per 3 MW turbine.',
+ q:{type:'num', prompt:'Mass of neodymium in the 3 MW geared generator (kg)?', label:'Neodymium mass in kilograms', unit:'kg',
+  // target 69.6 | distractors 240 (magnet only), 23.2 (1 MW), 565.5 (direct-drive) | tol 0.5
+  answer:ND_GR, tol:0.5,
+  ok:`Correct: 80 × 3 × 0.29 = ${fmtN(ND_GR)} kg, about 8 times less neodymium than the direct-drive design.`,
+  diagFn:x=>{if(near(x,GR*MW,0.005))return 'That is the magnet mass. Take 29% of it for neodymium.';if(near(x,GR*ND,0.01))return 'That is for 1 MW. The turbine is 3 MW.';if(near(x,ND_DD,0.01))return 'That is the direct-drive value. Use 80 kg/MW.';return null;},
+  generic:'Compute 80 × 3 × 0.29.', solution:`80 × 3 × 0.29 = <b>${fmtN(ND_GR)} kg</b>.`}
+},
+{ // 10
+ title:'A side effect: radioactive waste', view:'supply',
+ body:`<p>REE extraction can yield approximately <b>1.4 tons of radioactive waste</b> (solid, liquid, or gas) for every <b>1 ton of rare earth oxide</b> produced.</p>`,
+ cap:'Radioactive waste per ton of rare earth oxide.',
+ q:{type:'num', prompt:'Approximately how much radioactive waste comes with producing 100 tons of rare earth oxide (tons)?', label:'Tons of radioactive waste', unit:'tons',
+  // target 140 | distractors 71.4 (divided), 1.4, 101.4 | tol 0.5
+  answer:WASTE, tol:0.5,
+  ok:'Correct: 1.4 × 100 = 140 tons of radioactive waste: more waste than product, by mass.',
+  diagFn:x=>{if(near(x,100/1.4,0.01))return 'Multiply by 1.4; don\'t divide.';if(near(x,1.4,0.01))return 'That is per ton. Scale up to 100 tons.';if(near(x,101.4,0.001))return 'Multiply 100 by 1.4; don\'t add.';return null;},
+  generic:'Multiply 100 by 1.4.', solution:'100 × 1.4 = <b>140 tons</b>.'}
+},
+{ // 11
+ title:'Reading ppm', view:'supply',
+ body:`<p>REE concentrations in ore are about <b>150–200 ppm</b> (parts per million). Researchers at West Virginia University turned acid mine drainage sludge into an enriched solid containing <b>900,000 ppm</b> REEs.</p>
+ <div class="given">1% = 10,000 ppm</div>`,
+ cap:'Concentrations on a log scale: ore versus the enriched AMD product.',
+ q:{type:'num', prompt:'What is 900,000 ppm as a percent?', label:'Percent', unit:'%',
+  // target 90 | distractors 9 (/1e5), 0.9 (/1e6), 900 (/1000) | tol 0.5
+  answer:PCT_HI, tol:0.5,
+  ok:'Correct: 900,000 / 10,000 = 90%. The product is mostly rare earths.',
+  diagFn:x=>{if(near(x,9,0.01))return 'Divide by 10,000 (1% = 10,000 ppm).';if(near(x,0.9,0.01))return 'That is a fraction. As a percent, multiply by 100.';if(near(x,900,0.01))return 'Divide by 10,000, not 1,000.';return null;},
+  generic:'Divide 900,000 by 10,000.', solution:'900,000 / 10,000 = <b>90%</b>.'}
+},
+{ // 12
+ title:'How enriched is that?', view:'supply',
+ body:`<p>Compare the enriched product with ore at the top of the typical range, 200 ppm.</p>`,
+ cap:'Enrichment factor: product versus ore.',
+ q:{type:'num', prompt:'How many times more concentrated is the 900,000 ppm product than 200 ppm ore?', label:'Enrichment factor', unit:'×',
+  // target 4500 | distractors 0.000222 (inverted), 6000 (used 150), 450 | tol 5
+  answer:FACT, tol:5,
+  ok:'Correct: 900,000 / 200 = 4,500 times. (The lecture also notes the treatment sludge itself holds on average 2,600 times as many REEs as the raw drainage.)',
+  diagFn:x=>{if(near(x,1/FACT,0.02))return 'Put the product on top: 900,000 / 200.';if(near(x,6000,0.001))return 'That uses 150 ppm. Use 200 ppm.';if(near(x,450,0.01))return 'Check the zeros: 900,000 / 200 = 4,500.';return null;},
+  generic:'Divide 900,000 by 200.', solution:'900,000 / 200 = <b>4,500</b>.'}
+},
+{ // 13
+ title:'Putting it together', view:'supply',
+ body:`<ul>
+ <li>Shells hold 2n² electrons. Orbitals fill by n + l, so 5p and 6s fill before 4f; the lanthanides fill the 4f orbitals.</li>
+ <li>Adding 4f electrons shrinks the atoms (the lanthanide contraction); REEs are generally 3+, and unpaired electrons make them strongly magnetic.</li>
+ <li>A 3 MW direct-drive wind turbine can carry about 2 tonnes of NdFeB magnet, including about 565 kg of neodymium; a geared design needs about 8 times less.</li>
+ <li>Mining and refining produce waste, including about 1.4 t of radioactive waste per ton of oxide. Unconventional sources like acid mine drainage sludge could help build domestic supply.</li>
+ </ul>`,
+ cap:'Concentrations on a log scale: ore versus the enriched AMD product.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function line(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.stroke();}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+const g_=(k)=>done(k)||stage>k;
+
+function drawShells(){
+ const cx=220,cy=220;
+ for(let n=1;n<=4;n++){ctx.beginPath();ctx.arc(cx,cy,40+n*40,0,2*Math.PI);ctx.strokeStyle=C.line;ctx.lineWidth=1.5;ctx.stroke();}
+ ctx.beginPath();ctx.arc(cx,cy,24,0,2*Math.PI);ctx.fillStyle=C.terra;ctx.fill();txt('+',cx,cy,{sz:20,b:1,c:'#fff',al:'center'});
+ for(let n=1;n<=4;n++)txt('n = '+n,cx+40+n*40-6,cy-10,{sz:12.5,c:C.mut,al:'right'});
+ txt('max electrons = 2n²',560,70,{sz:17,b:1,c:C.navy,al:'center',serif:1});
+ for(let n=1;n<=4;n++){const y=110+n*48;const show=n<4||g_(S.CAP);
+   rrect(460,y-18,200,36,8);ctx.fillStyle=C.light;ctx.fill();
+   txt('n = '+n+':  2 × '+n+'² = ',475,y,{sz:15});txt(show?String(cap(n)):'?',640,y,{sz:16,b:1,c:show?(n===4?C.green:C.navy):C.amber,al:'right'});}
+}
+function drawAufbau(){
+ const rows=[['5p',5,1],['6s',6,0],['4f',4,3]];
+ txt('orbital',140,50,{sz:14,b:1,c:C.mut,al:'center'});txt('n',250,50,{sz:14,b:1,c:C.mut,al:'center'});txt('l',340,50,{sz:14,b:1,c:C.mut,al:'center'});txt('n + l',450,50,{sz:14,b:1,c:C.mut,al:'center'});
+ rows.forEach(([o,n,l],i)=>{const y=100+i*60;rrect(90,y-22,420,44,8);ctx.fillStyle=C.light;ctx.fill();
+   const hide=o==='4f'&&!g_(S.NL);
+   txt(o,140,y,{sz:18,b:1,c:C.navy,al:'center'});txt(String(n),250,y,{sz:17,al:'center'});txt(String(l),340,y,{sz:17,al:'center'});txt(hide?'?':String(n+l),450,y,{sz:18,b:1,c:hide?C.amber:C.green,al:'center'});});
+ txt('s = 0, p = 1, d = 2, f = 3',300,300,{sz:14,c:C.mut,al:'center'});
+ if(stage>=S.FILL){const d=g_(S.FILL);txt('filling order: '+(d?'5p → 6s → 4f':'?'),300,350,{sz:17,b:1,c:d?C.green:C.amber,al:'center'});
+   if(d)txt('lower n + l first; ties → lower n first',300,378,{sz:13.5,c:C.mut,al:'center'});}
+}
+function drawContract(){
+ const els=['La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu'];
+ const d=g_(S.CONT);
+ els.forEach((e,i)=>{const x=50+i*44, r=d?20-i*0.6:15;ctx.beginPath();ctx.arc(x,170,r,0,2*Math.PI);ctx.fillStyle='rgba(109,76,125,'+(0.35+i*0.03)+')';ctx.fill();txt(e,x,170,{sz:12,b:1,c:'#fff',al:'center'});});
+ txt(d?'atomic size decreases across the series: lanthanide contraction':'atomic size across the series: ?',CW/2,230,{sz:14.5,b:1,c:d?C.green:C.amber,al:'center'});
+ txt('schematic sizes',CW-20,110,{sz:12,c:C.mut,al:'right'});
+ if(stage>=S.OX){txt('typical oxidation state: 3+',CW/2,300,{sz:16,b:1,c:C.navy,al:'center'});
+   const m=g_(S.OX);txt(m?'unpaired electrons spinning the same way → own magnetic field':'magnetism: why?',CW/2,340,{sz:14.5,b:1,c:m?C.green:C.amber,al:'center'});}
+}
+function drawTurbine(){
+ // simple turbine
+ line(140,120,140,380,C.slate,6);ctx.beginPath();ctx.arc(140,120,10,0,2*Math.PI);ctx.fillStyle=C.slate;ctx.fill();
+ [0,120,240].forEach(a=>{const r=a*Math.PI/180;line(140,120,140+90*Math.cos(r-Math.PI/2),120+90*Math.sin(r-Math.PI/2),C.steel,5);});
+ txt('3 MW turbine',140,400,{sz:14,b:1,c:C.navy,al:'center'});
+ const rows=[['direct-drive: magnet',stage>=S.MDD?(g_(S.MDD)?fmtN(MAG_DD)+' kg':'? kg'):'650 kg/MW',g_(S.MDD)&&stage>=S.MDD],
+  ['direct-drive: neodymium',stage>=S.NDD?(g_(S.NDD)?fmtN(ND_DD)+' kg':'? kg'):'29% of magnet',g_(S.NDD)&&stage>=S.NDD],
+  ['geared: neodymium',stage>=S.NGR?(g_(S.NGR)?fmtN(ND_GR)+' kg':'? kg'):'80 kg/MW magnet',g_(S.NGR)&&stage>=S.NGR]];
+ rows.forEach(([n,v,ok],i)=>{const y=80+i*90;rrect(290,y,400,64,10);ctx.fillStyle=ok?'#E8F3EC':C.light;ctx.fill();ctx.strokeStyle=ok?C.green:C.line;ctx.lineWidth=1.5;ctx.stroke();
+   txt(n,310,y+20,{sz:14,c:C.mut});txt(v,310,y+44,{sz:18,b:1,c:ok?C.green:(v.includes('?')?C.amber:C.navy)});});
+ if(g_(S.NGR)&&stage>=S.NGR){const s=0.25;ctx.fillStyle=C.purp;ctx.fillRect(420,366,ND_DD*s,14);ctx.fillRect(420,386,ND_GR*s,14);txt('Nd, direct-drive',414,373,{sz:12,c:C.mut,al:'right'});txt('Nd, geared',414,393,{sz:12,c:C.mut,al:'right'});}
+}
+function drawSupply(){
+ const x0=200,x1=680,X=v=>x0+Math.log10(v)/6*(x1-x0);
+ txt('REE concentration (ppm, log scale)',CW/2,40,{sz:15,b:1,c:C.navy,al:'center'});
+ const bars=[['typical ore',200,C.amber,'150–200 ppm'],['enriched AMD product',900000,C.green,(g_(S.PCT)&&stage>=S.PCT)?'900,000 ppm = 90%':'900,000 ppm']];
+ bars.forEach(([n,v,col,lab],i)=>{const y=90+i*70;txt(n,x0-12,y+14,{sz:14,b:1,c:C.navy,al:'right'});ctx.fillStyle=col;ctx.fillRect(x0,y,X(v)-x0,28);txt(lab,Math.min(X(v)+8,x1-140),y+14+(i?-26:0),{sz:13.5,b:1,c:col});});
+ const ay=250;line(x0,ay,x1,ay,C.slate,1.5);
+ for(let e=0;e<=6;e++){line(X(Math.pow(10,e)),ay,X(Math.pow(10,e)),ay+5,C.slate,1.5);txt('10',X(Math.pow(10,e))-4,ay+17,{sz:12.5,c:C.mut,al:'center'});txt(String(e),X(Math.pow(10,e))+5,ay+11,{sz:10,c:C.mut});}
+ if(stage>=S.FACT){const d=g_(S.FACT);txt('enrichment: '+(d?'4,500×':'?'),CW/2,300,{sz:16,b:1,c:d?C.green:C.amber,al:'center'});}
+ if(stage>=S.WASTE){const d=g_(S.WASTE);txt('per 100 t rare earth oxide: '+(d?'~140 t':'?')+' radioactive waste',CW/2,350,{sz:14.5,b:1,c:d?C.terra:C.amber,al:'center'});}
+ txt('AMD = acid mine drainage',CW/2,400,{sz:12.5,c:C.mut,al:'center'});
+}
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({shells:drawShells,aufbau:drawAufbau,contract:drawContract,turbine:drawTurbine,supply:drawSupply})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

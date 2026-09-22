@@ -1,0 +1,14 @@
+# Answer keys stay OUT of this public repo. Students could find them otherwise.
+# (They live in Box: ENRG 330/Ordered lectures/Self-guided.)
+*_KEY.html
+*KEY*.html
+*.docx
+*SOLUTIONS*
+
+# Python / editor clutter
+__pycache__/
+*.pyc
+.vscode/
+Thumbs.db
+desktop.ini
+.DS_Store

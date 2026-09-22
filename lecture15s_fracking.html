@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="15s">
+<meta name="lecture-title" content="Fracking: Flow, Fractures, and Risk">
+<meta name="lecture-topic" content="Conventional vs unconventional development, Q = kA dP/(mu L), hydraulic fracturing sequence, stray gas, induced seismicity, wellbore integrity, risk assessment">
+<title>Lecture 15s: Fracking</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Fracking: Flow, Fractures, and Risk</h1>
+  <p class="sub">Self-guided review of Lecture 15 (conventional and unconventional development). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 15: conventional versus unconventional, the Drake well, the flow equation Q = kA(ΔP/μL), hydraulic fracturing and matrix stimulation, stray gas, wellbore integrity, induced seismicity (central U.S. earthquake counts), and risk assessment. The factor changes in the flow questions and the 10% methane example are added for the exercises.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script) ----------
+const DRAKE=20*365*5;                  // 36,500 bbl (20 bbl/day for 5 years; 365-day years)
+const QF_K=1000, QF_MU=5/5000, QF_L=0.5, QF_KM=100/10;   // Darcy ratio answers
+const EQ1=855, Y1=2008-1973+1, EQ2=2897, Y2=2016-2009+1;  // M>=3 quakes, central U.S. (lecture figure)
+const R1=EQ1/Y1, R2=EQ2/Y2, RR=R2/R1;  // 23.75/yr, 362.1/yr, 15.2
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={TRAP:1,DRAKE:2,K:4,MU:5,L:6,KM:7,PROP:8,EXPL:9,STEP:10,CH4:11,R1:12,RR:13,WELL:14,BASE:15};
+const fmtN=v=>Math.round(v).toLocaleString('en-US');
+
+const stages=[
+{ // 0
+ title:'Conventional versus unconventional development', view:'table',
+ body:`<p>This walk-through reviews how oil and gas are developed, mostly by hydraulic fracturing ("fracking"), and how we assess its risks.</p>
+ <p>Recall the contrast: conventional deposits are <b>difficult to find but easy to produce</b>; unconventional deposits are <b>easy to find but difficult to produce</b>.</p>`,
+ cap:'Conventional versus unconventional oil and gas, from the lecture\'s comparison table.'
+},
+{ // 1
+ title:'What each one needs', view:'table',
+ body:`<p>Unconventional resources are produced directly from thermally mature, high-organic rocks, using engineered stimulation.</p>`,
+ cap:'Comparison table. The highlighted row appears once you answer.',
+ q:{type:'choice', prompt:'Which type of deposit needs a trap and a seal?',
+  options:[{v:'conv',label:'Conventional'},{v:'unc',label:'Unconventional'},{v:'both',label:'Both'},{v:'neither',label:'Neither'}],
+  answer:'conv',
+  ok:'Correct. Conventional oil and gas migrates along natural pathways and must be caught by a trap and seal. Unconventional resources are produced from the source rock itself, so no reservoir rock, trap, or seal is needed.',
+  diag:{unc:'Unconventional resources stay in the source rock; they don\'t need a separate trap or seal.',both:'Only one type relies on migration into a trapped reservoir.',neither:'Oil that has migrated has to be trapped to accumulate.'},
+  generic:'Try again.', solution:'<b>Conventional</b> (Lecture 15).'}
+},
+{ // 2
+ title:'The first commercial oil well', view:'drake',
+ body:`<p>Colonel Edwin Drake drilled near Oil Creek, Pennsylvania. His well hit oil at 70 feet and produced about <b>20 barrels a day for 5 years</b>.</p>`,
+ cap:'Drake\'s well: 20 barrels per day for 5 years.',
+ q:{type:'num', prompt:'About how many barrels did the Drake well produce in total? (Use 365 days per year.)', label:'Total barrels', unit:'bbl',
+  // target 36,500 | distractors 100 (no days), 7,300 (1 year), 1,400 (70 ft x 20) | tol 50
+  answer:DRAKE, tol:50,
+  ok:'Correct: 20 × 365 × 5 = 36,500 barrels. It attracted investors to the industry.',
+  diagFn:x=>{if(near(x,100,0.001))return 'That multiplies barrels per day by years. Convert years to days first (× 365).';if(near(x,7300,0.001))return 'That is one year. The well produced for 5 years.';if(near(x,1400,0.001))return 'The 70 ft depth isn\'t part of the production total.';return null;},
+  generic:'Compute 20 bbl/day × 365 days/yr × 5 yr.', solution:'20 × 365 × 5 = <b>36,500 bbl</b>.'}
+},
+{ // 3
+ title:'Why fracking works: flow through rock', view:'darcy',
+ body:`<p>The lecture's flow equation for hydraulic fracturing:</p>
+ <span class="eq">Q = k A ΔP / (μ L)</span>
+ <div class="given"><b>Q</b> = flow rate of fluid through the rock (volume per time)<br><b>k</b> = permeability of the rock<br><b>A</b> = cross-sectional area the fluid flows through<br>
+ <b>ΔP</b> = pressure difference driving the flow<br><b>μ</b> (mu) = fluid viscosity<br><b>L</b> = distance (length) the fluid must travel</div>
+ <p>The next questions ask how Q changes when one variable changes. Everything else stays the same, so you only need ratios.</p>`,
+ cap:'Flow through a block of rock: Q depends on k, A, ΔP, μ, and L.'
+},
+{ // 4
+ title:'Alter the rock', view:'darcy',
+ body:`<p>Fracturing creates high-permeability flowpaths. Suppose it raises the effective permeability k of a shale by a factor of <b>1,000</b>.</p>`,
+ cap:'Permeability × 1,000. How does Q change?',
+ q:{type:'num', prompt:'By what factor does Q change?', label:'Factor', unit:'×',
+  // target 1000 | distractors 0.001 (inverted), 1e6 (squared) | tol 1
+  answer:QF_K, tol:1,
+  ok:'Correct: Q is proportional to k, so Q rises 1,000-fold. That is why fracking makes tight shale productive.',
+  diagFn:x=>{if(near(x,0.001,0.01))return 'k is in the numerator: raising k raises Q.';if(near(x,1e6,0.01))return 'Q depends on k to the first power, not k².';return null;},
+  generic:'Q ∝ k.', solution:'Q ∝ k → <b>× 1,000</b>.'}
+},
+{ // 5
+ title:'A thicker fluid', view:'darcy',
+ body:`<p>Now keep the rock the same but change the fluid: from an oil of 5 cP (centipoise) to a heavy oil of 5,000 cP.</p>`,
+ cap:'Viscosity × 1,000. How does Q change?',
+ q:{type:'num', prompt:'By what factor does Q change? (decimal)', label:'Factor', unit:'×',
+  // target 0.001 | distractors 1000 (numerator), 4995 | tol 0.00005
+  answer:QF_MU, tol:0.00005,
+  ok:'Correct: μ is in the denominator, so Q drops to 1/1,000 (0.001). That is why heavy oil needs heat or chemicals to "alter the fluid."',
+  diagFn:x=>{if(near(x,1000,0.01))return 'μ is in the denominator: a thicker fluid flows less.';if(near(x,4995,0.01))return 'Use the ratio of viscosities, not the difference.';return null;},
+  generic:'Q ∝ 1/μ; μ went from 5 to 5,000.', solution:'Q ∝ 1/μ → 5/5,000 = <b>0.001</b>.'}
+},
+{ // 6
+ title:'A longer path', view:'darcy',
+ body:`<p>Suppose the fluid must travel twice as far (L doubles) to reach the wellbore.</p>`,
+ cap:'Path length × 2. How does Q change?',
+ q:{type:'num', prompt:'By what factor does Q change? (decimal)', label:'Factor', unit:'×',
+  // target 0.5 | distractors 2, 0.25 | tol 0.01
+  answer:QF_L, tol:0.01,
+  ok:'Correct: L is in the denominator, so Q halves. A horizontal well and fractures shorten the path oil and gas must take through tight rock.',
+  diagFn:x=>{if(near(x,2,0.01))return 'L is in the denominator: a longer path means less flow.';if(near(x,0.25,0.01))return 'Q depends on 1/L, not 1/L².';return null;},
+  generic:'Q ∝ 1/L.', solution:'Q ∝ 1/L → <b>0.5</b>.'}
+},
+{ // 7
+ title:'Two changes at once', view:'darcy',
+ body:`<p>A treatment raises k by a factor of 100, but the fluid in the rock is 10 times more viscous than expected.</p>`,
+ cap:'k × 100 and μ × 10 together.',
+ q:{type:'num', prompt:'By what factor does Q change?', label:'Factor', unit:'×',
+  // target 10 | distractors 1000 (multiplied), 0.1 (inverted), 90 | tol 0.1
+  answer:QF_KM, tol:0.1,
+  ok:'Correct: 100 / 10 = 10. The permeability gain wins, but the viscous fluid eats most of it.',
+  diagFn:x=>{if(near(x,1000,0.01))return 'μ divides: 100 ÷ 10, not 100 × 10.';if(near(x,0.1,0.01))return 'Upside down: k (numerator) went up by 100, μ (denominator) by 10.';if(near(x,90,0.01))return 'These are multiplicative factors: divide, don\'t subtract.';return null;},
+  generic:'Q factor = (k factor) / (μ factor).', solution:'100 / 10 = <b>10</b>.'}
+},
+{ // 8
+ title:'Keeping fractures open', view:'frac',
+ body:`<p>Fractures are typically vertical, extending in the direction of maximum horizontal compressive stress. When pumping stops, the rock presses back on them.</p>`,
+ cap:'A fracture held open by proppant grains.',
+ q:{type:'choice', prompt:'What keeps a fracture open after the pressure is released?',
+  options:[{v:'prop',label:'Proppant (sand or other material) pumped into the fracture'},{v:'acid',label:'Muriatic acid'},{v:'gas',label:'The gas pressure alone'},{v:'cement',label:'Cement'}],
+  answer:'prop',
+  ok:'Correct. Fractures are "propped" with sand or other materials so they stay open as high-permeability flowpaths.',
+  diag:{acid:'Acid cleans out perforations and near-wellbore damage (matrix stimulation); it doesn\'t hold fractures open.',gas:'Without proppant, the surrounding stress closes the fracture.',cement:'Cement seals the wellbore; it would block, not open, flowpaths.'},
+  generic:'Try again.', solution:'<b>Proppant</b> (Lecture 15).'}
+},
+{ // 9
+ title:'Why not just use explosives?', view:'frac',
+ body:`<p>Early operators tried high explosives in wells.</p>`,
+ cap:'Explosives versus a gradual pressure rise.',
+ q:{type:'choice', prompt:'Why does hydraulic fracturing use a gradual pressure rise instead of high explosives?',
+  options:[{v:'far',label:'High explosives spend their energy near the wellbore, shattering the wall rock but not penetrating the formation'},{v:'cheap',label:'Explosives are illegal in all oil fields'},{v:'water',label:'Water is a stronger explosive'}],
+  answer:'far',
+  ok:'Correct. A gradual pressure rise (incompressible liquids or low-impulse explosives) lets a fracture grow a long distance into the rock.',
+  diag:{cheap:'The lecture\'s reason is physical: where the energy goes.',water:'Water isn\'t an explosive; it is incompressible, which lets pressure build gradually.'},
+  generic:'Try again.', solution:'<b>Explosives shatter only near the wellbore</b> (Lecture 15).'}
+},
+{ // 10
+ title:'The frac sequence', view:'frac',
+ body:`<p>A modern frac job has several stages.</p>`,
+ cap:'Steps of a hydraulic fracturing treatment. The order appears once you answer.',
+ q:{type:'choice', prompt:'Which order is correct?',
+  options:[{v:'ok',label:'Acid cleans perforations → water "pad" initiates the fracture → water with additives carries proppant → release pressure (flowback)'},
+           {v:'a',label:'Proppant first → acid → water pad → flowback'},
+           {v:'b',label:'Flowback → water pad → acid → proppant'}],
+  answer:'ok',
+  ok:'Correct. The pump rate must be high enough to keep proppant suspended (avoiding a screen-out) but not so high that proppant can\'t reach the end of the fracture; coarser proppant goes near the well.',
+  diag:{a:'Proppant can\'t go in until a fracture exists to carry it into.',b:'Flowback happens last, when pressure is released.'},
+  generic:'Try again.', solution:'<b>Acid → pad → proppant-laden fluid → flowback</b> (Lecture 15).'}
+},
+{ // 11
+ title:'Stray gas', view:'ch4',
+ body:`<p>The single biggest "contaminant" of concern is stray gas. Methane is non-toxic but is <b>explosive in air at concentrations from 5% to 15%</b>. It migrates through groundwater and accumulates in confined spaces.</p>`,
+ cap:'Methane concentration in air, with the explosive range marked.',
+ q:{type:'choice', prompt:'Methane builds up in a basement to 10% of the air. This is:',
+  options:[{v:'exp',label:'Within the explosive range'},{v:'low',label:'Too little to explode'},{v:'high',label:'Too rich to explode'},{v:'toxic',label:'Safe to explode but toxic to breathe'}],
+  answer:'exp',
+  ok:'Correct. 10% is between 5% and 15%: explosive. That is why methane accumulating in confined spaces is the main hazard.',
+  diag:{low:'The lower limit is 5%; 10% is above it.',high:'The upper limit is 15%; 10% is below it.',toxic:'Methane is non-toxic; the hazard is explosion.'},
+  generic:'Try again.', solution:'<b>Explosive</b>: 5% < 10% < 15%.'}
+},
+{ // 12
+ title:'Induced seismicity: before', view:'quake',
+ body:`<p>Injecting oil and gas wastewater into an existing fault system can raise pore pressure until the stressed fault slips.</p>
+ <p>From the lecture's figure: <b>855</b> earthquakes of magnitude 3 or greater in the central U.S. from <b>1973 to 2008</b> (inclusive).</p>`,
+ cap:'Central U.S. magnitude 3+ earthquakes, two periods.',
+ q:{type:'num', prompt:'Average earthquakes per year, 1973–2008?', label:'Earthquakes per year', unit:'per yr',
+  // target 23.75 (36 yr) | distractors 24.4 (35 yr), 855 | tol 0.3
+  answer:R1, tol:0.3,
+  ok:`Correct: 855 / 36 years ≈ ${R1.toFixed(1)} per year. (Counting inclusively, 1973 to 2008 is 36 years.)`,
+  diagFn:x=>{if(near(x,855/35,0.005))return 'Count the years inclusively: 1973 through 2008 is 36 years, not 35.';if(near(x,855,0.001))return 'Divide by the number of years.';return null;},
+  generic:'Divide 855 by 36 years.', solution:`855 / 36 = <b>${R1.toFixed(2)} per year</b>.`}
+},
+{ // 13
+ title:'Induced seismicity: after', view:'quake',
+ body:`<p>From <b>2009 to 2016</b> (inclusive, 8 years) there were <b>2,897</b> magnitude 3+ earthquakes.</p>`,
+ cap:'Yearly rates in the two periods.',
+ q:{type:'num', prompt:'How many times higher was the yearly rate in 2009–2016 than in 1973–2008?', label:'Ratio', unit:'×',
+  // target 15.2 | distractors 3.39 (totals only), 0.066 (inverted), 17.4 (7 yr) | tol 0.4
+  answer:RR, tol:0.4,
+  ok:`Correct: 2,897/8 ≈ ${R2.toFixed(0)} per year, versus ≈ ${R1.toFixed(0)} per year: about ${RR.toFixed(0)} times higher, coinciding with the growth in wastewater injection.`,
+  diagFn:x=>{if(near(x,EQ2/EQ1,0.02))return 'That compares totals over periods of different length. Compare per-year rates.';if(near(x,1/RR,0.03))return 'Upside down: put the later rate on top.';if(near(x,(EQ2/7)/R1,0.02))return 'Count 2009 through 2016 inclusively: 8 years.';return null;},
+  generic:'Rate 2 = 2,897/8; divide by your rate 1.', solution:`(2,897/8) / (855/36) = ${R2.toFixed(1)} / ${R1.toFixed(2)} = <b>${RR.toFixed(1)}</b>.`}
+},
+{ // 14
+ title:'Wellbore integrity', view:'well',
+ body:`<p>Ingraffea et al. (2014) analyzed 75,505 compliance reports for 41,381 Pennsylvania wells and found a <b>six-times greater frequency</b> of cement/casing failure in shale gas wells than in conventional wells, even though both are drilled and cased the same way through aquifers.</p>`,
+ cap:'Casing and cement through an aquifer.',
+ q:{type:'choice', prompt:'What explanation does the lecture give for the difference?',
+  options:[{v:'cyc',label:'Repeated, high-volume frac stages cycle pressure through the whole casing string, which may create microannuli that let gas migrate'},
+           {v:'depth',label:'Shale gas wells are cased differently through aquifers'},{v:'old',label:'Shale gas wells are older'}],
+  answer:'cyc',
+  ok:'Correct. Pressures from multiple frac stages are transmitted through the entire casing string, and repeated cycling can open tiny gaps (microannuli) between cement and casing or rock.',
+  diag:{depth:'The lecture stresses that both are drilled and cased the same through aquifers.',old:'Age isn\'t the explanation given; the difference is the repeated high-pressure fracturing.'},
+  generic:'Try again.', solution:'<b>Pressure cycling from repeated frac stages</b> (Lecture 15).'}
+},
+{ // 15
+ title:'Assessing risk', view:'well',
+ body:`<p>Two studies of methane in Pennsylvania water wells disagreed: Duke (68 wells) found higher methane near gas wells; Syracuse (11,300 analyses) found no significant link to proximity. Source and migration pathways of stray gas are notoriously hard to determine.</p>`,
+ cap:'Risk assessment: baseline, immediate, and long-term monitoring.',
+ q:{type:'choice', prompt:'Why is baseline data so important?',
+  options:[{v:'base',label:'Many sites have pre-existing contamination, so without data from before drilling it is hard to separate fracking impacts from other sources'},
+           {v:'none',label:'If no contamination is measured later, the site is proven safe'},{v:'fast',label:'All effects show up within the first week'}],
+  answer:'base',
+  ok:'Correct. Conditions before disturbance must be documented. And a lack of data is not the same thing as a lack of evidence: some effects may take years to decades to appear.',
+  diag:{none:'A lack of data is not the same as a lack of evidence.',fast:'Some effects may take years to decades to be noticed, so long-term monitoring matters too.'},
+  generic:'Try again.', solution:'<b>To separate fracking impacts from pre-existing contamination</b> (Lecture 15).'}
+},
+{ // 16
+ title:'Putting it together', view:'darcy',
+ body:`<ul>
+ <li>Conventional deposits are hard to find but easy to produce (trap and seal needed); unconventional deposits are easy to find but hard to produce (engineered stimulation needed).</li>
+ <li>Q = kA ΔP/(μL): fracturing raises k (alter the rock); heat and chemicals lower μ (alter the fluid); horizontal wells and fractures shorten L.</li>
+ <li>Fracturing: acid, water pad, proppant-laden fluid, flowback. Proppant holds fractures open.</li>
+ <li>Risks include stray gas (explosive at 5–15% in air), wellbore integrity, spills, and induced seismicity from wastewater injection (magnitude 3+ quakes in the central U.S. about 15× more frequent in 2009–2016).</li>
+ <li>Risk assessment needs baseline, immediate, and long-term monitoring.</li>
+ </ul>`,
+ cap:'Flow through rock: Q = kA ΔP/(μL).'
+}
+];
+
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.stroke();arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();}
+const g_=(k)=>done(k)||stage>k;
+
+function drawTable(){
+ const rows=[['geologically complex','produced directly from thermally mature, high-organic rocks'],['natural migration pathways','requires engineered stimulation'],['trap and seal needed','reservoir rock, trap or seal NOT needed'],['difficult to find, easy to produce','easy to find, difficult to produce']];
+ const x0=30,cw=[300,360];ctx.fillStyle=C.navy;ctx.fillRect(x0,40,660,40);txt('Conventional',x0+150,60,{sz:16,b:1,c:'#fff',al:'center'});txt('Unconventional',x0+300+180,60,{sz:16,b:1,c:'#fff',al:'center'});
+ rows.forEach(([a,b],i)=>{const y=80+i*70;const hl=i===2&&g_(S.TRAP)&&stage>=S.TRAP;ctx.fillStyle=hl?'#E8F3EC':(i%2?C.light:'#fff');ctx.fillRect(x0,y,660,70);ctx.strokeStyle=C.line;ctx.strokeRect(x0,y,660,70);
+   const hide=i===2&&stage===S.TRAP&&!done(S.TRAP);
+   txt(hide?'?':a,x0+12,y+35,{sz:14.5,b:hl,c:hide?C.amber:(hl?C.green:C.slate)});
+   const words=(hide?'?':b);ctx.font=font(14.5);if(ctx.measureText(words).width>340){const m=words.lastIndexOf(' ',words.length/2+8);txt(words.slice(0,m),x0+312,y+25,{sz:14.5,c:hide?C.amber:C.slate});txt(words.slice(m+1),x0+312,y+45,{sz:14.5,c:C.slate});}else txt(words,x0+312,y+35,{sz:14.5,c:hide?C.amber:C.slate});});
+}
+function drawDrake(){
+ line(200,380,200,120,C.slate,4);ctx.fillStyle='#8B6B45';ctx.fillRect(40,300,320,100);txt('70 ft to oil',210,340,{sz:14,b:1,c:'#fff'});
+ ctx.strokeStyle=C.slate;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(160,300);ctx.lineTo(200,120);ctx.lineTo(240,300);ctx.stroke();
+ txt('Drake well, Oil Creek, PA',200,90,{sz:15,b:1,c:C.navy,al:'center'});
+ rrect(420,130,260,160,10);ctx.fillStyle=C.light;ctx.fill();
+ txt('20 bbl/day',550,165,{sz:16,b:1,c:C.navy,al:'center'});txt('× 365 days/yr',550,195,{sz:15,al:'center'});txt('× 5 years',550,222,{sz:15,al:'center'});
+ const d=g_(S.DRAKE);txt('= '+(d?fmtN(DRAKE)+' bbl':'?'),550,258,{sz:18,b:1,c:d?C.green:C.amber,al:'center'});
+}
+function drawDarcy(){
+ // rock block
+ ctx.fillStyle='#D8C9A8';ctx.fillRect(160,120,360,160);for(let i=0;i<60;i++){dot(170+(i*53)%340,130+(i*37)%140,3,'#B7A57F');}
+ arrow(80,200,160,200,C.steel,4);arrow(520,200,610,200,C.steel,4);txt('Q in',80,180,{sz:14,b:1,c:C.steel});txt('Q out',560,180,{sz:14,b:1,c:C.steel});
+ line(160,300,520,300,C.purp,2);txt('L',340,316,{sz:16,b:1,c:C.purp,al:'center',serif:1});
+ txt('A (area of this face)',160,108,{sz:13,c:C.mut});txt('P₁',120,230,{sz:15,b:1,serif:1});txt('P₂',570,230,{sz:15,b:1,serif:1});txt('rock permeability k; fluid viscosity μ',340,200,{sz:14,b:1,c:C.navy,al:'center'});
+ txt('Q = k A ΔP / (μ L)',CW/2,55,{sz:22,c:C.navy,serif:1,al:'center'});
+ const m={[S.K]:['k × 1,000',QF_K],[S.MU]:['μ × 1,000',QF_MU],[S.L]:['L × 2',QF_L],[S.KM]:['k × 100, μ × 10',QF_KM]}[stage];
+ if(m){const d=done(stage);txt(m[0]+'  →  Q × '+(d?(m[1]<1?m[1].toString():m[1].toLocaleString('en-US')):'?'),CW/2,370,{sz:17,b:1,c:d?C.green:C.amber,al:'center'});}
+ if(stage===16){txt('↑k: fracture (alter rock)   ↓μ: heat, chemicals (alter fluid)   ↓L: horizontal wells',CW/2,370,{sz:14,b:1,c:C.green,al:'center'});}
+}
+function drawFrac(){
+ ctx.fillStyle='#E6E1D8';ctx.fillRect(0,40,CW,340);line(120,40,120,380,C.slate,6);
+ const hp=g_(S.PROP)&&stage>=S.PROP;
+ ctx.fillStyle='#FFFFFF';ctx.beginPath();ctx.moveTo(123,190);ctx.lineTo(620,205);ctx.lineTo(123,220);ctx.closePath();ctx.fill();ctx.strokeStyle=C.slate;ctx.stroke();
+ if(hp){for(let i=0;i<40;i++){const x=130+i*12,h=Math.max(2,14*(1-(x-123)/500));dot(x,205,Math.min(5,h/2+1),i<12?C.terra:C.amber);}txt('proppant (coarser near the well)',380,240,{sz:14,b:1,c:C.green,al:'center'});}
+ txt('wellbore',120,30,{sz:13,b:1,c:C.slate,al:'center'});txt('vertical fracture (seen edge-on)',380,170,{sz:13,c:C.mut,al:'center'});
+ if(stage===S.EXPL){const d=g_(S.EXPL);txt(d?'explosives: shatter near the wellbore only':'explosives vs gradual pressure?',CW/2,410,{sz:14.5,b:1,c:d?C.terra:C.amber,al:'center'});}
+ if(stage===S.STEP){const d=g_(S.STEP);txt(d?'acid → pad → proppant-laden fluid → flowback':'order of steps = ?',CW/2,410,{sz:14.5,b:1,c:d?C.green:C.amber,al:'center'});}
+}
+function drawCh4(){
+ const x0=80,x1=660,X=v=>x0+v/25*(x1-x0);
+ ctx.fillStyle='#F4D9A6';ctx.fillRect(X(5),150,X(15)-X(5),60);txt('explosive: 5–15%',(X(5)+X(15))/2,180,{sz:15,b:1,c:C.terra,al:'center'});
+ ctx.strokeStyle=C.line;ctx.strokeRect(x0,150,x1-x0,60);txt('too lean',X(2.5),180,{sz:13,c:C.mut,al:'center'});txt('too rich',X(20),180,{sz:13,c:C.mut,al:'center'});
+ line(x0,240,x1,240,C.slate,1.5);for(let v=0;v<=25;v+=5){line(X(v),240,X(v),246,C.slate,1.5);txt(v+'%',X(v),258,{sz:13,c:C.mut,al:'center'});}
+ txt('Methane in air (%)',CW/2,290,{sz:13.5,c:C.mut,al:'center'});
+ const d=g_(S.CH4);ctx.beginPath();ctx.moveTo(X(10),148);ctx.lineTo(X(10)-8,130);ctx.lineTo(X(10)+8,130);ctx.closePath();ctx.fillStyle=d?C.green:C.navy;ctx.fill();txt('basement: 10%',X(10),118,{sz:14,b:1,c:d?C.green:C.navy,al:'center'});
+ txt('methane is non-toxic; the hazard is explosion in confined spaces',CW/2,340,{sz:13.5,c:C.navy,al:'center'});
+}
+function drawQuake(){
+ const d1=g_(S.R1), d2=g_(S.RR)&&stage>=S.RR;
+ const bars=[['1973–2008 (36 yr)',EQ1,R1,d1],['2009–2016 (8 yr)',EQ2,R2,stage>=S.RR]];
+ txt('Central U.S. earthquakes, magnitude 3+',CW/2,34,{sz:15,b:1,c:C.navy,al:'center'});
+ bars.forEach(([n,t,r,show],i)=>{const x=110+i*300;txt(n,x+80,380,{sz:14,b:1,c:C.navy,al:'center'});txt('total: '+t.toLocaleString('en-US'),x+80,400,{sz:13,c:C.mut,al:'center'});
+   const h=r*0.7;if(show){ctx.fillStyle=i?C.terra:C.steel;ctx.fillRect(x+30,360-h,100,h);txt(r.toFixed(1)+' per yr',x+80,350-h,{sz:14,b:1,c:i?C.terra:C.steel,al:'center'});}
+   else{ctx.strokeStyle=C.amber;ctx.setLineDash([5,4]);ctx.strokeRect(x+30,300,100,60);ctx.setLineDash([]);txt('? per yr',x+80,330,{sz:14,b:1,c:C.amber,al:'center'});}});
+ line(90,360,630,360,C.slate,1.5);
+ if(stage>=S.RR)txt('ratio: '+(d2?RR.toFixed(1)+'×':'?'),CW/2,80,{sz:16,b:1,c:d2?C.green:C.amber,al:'center'});
+}
+function drawWell(){
+ ctx.fillStyle='#CFE3F5';ctx.fillRect(40,140,640,70);txt('aquifer',60,175,{sz:14,b:1,c:C.steel});
+ ctx.fillStyle='#E6E1D8';ctx.fillRect(40,80,640,60);ctx.fillRect(40,210,640,190);
+ ctx.fillStyle='#B8BEC7';ctx.fillRect(330,60,60,340);ctx.fillStyle='#F1F4F8';ctx.fillRect(342,60,36,340);
+ txt('cement',400,300,{sz:13,b:1,c:C.slate});txt('casing',360,50,{sz:13,b:1,c:C.slate,al:'center'});
+ if(stage===S.WELL&&done(S.WELL)){line(338,120,338,260,C.terra,3,true);txt('microannulus: gas path',300,280,{sz:13.5,b:1,c:C.terra,al:'right'});}
+ if(stage===S.BASE){const d=g_(S.BASE);[['baseline','before drilling'],['immediate','during drilling, stimulation, production'],['long-term','years to decades']].forEach(([a,b],i)=>{txt((d||i>0?a:'?')+': '+b,470,250+i*40,{sz:13.5,b:1,c:i===0?(d?C.green:C.amber):C.navy});});}
+}
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({table:drawTable,drake:drawDrake,darcy:drawDarcy,frac:drawFrac,ch4:drawCh4,quake:drawQuake,well:drawWell})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

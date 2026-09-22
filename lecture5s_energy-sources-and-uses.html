@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="5s">
+<meta name="lecture-title" content="Where Our Energy Comes From and Where It Goes">
+<meta name="lecture-topic" content="2021 global energy mix, fossil share, U.S. energy flow chart, rejected energy, sector efficiencies, scale of transitions">
+<title>Lecture 5s: Energy Sources and Uses</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>Where Our Energy Comes From and Where It Goes</h1>
+  <p class="sub">Self-guided review of Lecture 5 (historic and current sources of energy). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 5: global energy consumption in 2021 (EJ by source), why energy transitions are slow, transportation fuels, and the LLNL U.S. energy flow chart for 2021 (97.3 quads). Flow diagrams here are simplified redrawings of the LLNL chart using its numbers.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l5check.py) ----------
+// Global primary energy 2021, exajoules (lecture chart)
+const G=[['Oil',184.2,'#2E5496'],['Natural gas',145.0,'#B85042'],['Coal',160.0,'#6B8E3A'],['Nuclear',25.0,'#6D4C7D'],['Hydroelectric',40.26,'#3FA0B8'],['Renewables',39.91,'#E8890C']];
+const G_TOT = G.reduce((a,g)=>a+g[1],0);          // 594.37 EJ
+const G_FF = 184.2+145.0+160.0;                    // 489.2 EJ
+const FF_PCT = 100*G_FF/G_TOT;                     // 82.3 %
+const FF_REN = G_FF/39.91;                         // 12.26
+// US 2021, quads (LLNL flow chart)
+const US=97.3, REJ=65.4, SERV=31.8;
+const SERV_PCT = 100*SERV/US;                      // 32.7 %
+const EG_IN=36.6, EG_OUT=12.9, EG_REJ=23.7;
+const EG_PCT = 100*EG_OUT/EG_IN;                   // 35.2 %
+const TR_IN=26.9, TR_SERV=5.65, TR_REJ=21.2;
+const TR_PCT = 100*TR_SERV/TR_IN;                  // 21.0 %
+const TR_PET=24.3, PET=35.1;
+const TR_PET_PCT = 100*TR_PET/TR_IN;               // 90.3 %
+const TR_SRC=[['Petroleum',24.3,'#1E5E2E'],['Biomass',1.48,'#6DBE6D'],['Natural gas',1.1,'#4FA3E0'],['Electricity',0.02,'#E8890C']];
+const EG_SRC=[['Natural gas',11.6,'#4FA3E0'],['Coal',9.47,'#333333'],['Nuclear',8.13,'#C8102E'],['Wind',3.32,'#8E2C8E'],['Hydro',2.27,'#1F3FD0'],['Solar',1.0,'#E8B400'],['Biomass',0.44,'#6DBE6D'],['Petroleum',0.2,'#1E5E2E'],['Geothermal',0.14,'#8B5A1E']];
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={TOT:2,FF:3,PCT:4,RAT:5,SLOW:6,SERV:8,EG:9,TR:10,PET:11,DIV:12};
+
+const stages=[
+{ // 0
+ title:'The scale of the energy system', view:'mix',
+ body:`<p>Population growth and economic growth (GDP) drive global energy use, and personal choices shape the demand. The lecture's key message about change:</p>
+ <p><b>The world of energy is slow to change because the scale of infrastructure is so massive.</b></p>
+ <p>This walk-through puts numbers on that scale using two charts from the lecture: global energy consumption in 2021, and the U.S. energy flow chart from Lawrence Livermore National Laboratory (LLNL).</p>`,
+ cap:'Global primary energy consumption in 2021 by source, in exajoules (EJ).'
+},
+{ // 1
+ title:'Global energy consumption, 2021', view:'mix',
+ body:`<div class="given"><b>EJ</b> = exajoule = 10¹⁸ joules</div>
+ <p>From the lecture chart (EJ):</p>
+ <ul><li>Oil 184.2</li><li>Natural gas 145</li><li>Coal 160</li><li>Nuclear 25</li><li>Hydroelectric 40.26</li><li>Renewables 39.91 (hydroelectric is listed separately)</li></ul>`,
+ cap:'The 2021 global energy mix as one stacked bar, in EJ.'
+},
+{ // 2
+ title:'Total consumption', view:'mix',
+ body:`<p>Add up all six sources.</p>`,
+ cap:'The full stacked bar. The total appears once you answer.',
+ q:{type:'num', prompt:'Total global primary energy consumption in 2021?', label:'Total in exajoules', unit:'EJ',
+  // target 594.37 | distractors 489.2 (fossil only), 554.11 (no hydro), 554.46 (no renewables) | nearest gap 40 -> tol 0.5
+  answer:G_TOT, tol:0.5,
+  ok:`Correct: ≈ ${G_TOT.toFixed(1)} EJ, nearly 600 EJ in a single year.`,
+  diagFn:x=>{if(near(x,G_FF,0.005))return 'That is the fossil fuels only. Add nuclear, hydroelectric, and renewables too.';
+   if(near(x,G_TOT-40.26,0.003)||near(x,G_TOT-39.91,0.003))return 'You left out one of the non-fossil sources. There are six to add.';
+   if(near(x,G_TOT-25,0.003))return 'You left out nuclear. There are six sources to add.';return null;},
+  generic:'Add all six values: 184.2 + 145 + 160 + 25 + 40.26 + 39.91.',
+  solution:`184.2 + 145 + 160 + 25 + 40.26 + 39.91 = <b>${G_TOT.toFixed(2)} EJ</b>.`}
+},
+{ // 3
+ title:'How much is fossil?', view:'mix',
+ body:`<p>The fossil fuels are oil, natural gas, and coal.</p>`,
+ cap:'The fossil fuel segments of the bar are bracketed.',
+ q:{type:'num', prompt:'Total fossil fuel consumption in 2021?', label:'Fossil fuels in exajoules', unit:'EJ',
+  // target 489.2 | distractors 329.2 (oil+gas), 344.2 (oil+coal), 305 (gas+coal), 514.2 (+nuclear) | nearest gap 25 -> tol 0.5
+  answer:G_FF, tol:0.5,
+  ok:`Correct: 184.2 + 145 + 160 = ${G_FF.toFixed(1)} EJ.`,
+  diagFn:x=>{if(near(x,329.2,0.003)||near(x,344.2,0.003)||near(x,305,0.003))return 'You included only two of the three fossil fuels. Add oil, natural gas, and coal.';
+   if(near(x,G_FF+25,0.003))return 'Nuclear is not a fossil fuel. Use oil, natural gas, and coal only.';
+   if(near(x,G_TOT,0.003))return 'That is the total. Keep only oil, natural gas, and coal.';return null;},
+  generic:'Add oil, natural gas, and coal.',
+  solution:`184.2 + 145 + 160 = <b>${G_FF.toFixed(1)} EJ</b>.`}
+},
+{ // 4
+ title:'Fossil share', view:'mix',
+ body:`<span class="eq">share (%) = 100 × fossil / total</span>`,
+ cap:'Fossil fuels as a fraction of the whole bar.',
+ q:{type:'num', prompt:'What percent of 2021 global primary energy came from fossil fuels?', label:'Fossil share in percent', unit:'%',
+  // target 82.31 (lecture: 82) | distractors 81.53 (divided by 600), 17.69 (non-fossil), 0.823 (fraction) | nearest gap 0.78 -> tol 0.35
+  answer:FF_PCT, tol:0.35,
+  ok:`Correct: 100 × ${G_FF.toFixed(1)} / ${G_TOT.toFixed(1)} ≈ ${FF_PCT.toFixed(1)}%. The lecture chart rounds this to 82%.`,
+  diagFn:x=>{if(near(x,100*G_FF/600,0.002))return 'Use the exact total from your earlier answer, not a rounded 600.';
+   if(near(x,100-FF_PCT,0.01))return 'That is the non-fossil share. The question asks for fossil.';
+   if(near(x,FF_PCT/100,0.01))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide the fossil total by the overall total, then multiply by 100.',
+  solution:`100 × ${G_FF.toFixed(1)} / ${G_TOT.toFixed(2)} = <b>${FF_PCT.toFixed(1)}%</b>.`}
+},
+{ // 5
+ title:'Fossil versus renewables', view:'mix',
+ body:`<p>Compare the fossil total with the chart's "Renewables" category (39.91 EJ).</p>`,
+ cap:'Fossil fuel bar segment versus the renewables segment.',
+ q:{type:'num', prompt:'How many times larger was fossil fuel use than renewables use in 2021?', label:'Ratio', unit:'times',
+  // target 12.26 | distractors 0.0816 (inverted), 14.89 (total/ren), 4.61 (oil/ren) | nearest gap 2.6 -> tol 0.15
+  answer:FF_REN, tol:0.15,
+  ok:`Correct: ${G_FF.toFixed(1)} / 39.91 ≈ ${FF_REN.toFixed(1)}. To replace fossil fuels, renewables would have to grow about twelvefold, on top of any growth in demand.`,
+  diagFn:x=>{if(near(x,1/FF_REN,0.02))return 'That is renewables ÷ fossil. Put fossil on top.';
+   if(near(x,G_TOT/39.91,0.01))return 'That uses the total. Use the fossil total only.';
+   if(near(x,184.2/39.91,0.01))return 'That uses oil only. Use all three fossil fuels.';return null;},
+  generic:'Divide the fossil total by 39.91.',
+  solution:`${G_FF.toFixed(1)} / 39.91 = <b>${FF_REN.toFixed(1)}</b>.`}
+},
+{ // 6
+ title:'Why transitions are slow', view:'mix',
+ body:`<p>The lecture made several points about fossil fuel supplies and infrastructure. One of them: the world is not running out of fossil fuels; proven reserves are substantial.</p>`,
+ cap:'The 2021 energy mix: about 82% fossil.',
+ q:{type:'choice', prompt:'According to the lecture, what makes energy transitions hard and slow?',
+  options:[{v:'scale',label:'Scale: facilities are slow to build and decommission, and new technologies take decades to reach scale'},
+           {v:'run',label:'The world is about to run out of fossil fuels'},
+           {v:'none',label:'There are no alternatives to fossil fuels'},
+           {v:'demand',label:'Energy demand has stopped growing'}],
+  answer:'scale',
+  ok:'Correct. Scale is the biggest challenge in energy. Because population and personal consumption determine use, managing demand is a critical tool for managing scale.',
+  diag:{run:'The lecture showed the opposite: the world is not running out of fossil fuels.',
+        none:'Alternatives exist (nuclear, hydro, wind, solar, and more). The problem is scaling them up.',
+        demand:'Demand keeps growing: 2021 saw the largest increase in primary energy in history.'},
+  generic:'Try again.',
+  solution:'<b>Scale.</b> "The world of energy is slow to change because the scale of infrastructure is so massive" (Lecture 5).'}
+},
+{ // 7
+ title:'Where U.S. energy goes', view:'flow',
+ body:`<p>The LLNL chart follows U.S. energy in 2021 from sources to uses.</p>
+ <div class="given"><b>quad</b> = one quadrillion (10¹⁵) British thermal units (BTU)<br>
+ <b>Energy services</b> = the energy that ends up doing what we wanted (heating, moving, lighting, ...)<br>
+ <b>Rejected energy</b> = the rest, which doesn't end up as a useful service (most of it leaves as waste heat)</div>
+ <p>Total U.S. consumption: <b>97.3 quads</b>. Rejected energy: <b>65.4 quads</b>. Energy services: <b>31.8 quads</b>.</p>`,
+ cap:'U.S. energy in 2021: all primary energy on the left splits into rejected energy and energy services on the right.'
+},
+{ // 8
+ title:'How much becomes useful?', view:'flow',
+ body:`<span class="eq">% useful = 100 × energy services / total primary energy</span>`,
+ cap:'The share of U.S. primary energy that becomes energy services appears once you answer.',
+ q:{type:'num', prompt:'What percent of U.S. primary energy ended up as energy services?', label:'Percent useful', unit:'%',
+  // target 32.68 | distractors 67.21 (rejected), 48.6 (services/rejected), 0.327 (fraction) | nearest gap 16 -> tol 0.5 (accepts 33)
+  answer:SERV_PCT, tol:0.5,
+  ok:`Correct: 100 × 31.8 / 97.3 ≈ ${SERV_PCT.toFixed(1)}%. About two-thirds of U.S. primary energy is rejected.`,
+  diagFn:x=>{if(near(x,100*REJ/US,0.01))return 'That is the rejected share. The question asks for energy services.';
+   if(near(x,100*SERV/REJ,0.01))return 'You divided by rejected energy. Divide by the total, 97.3 quads.';
+   if(near(x,SERV_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 31.8 by 97.3 and multiply by 100.',
+  solution:`100 × 31.8 / 97.3 = <b>${SERV_PCT.toFixed(1)}%</b>.`}
+},
+{ // 9
+ title:'Electricity generation', view:'flow',
+ body:`<p>36.6 quads went into electricity generation. 12.9 quads came out as retail electricity; 23.7 quads were rejected.</p>`,
+ cap:'Electricity generation: 36.6 quads in, split into delivered electricity and rejected energy.',
+ q:{type:'num', prompt:'What percent of the energy into electricity generation came out as delivered electricity?', label:'Percent delivered', unit:'%',
+  // target 35.25 | distractors 64.75 (rejected), 13.26 (divided by US total), 54.4 (12.9/23.7) | nearest gap 19 -> tol 0.3
+  answer:EG_PCT, tol:0.3,
+  ok:`Correct: 100 × 12.9 / 36.6 ≈ ${EG_PCT.toFixed(1)}%. Roughly two-thirds of the energy fed to power plants is rejected before electricity reaches customers.`,
+  diagFn:x=>{if(near(x,100*EG_REJ/EG_IN,0.01))return 'That is the rejected share. Use the 12.9 quads of delivered electricity.';
+   if(near(x,100*EG_OUT/US,0.01))return 'You divided by all U.S. energy. Divide by the 36.6 quads that went into electricity generation.';
+   if(near(x,100*EG_OUT/EG_REJ,0.01))return 'You divided by the rejected energy. Divide by the 36.6 quads going in.';
+   if(near(x,EG_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 12.9 by 36.6 and multiply by 100.',
+  solution:`100 × 12.9 / 36.6 = <b>${EG_PCT.toFixed(1)}%</b>.`}
+},
+{ // 10
+ title:'Transportation', view:'flow',
+ body:`<p>26.9 quads went into transportation. 5.65 quads became energy services; 21.2 quads were rejected.</p>`,
+ cap:'Transportation: 26.9 quads in, split into energy services and rejected energy.',
+ q:{type:'num', prompt:'What percent of transportation energy became energy services?', label:'Percent useful in transportation', unit:'%',
+  // target 21.0 (LLNL footnote: 21%) | distractors 78.8 (rejected), 5.81 (divided by US total), 26.7 (5.65/21.2) | nearest gap 5.7 -> tol 0.3
+  answer:TR_PCT, tol:0.3,
+  ok:`Correct: 100 × 5.65 / 26.9 ≈ ${TR_PCT.toFixed(0)}%, the value in the LLNL chart's footnote. Transportation turns the smallest fraction of its energy into useful work of any sector.`,
+  diagFn:x=>{if(near(x,100*TR_REJ/TR_IN,0.01))return 'That is the rejected share. Use the 5.65 quads of energy services.';
+   if(near(x,100*TR_SERV/US,0.02))return 'You divided by all U.S. energy. Divide by the 26.9 quads into transportation.';
+   if(near(x,100*TR_SERV/TR_REJ,0.01))return 'You divided by the rejected energy. Divide by the 26.9 quads going in.';
+   if(near(x,TR_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 5.65 by 26.9 and multiply by 100.',
+  solution:`100 × 5.65 / 26.9 = <b>${TR_PCT.toFixed(1)}%</b>.`}
+},
+{ // 11
+ title:'What fuels transportation?', view:'flow',
+ body:`<p>Transportation's 26.9 quads came from petroleum (24.3), biomass (1.48), natural gas (1.1), and electricity (0.02).</p>
+ <p>Fuels made from oil are nearly ideal for transportation: energy-dense, averaging twice the energy content of coal by weight, and liquid.</p>`,
+ cap:'The sources feeding U.S. transportation in 2021.',
+ q:{type:'num', prompt:'What percent of U.S. transportation energy came from petroleum?', label:'Petroleum share of transportation', unit:'%',
+  // target 90.33 | distractors 69.23 (share of petroleum going to transport), 24.97 (divided by US total), 0.903 | nearest gap 21 -> tol 0.4
+  answer:TR_PET_PCT, tol:0.4,
+  ok:`Correct: 100 × 24.3 / 26.9 ≈ ${TR_PET_PCT.toFixed(0)}%. U.S. transportation runs almost entirely on petroleum.`,
+  diagFn:x=>{if(near(x,100*TR_PET/PET,0.01))return 'That is the share of all petroleum that goes to transportation (24.3 / 35.1). The question asks what share of transportation comes from petroleum: divide by 26.9.';
+   if(near(x,100*TR_PET/US,0.02))return 'You divided by all U.S. energy. Divide by transportation\'s 26.9 quads.';
+   if(near(x,TR_PET_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 24.3 by 26.9 and multiply by 100.',
+  solution:`100 × 24.3 / 26.9 = <b>${TR_PET_PCT.toFixed(1)}%</b>.`}
+},
+{ // 12
+ title:'Electricity versus transportation', view:'flow',
+ body:`<p>Electricity generation's 36.6 quads came from natural gas (11.6), coal (9.47), nuclear (8.13), wind (3.32), hydro (2.27), solar (1.0), and small amounts of biomass, petroleum, and geothermal.</p>`,
+ cap:'Side by side: the sources feeding electricity generation and transportation.',
+ q:{type:'choice', prompt:'Which sector draws on a more diverse mix of sources?',
+  options:[{v:'elec',label:'Electricity generation'},{v:'trans',label:'Transportation'},{v:'same',label:'They are about equally diverse'}],
+  answer:'elec',
+  ok:'Correct. Electricity already draws on many sources, including nuclear, wind, hydro, and solar, while transportation is about 90% petroleum. That is one reason the pace of transition differs between the two.',
+  diag:{trans:'Transportation is about 90% petroleum (your last answer). Compare that with the list for electricity.',
+        same:'Compare them: no single source is even a third of electricity generation, while petroleum is about 90% of transportation.'},
+  generic:'Try again.',
+  solution:'<b>Electricity generation.</b> Its largest source (natural gas) is under a third of its input; petroleum is ~90% of transportation.'}
+},
+{ // 13
+ title:'Putting it together', view:'mix',
+ body:`<ul>
+ <li>In 2021 the world used about ${G_TOT.toFixed(0)} EJ of primary energy, about ${FF_PCT.toFixed(0)}% of it from fossil fuels: roughly ${FF_REN.toFixed(0)} times the renewables total.</li>
+ <li>In the U.S., only about a third of primary energy (${SERV_PCT.toFixed(0)}%) ends up as energy services. Electricity generation delivers about ${EG_PCT.toFixed(0)}% of its input; transportation turns about ${TR_PCT.toFixed(0)}% of its input into useful work.</li>
+ <li>Electricity already draws on many sources. Transportation is about ${TR_PET_PCT.toFixed(0)}% petroleum, because liquid, energy-dense fuels are nearly ideal for it.</li>
+ <li>With a system this large, transitions are slow: facilities take decades to build and retire, and new technologies take decades to reach scale. Managing demand is a critical tool.</li>
+ </ul>`,
+ cap:'The global 2021 energy mix, about 82% fossil.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function bracket(x1,x2,y,col,down){const d=down?8:-8;ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x1,y+d);ctx.lineTo(x2,y+d);ctx.lineTo(x2,y);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();}
+
+// ---------- global mix ----------
+function drawMix(){
+ const x0=40,x1=680,y=120,h=64,scale=(x1-x0)/600, X=v=>x0+v*scale;
+ txt('Global primary energy consumption, 2021 (EJ)',x0,34,{sz:15,b:1,c:C.navy});
+ let acc=0; const mids=[];
+ G.forEach(([n,v,col],i)=>{ctx.fillStyle=col;ctx.fillRect(X(acc),y,v*scale,h);ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.strokeRect(X(acc),y,v*scale,h);
+   const m=X(acc+v/2); mids.push(m); const up=i%2===0;
+   const ly=up?y-26:y+h+26; line(m,up?y-14:y+h+14,m,up?y:y+h,col,1);
+   txt(n,m,up?ly-8:ly,{sz:13,b:1,c:col,al:'center'});txt(String(v),m,up?ly+8:ly+16,{sz:13,c:C.slate,al:'center'});
+   acc+=v;});
+ // axis
+ const ay=y+h+64; line(x0,ay,x1,ay,C.slate,1.5);
+ for(let v=0;v<=600;v+=100){line(X(v),ay,X(v),ay+5,C.slate,1.5);txt(String(v),X(v),ay+16,{sz:13,c:C.mut,al:'center'});}
+
+ const tDone=done(S.TOT)||stage>S.TOT;
+ if(stage>=S.TOT){line(X(G_TOT),y-54,X(G_TOT),y+h+6,C.navy,2,true);txt('total = '+(tDone?G_TOT.toFixed(1)+' EJ':'?'),X(G_TOT)-4,y-64,{sz:14,b:1,c:tDone?C.green:C.amber,al:'right'});}
+ if(stage>=S.FF){const fDone=done(S.FF)||stage>S.FF;const by=ay+34;bracket(X(0),X(G_FF),by,C.terra,true);
+   txt('fossil fuels = '+(fDone?G_FF.toFixed(1)+' EJ':'?'),X(G_FF/2),by+24,{sz:14,b:1,c:fDone?C.green:C.amber,al:'center'});
+   if(stage>=S.PCT){const pDone=done(S.PCT)||stage>S.PCT;txt('share = '+(pDone?FF_PCT.toFixed(1)+'%':'?'),X(G_FF/2),by+44,{sz:14,b:1,c:pDone?C.green:C.amber,al:'center'});}}
+ if(stage>=S.RAT&&stage!==13){const rDone=done(S.RAT)||stage>S.RAT, yb=ay+100;
+   txt('to scale:',x0,yb+4,{sz:13,c:C.mut});
+   ctx.fillStyle=C.terra;ctx.fillRect(X(70),yb-12,G_FF*scale*0.8,14);txt('fossil '+G_FF.toFixed(1),X(70)+G_FF*scale*0.8+6,yb-5,{sz:12.5,c:C.terra,b:1});
+   ctx.fillStyle=C.amber;ctx.fillRect(X(70),yb+6,39.91*scale*0.8,14);txt('renewables 39.91',X(70)+39.91*scale*0.8+6,yb+13,{sz:12.5,c:C.amber,b:1});
+   txt('ratio = '+(rDone?FF_REN.toFixed(1)+'×':'?'),x1,yb+4,{sz:14,b:1,c:rDone?C.green:C.amber,al:'right'});}
+ if(stage===13)txt('≈ 82% fossil; the system is enormous and slow to turn over',CW/2,ay+110,{sz:14,b:1,c:C.navy,al:'center'});
+}
+
+// ---------- proportional flow (ribbon) ----------
+function ribbons(L,R,title,unit,note){
+ const tot=L.reduce((a,b)=>a+b[1],0), H=280, top=70, k=H/tot, gap=6;
+ const xl=40,wl=120,xr=560,wr=120;
+ txt(title,CW/2,30,{sz:15,b:1,c:C.navy,al:'center'});
+ const place=(arr)=>{let y=top;return arr.map(([n,v,col])=>{const h=Math.max(v*k,1.5);const o={n,v,col,y,h};y+=h+gap;return o;});};
+ const Lp=place(L), Rp=place(R);
+ // ribbons: map cumulative intervals
+ let li=0,ri=0,lu=0,ru=0; const lrem=L.map(a=>a[1]), rrem=R.map(a=>a[1]);
+ while(li<L.length&&ri<R.length){const f=Math.min(lrem[li],rrem[ri]);if(f>1e-9){
+   const ly0=Lp[li].y+lu*k, ly1=ly0+f*k, ry0=Rp[ri].y+ru*k, ry1=ry0+f*k, xa=xl+wl, xb=xr, xm=(xa+xb)/2;
+   ctx.beginPath();ctx.moveTo(xa,ly0);ctx.bezierCurveTo(xm,ly0,xm,ry0,xb,ry0);ctx.lineTo(xb,ry1);ctx.bezierCurveTo(xm,ry1,xm,ly1,xa,ly1);ctx.closePath();
+   ctx.fillStyle=(R.length>1?Rp[ri].col:Lp[li].col)+'55';ctx.fill();}
+   lrem[li]-=f;rrem[ri]-=f;lu+=f;ru+=f;if(lrem[li]<=1e-9){li++;lu=0;}if(rrem[ri]<=1e-9){ri++;ru=0;}}
+ const box=(o,x,w,al)=>{ctx.fillStyle=o.col;ctx.fillRect(x,o.y,w,o.h);
+   const tx=al==='left'?x-8:x+w+8, a=al==='left'?'right':'left';
+   if(o.h>=26){ctx.font=font(13.5,1);const words=o.n.split(' ');let lines=[o.n];if(ctx.measureText(o.n).width>w-10&&words.length>1){const m=Math.ceil(words.length/2);lines=[words.slice(0,m).join(' '),words.slice(m).join(' ')];}
+   const y0=o.y+o.h/2-8-(lines.length-1)*8;lines.forEach((ln,j)=>txt(ln,x+w/2,y0+j*16,{sz:13.5,b:1,c:'#fff',al:'center'}));txt(o.v+' '+unit,x+w/2,y0+lines.length*16+1,{sz:13,c:'#fff',al:'center'});}
+   else txt(o.n+' '+o.v,al==='left'?x+w+6:x-6,o.y+o.h/2,{sz:12,c:o.col==='#E8B400'?C.slate:o.col,b:1,al:al==='left'?'left':'right'});};
+ Lp.forEach(o=>box(o,xl,wl,'left'));Rp.forEach(o=>box(o,xr,wr,'right'));
+ if(note)txt(note,CW/2,top+H+(L.length+R.length)*3+40,{sz:14,b:1,c:note.includes('?')?C.amber:C.green,al:'center'});
+}
+function pctNote(k,val,label){const d=done(k)||stage>k;return label+' = '+(d?val.toFixed(1)+'%':'?');}
+function stack100(x,title,src){const H=300,top=70,tot=src.reduce((a,b)=>a+b[1],0);let y=top;
+ txt(title,x+60,top-18,{sz:14,b:1,c:C.navy,al:'center'});
+ src.forEach(([n,v,col])=>{const h=v/tot*H;ctx.fillStyle=col;ctx.fillRect(x,y,120,h);ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(x,y,120,h);
+   if(h>=16)txt(n+' '+Math.round(100*v/tot)+'%',x+60,y+h/2,{sz:12.5,b:1,c:'#fff',al:'center'});y+=h;});
+ txt(tot.toFixed(1)+' quads',x+60,top+H+18,{sz:13,c:C.mut,al:'center'});}
+function drawFlow(){
+ if(stage<=S.SERV){ribbons([['U.S. primary energy',US,'#3F4A5A']],[['Rejected energy',REJ,'#9AA3AE'],['Energy services',SERV,'#2C6E49']],'U.S. energy in 2021 (quads)','',stage===S.SERV?pctNote(S.SERV,SERV_PCT,'energy services share'):'65.4 + 31.8 ≈ 97.3 quads (LLNL rounding)');}
+ else if(stage===S.EG){ribbons([['Electricity generation',EG_IN,'#E8890C']],[['Rejected energy',EG_REJ,'#9AA3AE'],['Delivered electricity',EG_OUT,'#E8890C']],'Electricity generation, 2021 (quads)','',pctNote(S.EG,EG_PCT,'delivered share'));}
+ else if(stage===S.TR){ribbons([['Transportation',TR_IN,'#E7A0AE']],[['Rejected energy',TR_REJ,'#9AA3AE'],['Energy services',TR_SERV,'#2C6E49']],'Transportation, 2021 (quads)','',pctNote(S.TR,TR_PCT,'useful share'));}
+ else if(stage===S.PET){ribbons(TR_SRC,[['Transportation',TR_IN,'#E7A0AE']],'Sources feeding U.S. transportation, 2021 (quads)','',pctNote(S.PET,TR_PET_PCT,'petroleum share of transportation'));}
+ else {stack100(150,'Electricity generation',EG_SRC);stack100(450,'Transportation',TR_SRC);
+   const d=done(S.DIV);txt(d?'electricity: many sources  ·  transportation: ~90% petroleum':'which is more diverse?',CW/2,418,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+   txt('100% bars: share of each sector\'s input by source',CW/2,30,{sz:15,b:1,c:C.navy,al:'center'});}
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({mix:drawMix,flow:drawFlow})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ const fr=s.match(/^([-+]?\d*\.?\d+)\/(\d*\.?\d+)$/); if(fr)return Number(fr[1])/Number(fr[2]);
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>

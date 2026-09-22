@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="lecture-number" content="3s">
+<meta name="lecture-title" content="The Isotopic Fingerprint of Fossil CO₂">
+<meta name="lecture-topic" content="Climate fingerprints, carbon isotopes, delta 13C notation, Suess effect, bomb pulse">
+<title>Lecture 3s: Isotopic Fingerprint</title>
+<style>
+:root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
+--steel:#2E5496;--slate:#3F4A5A;--mut:#6B7480;--line:#C7CFDA;--ice:#D9E1F2;
+--light:#F1F4F8;--bg:#FFFFFF;--green:#2C6E49;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--slate);font-family:Calibri,'Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.75rem;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 16px}
+.stage{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.canvaswrap{flex:1 1 500px;min-width:320px}
+canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff}
+.legend{color:var(--mut);font-size:.9rem;margin-top:8px}
+.panel{flex:1 1 355px;min-width:305px}
+.step{color:var(--purp);font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--light)}
+.card h2{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.25rem;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.card ul,.card ol{margin:0 0 10px;padding-left:22px}
+.card li{margin-bottom:4px}
+.card li::marker{color:var(--purp)}
+.eq{font-family:Cambria,Georgia,serif;color:var(--navy);font-size:1.05rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:6px 0 10px;display:block}
+.given{background:#fff;border-left:4px solid var(--purp);padding:8px 12px;margin:0 0 10px;font-size:.95rem}
+.given b{color:var(--purp)}
+.q{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qp{font-weight:700;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.opt{font:inherit;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-radius:7px;background:#fff;color:var(--slate);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--steel)}
+.opt:focus-visible,.btn:focus-visible,.ghost:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt.pick-no{border-color:var(--terra);background:#FBECE9}
+.opt.pick-ok{border-color:var(--green);background:#E8F3EC;font-weight:700}
+.opt:disabled{cursor:default}
+.numrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.numrow input{font:inherit;width:110px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px}
+.unit{color:var(--mut)}
+.btn{font:inherit;font-weight:700;background:var(--navy);color:#fff;border:0;border-radius:7px;padding:8px 16px;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{font:inherit;background:transparent;color:var(--mut);border:1.5px dashed var(--mut);border-radius:7px;padding:6px 12px;cursor:pointer;margin-top:4px}
+.feedback{display:none;border-left:4px solid;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:.95rem}
+.feedback.ok{display:block;background:#E8F3EC;border-color:var(--green)}
+.feedback.no{display:block;background:#FBECE9;border-color:var(--terra)}
+.sol{background:#fff;border:1px dashed var(--mut);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:.95rem}
+.nav{display:flex;justify-content:space-between;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.done{background:var(--green)}
+.dots span.cur{background:var(--purp)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.foot{color:var(--mut);font-size:.85rem;margin-top:18px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>The Isotopic Fingerprint of Fossil CO₂</h1>
+  <p class="sub">Self-guided review of Lecture 3 (climate fingerprints). Answer each question to unlock the next screen.</p>
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="cv" role="img" aria-label=""></canvas>
+      <div class="legend" id="capt"></div>
+    </div>
+    <div class="panel">
+      <div class="step" id="stepLabel"></div>
+      <div class="card" id="card"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+  <p class="foot">Built from ENRG 330 Lecture 3: the idea of a climate fingerprint, the isotopes of carbon, δ¹³C notation, isotope fractionation, the carbon-reservoir δ¹³C values, the seasonal and long-term atmospheric δ¹³C records, and the bomb pulse. Reservoir δ¹³C values are the ones in the lecture's carbon-cycle figure. The seasonal curves are schematic shapes, not data.</p>
+</div>
+<script>
+// ---------- constants (verified in scratch script l3check.py) ----------
+// delta13C = ((R_sample / R_standard) - 1) x 1000 permil, R = 13C/12C, standard = VPDB
+const R_ATM = 0.9925;                 // given ratio R_sample/R_std for the atmosphere problem
+const D_ATM = (R_ATM-1)*1000;         // -7.5 permil (matches reservoir figure)
+const D_FF = -28, D_BIO = -25, D_VOLC = -6, D_SO = 1.8, D_DO = 0.6, D_SED = 1, D_SORG = -20; // reservoir figure, permil
+const R_FF = 1 + D_FF/1000;           // 0.972
+const DELTA_AP = D_ATM - D_BIO;       // Delta13C (CO2 minus plant) = 17.5 permil
+const T_HALF = 5730, AGE = 1e6;       // years
+const N_HALF = AGE/T_HALF;            // 174.5
+const P_N14 = 7, N_N14 = 7;           // nitrogen-14: 7 protons, 7 neutrons (given)
+const P_PROD = P_N14 - 1;             // 6 protons -> carbon
+const N_C14 = 14 - 6;                 // 8 neutrons
+
+const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
+steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
+const CW=720, CH=440;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const card=document.getElementById('card'), capt=document.getElementById('capt');
+const stepLabel=document.getElementById('stepLabel'), dotsEl=document.getElementById('dots');
+
+let stage=0;
+const answers={}, feedback={}, attempts={}, revealed={}, solved={};
+function done(k){return !!(solved[k]||revealed[k]);}
+function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
+const S={NEU:1,DATM:3,RFF:4,DEP:5,DAP:6,PUSH:7,C14:8,HALF:9,BOMB:10,SEAS:11,TREND:12};
+const pm=v=>(v>0?'+':'')+(Number.isInteger(v)?v:v.toFixed(1))+' ‰';
+
+const stages=[
+{ // 0
+ title:'What makes a climate fingerprint?', view:'line',
+ body:`<p>A climate fingerprint is:</p>
+ <ul><li>a <b>measurable</b> pattern of change,</li><li><b>predicted by physics</b>,</li><li>which <b>identifies the cause</b> of the change.</li></ul>
+ <p>This walk-through works through one fingerprint in detail: the <b>isotopic composition of atmospheric CO₂</b>. The number line on the left shows the carbon-isotope signature (δ¹³C) of Earth's carbon reservoirs.</p>`,
+ cap:'δ¹³C of Earth\'s carbon reservoirs on a number line, in per mil (‰).'
+},
+{ // 1
+ title:'Three isotopes of carbon', view:'nuclei',
+ body:`<p>Every carbon atom has 6 protons. Isotopes of carbon differ in their number of neutrons. The number in the name (12, 13, 14) counts protons plus neutrons.</p>
+ <p>¹²C makes up 98.89% of natural carbon and ¹³C makes up 1.109%. ¹⁴C is about 1 part per trillion, and it is radioactive, with a half-life of 5,730 ± 40 years.</p>`,
+ cap:'The three natural isotopes of carbon, with their protons and neutrons.',
+ q:{type:'num', prompt:'How many neutrons does a ¹⁴C atom have?', label:'Neutrons in carbon-14', unit:'neutrons',
+  // target 8 | distractors 6, 7, 14 | integer -> tol 0.01
+  answer:N_C14, tol:0.01,
+  ok:'Correct: 14 − 6 protons = 8 neutrons.',
+  diagFn:x=>{if(x===14)return 'That is protons + neutrons together. Subtract the 6 protons.';
+   if(x===6)return 'That is the number of protons (and the neutron count of ¹²C). ¹⁴C has more neutrons.';
+   if(x===7)return 'That is ¹³C. For ¹⁴C, subtract 6 protons from 14.';return null;},
+  generic:'Protons + neutrons = 14, so neutrons = 14 − 6.',
+  solution:'14 − 6 = <b>8 neutrons</b>.'}
+},
+{ // 2
+ title:'δ¹³C notation', view:'line',
+ body:`<span class="eq">δ¹³C = ( R<sub>sample</sub> / R<sub>standard</sub> − 1 ) × 1000 ‰</span>
+ <div class="given"><b>R</b> = the ¹³C/¹²C ratio<br><b>R<sub>standard</sub></b> = the ratio in the Vienna Pee Dee Belemnite (VPDB) standard<br><b>‰</b> = per mil: parts per thousand</div>
+ <p>If a sample has less ¹³C relative to ¹²C than the standard, δ¹³C is negative. The more ¹³C-depleted it is, the more negative δ¹³C becomes.</p>`,
+ cap:'δ¹³C number line. The standard sits at 0 ‰; ¹³C-depleted samples fall to the left (negative).'
+},
+{ // 3
+ title:'Compute a δ¹³C', view:'line',
+ body:`<p>An air sample's ¹³C/¹²C ratio is 0.9925 times the standard's ratio:</p>
+ <span class="eq">R<sub>sample</sub> / R<sub>standard</sub> = 0.9925</span>`,
+ cap:'Where does this air sample fall on the δ¹³C line? Its marker appears once you answer.',
+ q:{type:'num', prompt:'Compute δ¹³C for this sample.', label:'delta 13 C in per mil', unit:'‰',
+  // target -7.5 | distractors +7.5 (sign), -0.0075 (no x1000), 992.5 (no -1), -0.75 (x100) | nearest gap 6.75 -> tol 0.05
+  answer:D_ATM, tol:0.05,
+  ok:'Correct: (0.9925 − 1) × 1000 = −7.5 ‰. That is the δ¹³C of atmospheric CO₂ in the lecture\'s reservoir figure.',
+  diagFn:x=>{if(Math.abs(x-7.5)<0.05)return 'Check the sign. The ratio is below 1 (less ¹³C than the standard), so δ¹³C is negative.';
+   if(Math.abs(x+0.0075)<0.0005)return 'That is the fraction before multiplying by 1000. δ¹³C is reported in per mil.';
+   if(Math.abs(x-992.5)<0.5)return 'Subtract 1 from the ratio before multiplying by 1000.';
+   if(Math.abs(x+0.75)<0.01)return 'Per mil means multiply by 1000, not 100.';return null;},
+  generic:'Use (ratio − 1) × 1000.',
+  solution:'(0.9925 − 1) × 1000 = <b>−7.5 ‰</b>.'}
+},
+{ // 4
+ title:'Go the other way: fossil fuel', view:'line',
+ body:`<p>Plants preferentially use ¹²C during photosynthesis, so fossil fuels derived from ancient plants are ¹³C-depleted. Fossil fuel carbon has δ¹³C ≈ −28 ‰.</p>
+ <p>Rearranging the definition:</p><span class="eq">R<sub>sample</sub> / R<sub>standard</sub> = 1 + δ¹³C / 1000</span>`,
+ cap:'Fossil fuel carbon sits far to the left, at about −28 ‰.',
+ q:{type:'num', prompt:'What is R_sample / R_standard for fossil fuel carbon (three decimal places)?', label:'Isotope ratio relative to standard', unit:'',
+  // target 0.972 | distractors 1.028 (sign), -0.028 (no +1), 0.72 (percent) | nearest gap 0.056 -> tol 0.0005
+  answer:R_FF, tol:0.0005,
+  ok:'Correct: 1 + (−28/1000) = 0.972. Fossil carbon has 2.8% less ¹³C (relative to ¹²C) than the standard.',
+  diagFn:x=>{if(Math.abs(x-1.028)<0.0005)return 'Check the sign: δ¹³C is −28, so the ratio is below 1.';
+   if(Math.abs(x+0.028)<0.0005)return 'That is δ¹³C/1000. Add 1 to get the ratio.';
+   if(Math.abs(x-0.72)<0.005)return 'Per mil means divide by 1000, not 100.';
+   if(Math.abs(x-0.028)<0.0005)return 'Add 1 and keep the negative sign: 1 + (−28/1000).';return null;},
+  generic:'Use 1 + δ¹³C/1000 with δ¹³C = −28.',
+  solution:'1 + (−28)/1000 = <b>0.972</b>.'}
+},
+{ // 5
+ title:'Which reservoir is most ¹³C-depleted?', view:'line',
+ body:`<p>More negative δ¹³C means more ¹³C-depleted.</p>`,
+ cap:'Compare the reservoirs on the number line.',
+ q:{type:'choice', prompt:'Of these, which carbon is most ¹³C-depleted?',
+  options:[{v:'ff',label:'Fossil fuel carbon (−28 ‰)'},{v:'atm',label:'Atmospheric CO₂ (−7.5 ‰)'},{v:'volc',label:'Volcanic CO₂ (about −6 ‰)'},{v:'so',label:'Surface ocean (+1.8 ‰)'}],
+  answer:'ff',
+  ok:'Correct. −28 ‰ is the most negative value, so fossil carbon has the least ¹³C relative to ¹²C.',
+  diag:{atm:'−7.5 is negative, but −28 is much more negative.',volc:'About −6 ‰ is only slightly depleted. Look for the most negative number.',so:'+1.8 ‰ is positive: slightly enriched in ¹³C compared with the standard, not depleted.'},
+  generic:'Try again.',
+  solution:'<b>Fossil fuel carbon (−28 ‰).</b> The most negative δ¹³C is the most ¹³C-depleted (Lecture 3).'}
+},
+{ // 6
+ title:'Fractionation: CO₂ versus plants', view:'line',
+ body:`<p>Isotope fractionation is the uneven distribution of isotopes between phases or compounds during physical and chemical processes, generally due to differences in mass or bond strength. The size of the separation between two substances A and B is:</p>
+ <span class="eq">Δ¹³C = δ¹³C<sub>A</sub> − δ¹³C<sub>B</sub></span>
+ <p>Take A = atmospheric CO₂ (−7.5 ‰) and B = plant tissue (biosphere and soil, −25 ‰).</p>`,
+ cap:'The gap between atmospheric CO₂ and plant carbon on the δ¹³C line.',
+ q:{type:'num', prompt:'Compute Δ¹³C between atmospheric CO₂ and plant tissue.', label:'Delta 13 C in per mil', unit:'‰',
+  // target 17.5 | distractors -17.5 (order), -32.5 (added), 32.5 | nearest gap 15 -> tol 0.05
+  answer:DELTA_AP, tol:0.05,
+  ok:'Correct: −7.5 − (−25) = 17.5 ‰. Photosynthesis leaves plant carbon 17.5 ‰ lighter than the CO₂ it came from, because plants preferentially use ¹²C.',
+  diagFn:x=>{if(Math.abs(x+17.5)<0.05)return 'You subtracted in the other order. Here A is CO₂: δ¹³C(CO₂) − δ¹³C(plant).';
+   if(Math.abs(x+32.5)<0.05)return 'You added the two values. Subtract: −7.5 − (−25).';
+   if(Math.abs(x-32.5)<0.05)return 'Watch the double negative: −7.5 − (−25) = −7.5 + 25.';return null;},
+  generic:'Use δ¹³C(CO₂) − δ¹³C(plant) = −7.5 − (−25).',
+  solution:'−7.5 − (−25) = <b>17.5 ‰</b>.'}
+},
+{ // 7
+ title:'Which source drives the atmosphere more negative?', view:'line',
+ body:`<p>Adding carbon that is more ¹³C-depleted than the atmosphere drags the atmosphere's δ¹³C down. Adding carbon that is less depleted pushes it up.</p>`,
+ cap:'Sources to the left of the atmosphere pull its δ¹³C down; sources to the right push it up.',
+ q:{type:'choice', prompt:'Which of these, added to the atmosphere, would make atmospheric δ¹³C more negative?',
+  options:[{v:'volc',label:'Volcanic CO₂ (about −6 ‰)'},{v:'ff',label:'Fossil fuel CO₂ (−28 ‰)'},{v:'so',label:'CO₂ from the surface ocean (+1.8 ‰)'},{v:'sed',label:'Carbon sediments (about +1 ‰)'}],
+  answer:'ff',
+  ok:'Correct. Fossil CO₂ (−28 ‰) is far more depleted than the atmosphere (−7.5 ‰), so burning fossil fuels makes atmospheric δ¹³C more negative. Volcanic CO₂ would do the opposite.',
+  diag:{volc:'−6 ‰ is less negative than the atmosphere\'s −7.5 ‰, so volcanic CO₂ would nudge atmospheric δ¹³C up, not down. Volcanoes can\'t produce this fingerprint.',
+        so:'+1.8 ‰ is above the atmosphere\'s −7.5 ‰, so it would push atmospheric δ¹³C up.',
+        sed:'About +1 ‰ is above the atmosphere\'s −7.5 ‰, so it would push atmospheric δ¹³C up.'},
+  generic:'Try again.',
+  solution:'<b>Fossil fuel CO₂.</b> Only a source below −7.5 ‰ can drag the atmosphere down (Lecture 3).'}
+},
+{ // 8
+ title:'A second fingerprint: ¹⁴C', view:'line',
+ body:`<p>Plant carbon (−25 ‰) is almost as ¹³C-depleted as fossil carbon (−28 ‰), so δ¹³C alone can't fully separate them. The lecture's second isotope fingerprint does.</p>`,
+ cap:'Fossil fuel and plant carbon sit close together on the δ¹³C line. What else distinguishes them?',
+ q:{type:'choice', prompt:'What distinguishes fossil carbon from the carbon in living plants?',
+  options:[{v:'c14',label:'Fossil carbon contains no ¹⁴C'},{v:'c13',label:'Fossil carbon has more ¹³C'},{v:'c12',label:'Fossil carbon contains no ¹²C'},{v:'none',label:'Nothing: they are isotopically identical'}],
+  answer:'c14',
+  ok:'Correct. Fossil carbon is ¹⁴C-free, because it is so old that all the radiocarbon has decayed. Low δ¹³C and no ¹⁴C together: no natural carbon source has that isotopic fingerprint.',
+  diag:{c13:'Fossil carbon has less ¹³C than the standard (δ¹³C ≈ −28 ‰), not more.',c12:'¹²C is 98.89% of carbon and is stable; fossil carbon is full of it. Think about the radioactive isotope.',none:'They differ in the radioactive isotope. Fossil carbon is old enough that it has all decayed.'},
+  generic:'Try again.',
+  solution:'<b>Fossil carbon contains no ¹⁴C</b> (Lecture 3).'}
+},
+{ // 9
+ title:'Why fossil carbon has no ¹⁴C', view:'decay',
+ body:`<p>¹⁴C has a half-life of 5,730 years: in each half-life, half of the ¹⁴C that is left decays.</p>
+ <p>Suppose a fossil fuel formed 1,000,000 years ago.</p>`,
+ cap:'Fraction of ¹⁴C remaining after each half-life: it halves every 5,730 years.',
+ q:{type:'num', prompt:'How many ¹⁴C half-lives fit into 1,000,000 years?', label:'Number of half-lives', unit:'half-lives',
+  // target 174.5 (173.3-175.7 using 5730 ± 40) | distractors 0.00573 (inverted), 5.73e9 (multiplied) | tol 1.5
+  answer:N_HALF, tol:1.5,
+  ok:`Correct: 1,000,000 / 5,730 ≈ ${N_HALF.toFixed(0)} half-lives. After only 10 halvings, less than 0.1% is left; after about ${N_HALF.toFixed(0)}, there is nothing measurable. That is why fossil carbon is ¹⁴C-free.`,
+  diagFn:x=>{if(near(x,T_HALF/AGE,0.02))return 'You divided the other way. Divide the age by the half-life: 1,000,000 / 5,730.';
+   if(near(x,T_HALF*AGE,0.02))return 'Divide, don\'t multiply: 1,000,000 / 5,730.';return null;},
+  generic:'Divide the age by the half-life.',
+  solution:`1,000,000 / 5,730 ≈ <b>${N_HALF.toFixed(1)}</b> half-lives.`}
+},
+{ // 10
+ title:'The bomb pulse', view:'reaction',
+ body:`<p>Nuclear testing in the 1950s and 60s released large numbers of neutrons, which reacted with atmospheric nitrogen to form ¹⁴C:</p>
+ <span class="eq">¹⁴N + neutron → ¹⁴C + proton</span>
+ <p>Given: ¹⁴N has 7 protons and 7 neutrons. The nitrogen nucleus absorbs a neutron, then emits a proton.</p>`,
+ cap:'Nitrogen-14 absorbs a neutron and emits a proton. Count the protons left in the product.',
+ q:{type:'num', prompt:'How many protons does the product nucleus have?', label:'Protons in the product', unit:'protons',
+  // target 6 | distractors 7 (forgot to remove proton), 8 (neutrons), 5 | integer -> tol 0.01
+  answer:P_PROD, tol:0.01,
+  ok:'Correct: 7 − 1 = 6 protons, with 7 + 1 = 8 neutrons. Six protons makes it carbon, and 6 + 8 = 14: carbon-14. This is the jump in Δ¹⁴C from nuclear testing.',
+  diagFn:x=>{if(x===7)return 'That is before the proton leaves. The nucleus emits one proton.';
+   if(x===8)return 'That is the neutron count of the product (7 + 1). The question asks for protons.';
+   if(x===5)return 'Only one proton leaves: 7 − 1.';return null;},
+  generic:'Start with 7 protons. Absorbing a neutron doesn\'t change the protons; emitting a proton removes one.',
+  solution:'7 protons − 1 emitted = <b>6 protons</b> (and 8 neutrons): carbon-14.'}
+},
+{ // 11
+ title:'The seasonal wiggle', view:'season',
+ body:`<p>Atmospheric CO₂ rises and falls every year. In winter, plants release more CO₂ than they consume, and that CO₂ is relatively poor in ¹³C.</p>`,
+ cap:'Schematic yearly cycles of CO₂ concentration and δ¹³C (shapes only, not data).',
+ q:{type:'choice', prompt:'At the time of year when CO₂ is highest, atmospheric δ¹³C is:',
+  options:[{v:'low',label:'At its lowest (most negative)'},{v:'high',label:'At its highest'},{v:'same',label:'Unaffected by the season'}],
+  answer:'low',
+  ok:'Correct. The extra winter CO₂ comes from plants, which are ¹³C-poor, so δ¹³C dips just as CO₂ peaks. The two curves wiggle in opposite directions.',
+  diag:{high:'The winter CO₂ comes from plants, which are ¹³C-poor. Adding ¹³C-poor carbon lowers δ¹³C.',same:'The seasonal plant CO₂ is ¹³C-poor, so it does change δ¹³C every year.'},
+  generic:'Try again.',
+  solution:'<b>At its lowest.</b> The lowest CO₂ each year is when δ¹³C is highest, and vice versa (Lecture 3).'}
+},
+{ // 12
+ title:'The long-term trend', view:'season',
+ body:`<p>Underneath the seasonal wiggle, both records have a trend. Ice cores and flask measurements going back to the 1700s show a sharp change in slope after the industrial revolution.</p>`,
+ cap:'Schematic records with the seasonal wiggle and the long-term trend.',
+ q:{type:'choice', prompt:'Since the industrial revolution, atmospheric δ¹³C has been:',
+  options:[{v:'dec',label:'Decreasing (becoming more negative)'},{v:'inc',label:'Increasing'},{v:'flat',label:'Flat, with only seasonal wiggles'}],
+  answer:'dec',
+  ok:'Correct. This decrease in δ¹³C (and in Δ¹⁴C) from fossil emissions is called the <b>Suess effect</b>.',
+  diag:{inc:'Fossil CO₂ is ¹³C-depleted (−28 ‰), so adding it pulls atmospheric δ¹³C down, not up.',flat:'The records show a clear downward trend on top of the seasonal cycle, steepest after the industrial revolution.'},
+  generic:'Try again.',
+  solution:'<b>Decreasing.</b> This is the Suess effect (Lecture 3).'}
+},
+{ // 13
+ title:'Putting it together', view:'line',
+ body:`<p>Check the isotope evidence against the definition of a fingerprint:</p>
+ <ul>
+ <li><b>Measurable pattern of change:</b> atmospheric δ¹³C and Δ¹⁴C are both falling (the Suess effect), with the sharpest drop after the industrial revolution.</li>
+ <li><b>Predicted by physics:</b> plants preferentially use ¹²C, so fossil fuels made from ancient plants are ¹³C-depleted (−28 ‰), and fossil carbon is old enough that all its ¹⁴C has decayed.</li>
+ <li><b>Identifies the cause:</b> volcanic and ocean carbon would push δ¹³C up, not down, and living-plant carbon still contains ¹⁴C. No natural carbon source has the fingerprint of low δ¹³C plus no ¹⁴C.</li>
+ </ul>`,
+ cap:'Fossil carbon (−28 ‰, no ¹⁴C) drags atmospheric δ¹³C downward.'
+}
+];
+
+// ---------- canvas helpers ----------
+function font(sz,bold,serif){return (bold?'bold ':'')+sz+'px '+(serif?'Cambria, Georgia, serif':'Calibri, "Segoe UI", system-ui, sans-serif');}
+function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=o.c||C.slate;ctx.textAlign=o.al||'left';ctx.textBaseline=o.bl||'middle';ctx.fillText(s,x,y);}
+function arrowHead(x,y,ux,uy,col){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-10*ux+5*uy,y-10*uy-5*ux);ctx.lineTo(x-10*ux-5*uy,y-10*uy+5*ux);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function arrow(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L;ctx.lineTo(x2-8*ux,y2-8*uy);
+ ctx.strokeStyle=col;ctx.lineWidth=w||2;ctx.setLineDash(dash?[6,5]:[]);ctx.stroke();ctx.setLineDash([]);arrowHead(x2,y2,ux,uy,col);}
+function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
+function dot(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function axes(x0,y0,x1,y1){ctx.strokeStyle=C.slate;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x0,y0);ctx.lineTo(x1,y0);ctx.stroke();}
+
+// ---------- δ13C number line ----------
+const LX0=40, LX1=690, LY=236, DMIN=-32, DMAX=5;
+const lx=d=>LX0+(d-DMIN)/(DMAX-DMIN)*(LX1-LX0);
+function drawLine(){
+ const atmShown=done(S.DATM)||stage>S.DATM;
+ // axis
+ line(LX0,LY,LX1,LY,C.slate,2);
+ for(let d=-30;d<=5;d+=5){line(lx(d),LY-5,lx(d),LY+5,C.slate,1.5);txt(String(d),lx(d),LY+18,{sz:13,c:C.mut,al:'center'});}
+ txt('δ¹³C (‰ relative to the VPDB standard)',(LX0+LX1)/2,LY+40,{sz:13.5,c:C.mut,al:'center'});
+ txt('← more ¹³C-depleted',LX0,LY+62,{sz:13,c:C.terra,b:1});txt('less depleted →',LX1,LY+62,{sz:13,c:C.steel,b:1,al:'right'});
+ txt('(standard)',lx(0),LY+31,{sz:12,c:C.mut,al:'center'});
+ // reservoirs: [delta, name, labelY, align]
+ const R=[[D_FF,'fossil fuel',LY-120,'center'],[D_BIO,'biosphere & soil',LY-70,'center'],[D_SORG,'sedimentary organic',LY-120,'center'],
+          [D_ATM,'atmosphere',LY-120,'center'],[D_VOLC,'volcanism',LY-70,'center'],
+          [D_DO,'deep ocean',LY-196,'right'],[D_SED,'carbon sediments',LY-148,'right'],[D_SO,'surface ocean',LY-100,'right']];
+ const ffHi=stage>=S.DEP&&done(S.DEP);
+ R.forEach(([d,n,y,al])=>{const x=lx(d);let col=C.steel;
+   if(d===D_FF)col=ffHi?C.green:C.terra; if(d===D_ATM)col=C.navy; if(d===D_BIO)col=C.teal;
+   line(x,LY,x,y+(y<LY?10:-10),col,1,true);dot(x,LY,6,col);
+   const val=(d===D_ATM&&!atmShown)?'?':((d===D_VOLC||d===D_SED)?'≈ ':'')+pm(d);
+   const xx=al==='right'?x+8:x;
+   ctx.font=font(13.5,1);const w=Math.max(ctx.measureText(n).width,40)+8;const bx=al==='right'?xx-w+4:xx-w/2;
+   ctx.fillStyle='rgba(255,255,255,0.92)';ctx.fillRect(bx,y-17,w,34);
+   txt(n,xx,y-8,{sz:13.5,b:1,c:col,al:al});txt(val,xx,y+8,{sz:13,c:col,al:al});});
+ if(ffHi)txt('most depleted',lx(D_FF),LY-150,{sz:13,b:1,c:C.green,al:'center'});
+ // S3: your sample
+ if(stage===S.DATM){ if(done(S.DATM)){dot(lx(D_ATM),LY,9,C.green);txt('your sample',lx(D_ATM)-12,LY-20,{sz:13,b:1,c:C.green,al:'right'});}
+   else txt('ratio 0.9925 → δ¹³C = ?',lx(-12),LY-30,{sz:14,b:1,c:C.amber,al:'center'});}
+ // S4: fossil ratio
+ if(stage===S.RFF) txt('R/R_std = '+(done(S.RFF)?R_FF.toFixed(3):'?'),lx(D_FF)+6,LY+100,{sz:14,b:1,c:done(S.RFF)?C.green:C.amber});
+ // S6: Delta bracket
+ if(stage>=S.DAP&&stage<=S.DAP){const y=LY-30;line(lx(D_BIO),y,lx(D_ATM),y,C.purp,2);line(lx(D_BIO),y-6,lx(D_BIO),y+6,C.purp,2);line(lx(D_ATM),y-6,lx(D_ATM),y+6,C.purp,2);
+   txt('Δ¹³C = '+(done(S.DAP)?DELTA_AP.toFixed(1)+' ‰':'?'),(lx(D_BIO)+lx(D_ATM))/2,y-12,{sz:14,b:1,c:done(S.DAP)?C.green:C.purp,al:'center'});}
+ // S7 & payoff: push arrows
+ if((stage===S.PUSH&&done(S.PUSH))||stage===13){arrow(lx(D_ATM)-4,LY+100,lx(-14),LY+100,C.terra,3);txt('fossil CO₂ pulls down',lx(-14)-6,LY+100,{sz:13,b:1,c:C.terra,al:'right'});}
+ if(stage===S.PUSH&&done(S.PUSH)){arrow(lx(D_ATM)+4,LY+130,lx(-1.5),LY+130,C.steel,2);txt('volcanic/ocean push up',lx(-1.5)+6,LY+130,{sz:12.5,b:1,c:C.steel});}
+ // S8 & payoff: 14C tags
+ if((stage>=S.C14&&done(S.C14)&&stage<=S.C14)||stage===13){
+   rrect(lx(D_FF)-30,LY+140,70,24,5);ctx.fillStyle='#FBECE9';ctx.fill();txt('no ¹⁴C',lx(D_FF)+5,LY+152,{sz:13,b:1,c:C.terra,al:'center'});
+   rrect(lx(D_BIO)+8,LY+140,78,24,5);ctx.fillStyle='#E8F3EC';ctx.fill();txt('has ¹⁴C',lx(D_BIO)+47,LY+152,{sz:13,b:1,c:C.green,al:'center'});}
+}
+
+// ---------- nuclei ----------
+function drawNuclei(){
+ const iso=[['¹²C',6,6,'98.89%'],['¹³C',6,7,'1.109%'],['¹⁴C',6,N_C14,'≈ 1 part per trillion']];
+ iso.forEach(([n,p,ne,ab],i)=>{const cx=130+i*230, cy=180;
+   ctx.beginPath();ctx.arc(cx,cy,78,0,2*Math.PI);ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+   // nucleus: protons (terra) and neutrons (steel) packed
+   const tot=p+(i===2&&!done(S.NEU)?6:ne); let k=0;
+   for(let a=0;a<tot;a++){const ang=a*2.4, r=5.5*Math.sqrt(a);const x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang);
+     const isP=(a%2===0&&k<p)||(tot-a<=p-k); if(isP)k++; dot(x,y,7,isP?C.terra:C.steel);}
+   txt(n,cx,70,{sz:22,b:1,c:C.navy,al:'center',serif:1});
+   txt(p+' protons',cx,290,{sz:14.5,b:1,c:C.terra,al:'center'});
+   const nn=(i===2&&!done(S.NEU))?'? neutrons':ne+' neutrons';
+   txt(nn,cx,312,{sz:14.5,b:1,c:(i===2&&!done(S.NEU))?C.amber:C.steel,al:'center'});
+   txt('abundance: '+ab,cx,340,{sz:13,c:C.mut,al:'center'});
+   if(i===2)txt('half-life 5,730 ± 40 yr',cx,362,{sz:13,c:C.mut,al:'center'});});
+ dot(250,410,6,C.terra);txt('proton',262,410,{sz:13,c:C.mut});dot(350,410,6,C.steel);txt('neutron',362,410,{sz:13,c:C.mut});
+ if(!done(S.NEU))txt('(¹⁴C drawn with a placeholder nucleus)',CW/2,432,{sz:12,c:C.mut,al:'center'});
+}
+
+// ---------- decay bars ----------
+function drawDecay(){
+ const x0=90,x1=690,y0=360,y1=50; axes(x0,y0,x1,y1);
+ const bw=(x1-x0)/11;
+ for(let n=0;n<=10;n++){const f=Math.pow(0.5,n),h=f*(y0-y1);ctx.fillStyle=n===10?C.terra:C.steel;ctx.fillRect(x0+n*bw+8,y0-h,bw-16,h);
+   txt(String(n),x0+n*bw+bw/2,y0+16,{sz:13,c:C.mut,al:'center'});}
+ for(let f=0;f<=1.001;f+=0.25){line(x0-5,y0-f*(y0-y1),x0,y0-f*(y0-y1),C.slate,1.5);txt(f.toFixed(2),x0-9,y0-f*(y0-y1),{sz:13,c:C.mut,al:'right'});}
+ txt('Half-lives elapsed (1 half-life = 5,730 years)',(x0+x1)/2,y0+38,{sz:13.5,c:C.mut,al:'center'});
+ ctx.save();ctx.translate(26,(y0+y1)/2);ctx.rotate(-Math.PI/2);txt('Fraction of ¹⁴C remaining',0,0,{sz:13.5,c:C.mut,al:'center'});ctx.restore();
+ txt('after 10: < 0.1% left',x0+10*bw+bw/2,y0-30,{sz:13,b:1,c:C.terra,al:'right'});
+ const d=done(S.HALF);
+ txt('1,000,000 years = '+(d?'≈ '+N_HALF.toFixed(0):'?')+' half-lives',x1,y1+20,{sz:15,b:1,c:d?C.green:C.amber,al:'right'});
+ if(d)txt('far off the right edge of this chart: no measurable ¹⁴C',x1,y1+42,{sz:13,c:C.green,al:'right'});
+}
+
+// ---------- bomb-pulse reaction ----------
+function nucleus(cx,cy,p,n,lab,unk){ctx.beginPath();ctx.arc(cx,cy,48,0,2*Math.PI);ctx.fillStyle=C.light;ctx.fill();ctx.strokeStyle=C.line;ctx.lineWidth=1.2;ctx.stroke();
+ txt(lab,cx,cy-70,{sz:17,b:1,c:unk?C.amber:C.navy,al:'center',serif:1});
+ txt((unk?'?':p)+' protons',cx,cy-10,{sz:14,b:1,c:unk?C.amber:C.terra,al:'center'});txt(n+' neutrons',cx,cy+12,{sz:14,b:1,c:C.steel,al:'center'});}
+function drawReaction(){
+ const d=done(S.BOMB), y=190;
+ nucleus(90,y,P_N14,N_N14,'¹⁴N');
+ txt('+',160,y,{sz:22,b:1,al:'center'});dot(190,y,9,C.steel);txt('neutron',190,y+26,{sz:13,c:C.steel,al:'center'});
+ arrow(210,y,250,y,C.slate,2);
+ nucleus(310,y,P_N14,N_N14+1,'absorbs');
+ arrow(365,y,405,y,C.slate,2);
+ nucleus(470,y,P_PROD,N_N14+1,d?'¹⁴C':'product = ?',!d);
+ txt('+',540,y,{sz:22,b:1,al:'center'});dot(570,y,9,C.terra);txt('proton',570,y+26,{sz:13,c:C.terra,al:'center'});
+ if(d)txt('6 protons → carbon; 6 + 8 = 14',470,y+80,{sz:14,b:1,c:C.green,al:'center'});
+ txt('Neutrons from nuclear tests + atmospheric nitrogen → the "bomb pulse" of ¹⁴C',CW/2,360,{sz:14,c:C.navy,al:'center'});
+}
+
+// ---------- seasonal records (schematic) ----------
+function drawSeason(){
+ const x0=80,x1=690, yrs=6, sx=t=>x0+t/yrs*(x1-x0);
+ const panel=(ytop,h,title,col,sign,trend,show,trendShow)=>{
+   rrect(x0-10,ytop-6,x1-x0+20,h+12,8);ctx.fillStyle=C.light;ctx.fill();
+   txt(title,x0,ytop+8,{sz:14.5,b:1,c:col});
+   if(!show){txt('?',(x0+x1)/2,ytop+h/2+8,{sz:28,b:1,c:C.amber,al:'center'});return;}
+   ctx.beginPath();for(let t=0;t<=yrs;t+=0.01){const tr=trendShow?trend*t/yrs:0; const v=ytop+h/2+10 - sign*(0.35*Math.cos(2*Math.PI*t)*h/2) - tr*h*0.35;
+     t===0?ctx.moveTo(sx(t),v):ctx.lineTo(sx(t),v);}ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.stroke();
+   if(trendShow){line(sx(0),ytop+h/2+10,sx(yrs),ytop+h/2+10-trend*h*0.35,col,1.5,true);}
+ };
+ const s11=done(S.SEAS)||stage>S.SEAS, s12=stage>=S.TREND&&done(S.TREND);
+ panel(30,150,'CO₂ concentration',C.terra,1,1,true,true);
+ panel(230,150,'Atmospheric δ¹³C',C.steel,-1,-1,s11,s12);
+ for(let t=0;t<=yrs;t++){line(sx(t),36,sx(t),386,C.amber,1,true);}
+ txt('dashed lines: each year\'s CO₂ peak (winter)',x1,404,{sz:12.5,c:C.amber,al:'right'});
+ txt('years (schematic: shapes only, not data)',(x0+x1)/2,424,{sz:13,c:C.mut,al:'center'});
+ if(stage===S.TREND&&!s12)txt('long-term trend = ?',x1-6,356,{sz:14,b:1,c:C.amber,al:'right'});
+ if(s12)txt('Suess effect: trending down',x1-6,366,{sz:14,b:1,c:C.green,al:'right'});
+}
+
+// ---------- draw ----------
+function draw(){
+ const dpr=window.devicePixelRatio||1, cssW=cv.clientWidth||CW;
+ cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
+ ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
+ ctx.clearRect(0,0,CW,CH);
+ ({line:drawLine,nuclei:drawNuclei,decay:drawDecay,reaction:drawReaction,season:drawSeason})[stages[stage].view]();
+ const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
+}
+
+// ---------- state + UI ----------
+function updateNext(){const n=document.getElementById('next');if(!n)return;const q=stages[stage].q;n.disabled=!!q&&!done(stage);}
+function applyStepState(){
+ const q=stages[stage].q; if(!q){updateNext();return;}
+ const k=stage, fb=document.getElementById('fb');
+ if(feedback[k]){fb.className='feedback '+feedback[k].cls;fb.innerHTML=feedback[k].html;}else{fb.className='feedback';fb.innerHTML='';}
+ if(q.type==='choice'){document.querySelectorAll('.opt').forEach(b=>{b.classList.remove('pick-ok','pick-no');
+   if(answers[k]===b.dataset.v)b.classList.add(b.dataset.v===q.answer?'pick-ok':'pick-no');
+   b.disabled=!!solved[k];});}
+ else{const inp=document.getElementById('inp');if(answers[k]!==undefined)inp.value=answers[k];inp.disabled=!!solved[k];document.getElementById('chk').disabled=!!solved[k];}
+ document.getElementById('show').style.display=((attempts[k]||0)>=2&&!solved[k]&&!revealed[k])?'inline-block':'none';
+ document.getElementById('sol').style.display=revealed[k]?'block':'none';
+ updateNext();
+}
+function checkChoice(v){const k=stage,q=stages[k].q;answers[k]=v;
+ if(v===q.answer){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diag[v]||q.generic)};}
+ applyStepState();draw();}
+function parseNum(raw){ // accepts 390, 3.9e2, 3.9E2, 3.9x10^2, 3.9×10^2
+ let s=raw.replace(/\s|,/g,'').replace(/[−–]/g,'-').replace(/×|x|X/,'e').replace(/e10\^/,'e').replace(/\^/,'');
+ if(/^[-+]?\d*\.?\d+e10[-+]?\d+$/.test(s))s=s.replace('e10','e');
+ return s===''?NaN:Number(s);}
+function checkNum(){const k=stage,q=stages[k].q,raw=document.getElementById('inp').value.trim();answers[k]=raw;
+ const x=parseNum(raw);
+ if(!isFinite(x)){feedback[k]={cls:'no',html:'Enter a number (for example 12.5 or 1.25e3).'};applyStepState();return;}
+ if(Math.abs(x-q.answer)<=q.tol){solved[k]=true;feedback[k]={cls:'ok',html:q.ok};}
+ else{attempts[k]=(attempts[k]||0)+1;feedback[k]={cls:'no',html:'Not quite. '+(q.diagFn(x)||q.generic)};}
+ applyStepState();draw();}
+function render(){
+ const s=stages[stage];
+ stepLabel.textContent='Step '+(stage+1)+' of '+stages.length;
+ let h='<h2>'+s.title+'</h2>'+s.body;
+ if(s.q){h+='<div class="q"><p class="qp" id="qp">'+s.q.prompt+'</p>';
+  if(s.q.type==='choice'){h+='<div class="opts" role="group" aria-labelledby="qp">'+s.q.options.map(o=>'<button type="button" class="opt" data-v="'+o.v+'">'+o.label+'</button>').join('')+'</div>';}
+  else{h+='<label class="sr-only" for="inp">'+s.q.label+'</label><div class="numrow"><input id="inp" type="text" inputmode="decimal" autocomplete="off"><span class="unit">'+(s.q.unit||'')+'</span><button type="button" class="btn" id="chk">Check</button></div>';}
+  h+='<div class="feedback" id="fb" aria-live="polite"></div><button type="button" class="ghost" id="show" style="display:none">Show the working</button><div class="sol" id="sol" style="display:none">'+s.q.solution+'</div></div>';}
+ h+='<div class="nav"><button type="button" class="btn sec" id="back"'+(stage===0?' disabled':'')+'>← Back</button>'+
+   (stage<stages.length-1?'<button type="button" class="btn" id="next">Next →</button>':'<button type="button" class="btn" id="restart">↺ Start over</button>')+'</div>';
+ card.innerHTML=h;
+ if(s.q){if(s.q.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkChoice(b.dataset.v));
+  else{const inp=document.getElementById('inp');inp.onkeydown=e=>{if(e.key==='Enter')checkNum();};document.getElementById('chk').onclick=checkNum;}
+  document.getElementById('show').onclick=()=>{revealed[stage]=true;applyStepState();draw();};}
+ document.getElementById('back').onclick=()=>{if(stage>0){stage--;render();}};
+ const nx=document.getElementById('next');if(nx)nx.onclick=()=>{const q=stages[stage].q;if(q&&!done(stage))return;stage++;render();};
+ const rs=document.getElementById('restart');if(rs)rs.onclick=()=>{[answers,feedback,attempts,revealed,solved].forEach(o=>{for(const k in o)delete o[k];});stage=0;render();};
+ dotsEl.innerHTML=stages.map((st,i)=>'<span class="'+(i===stage?'cur':((!st.q&&i<stage)||done(i)?'done':''))+'"></span>').join('');
+ applyStepState();draw();
+}
+window.addEventListener('resize',draw);
+render();
+</script>
+</body>
+</html>
