@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="lecture-number" content="5s">
 <meta name="lecture-title" content="Where Our Energy Comes From and Where It Goes">
-<meta name="lecture-topic" content="2021 global energy mix, fossil share, U.S. energy flow chart, rejected energy, sector efficiencies, scale of transitions">
+<meta name="lecture-topic" content="2025 global energy mix, fossil share, accounting methods, CO2 per unit energy, atmospheric carbon check, U.S. energy flow (2024), waste heat vs. CO2 forcing">
 <title>Lecture 5s: Energy Sources and Uses</title>
 <style>
 :root{--navy:#1F3864;--terra:#B85042;--teal:#1F7A63;--amber:#E8890C;--purp:#6D4C7D;
@@ -76,27 +76,37 @@ canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;b
       <div class="dots" id="dots"></div>
     </div>
   </div>
-  <p class="foot">Built from ENRG 330 Lecture 5: global energy consumption in 2021 (EJ by source), why energy transitions are slow, transportation fuels, and the LLNL U.S. energy flow chart for 2021 (97.3 quads). Flow diagrams here are simplified redrawings of the LLNL chart using its numbers.</p>
+  <p class="foot">Built from ENRG 330 Lecture 5. Data: Energy Institute Statistical Review of World Energy 2026 (2025 data); IPCC 2006 emission factors; Global Carbon Budget 2025 and NOAA (CO₂); Lawrence Livermore National Laboratory U.S. energy flow chart for 2024 (94.6 quads). Flow diagrams here are simplified redrawings of the LLNL chart using its numbers.</p>
 </div>
 <script>
-// ---------- constants (verified in scratch script l5check.py) ----------
-// Global primary energy 2021, exajoules (lecture chart)
-const G=[['Oil',184.2,'#2E5496'],['Natural gas',145.0,'#B85042'],['Coal',160.0,'#6B8E3A'],['Nuclear',25.0,'#6D4C7D'],['Hydroelectric',40.26,'#3FA0B8'],['Renewables',39.91,'#E8890C']];
-const G_TOT = G.reduce((a,g)=>a+g[1],0);          // 594.37 EJ
-const G_FF = 184.2+145.0+160.0;                    // 489.2 EJ
-const FF_PCT = 100*G_FF/G_TOT;                     // 82.3 %
-const FF_REN = G_FF/39.91;                         // 12.26
-// US 2021, quads (LLNL flow chart)
-const US=97.3, REJ=65.4, SERV=31.8;
-const SERV_PCT = 100*SERV/US;                      // 32.7 %
-const EG_IN=36.6, EG_OUT=12.9, EG_REJ=23.7;
-const EG_PCT = 100*EG_OUT/EG_IN;                   // 35.2 %
-const TR_IN=26.9, TR_SERV=5.65, TR_REJ=21.2;
+// ---------- constants ----------
+// Global total energy supply 2025, exajoules (Energy Institute 2026, physical-content method)
+const G=[['Oil',201.0,'#9E480E'],['Coal',166.0,'#3B3B3B'],['Natural gas',150.7,'#5B9BD5'],['Nuclear',31.0,'#7030A0'],['Hydro',16.1,'#1F9E89'],['Wind & solar',19.9,'#E3A100'],['Other renewables',15.6,'#385723']];
+const G_TOT = G.reduce((a,g)=>a+g[1],0);          // 600.3 EJ
+const G_FF = 201.0+166.0+150.7;                    // 517.7 EJ
+const FF_PCT = 100*G_FF/G_TOT;                     // 86.24 %
+// IPCC 2006 default CO2 emission factors, kg CO2 per GJ
+const EF=[['Lignite',101.0,'#3B3B3B'],['Bituminous coal',94.6,'#3B3B3B'],['Diesel',74.1,'#9E480E'],['Crude oil',73.3,'#9E480E'],['Gasoline',69.3,'#9E480E'],['Natural gas',56.1,'#5B9BD5'],['Hydrogen',0,'#9AA3AE']];
+const CG = 94.6/56.1;                              // 1.686
+// Atmospheric carbon check
+const PPM0=278, PPM1=427, GT_PER_PPM=7.8, EMIT=2750;
+const AIR = (PPM1-PPM0)*GT_PER_PPM;                // 1162.2 Gt CO2
+const AF = 100*AIR/EMIT;                           // 42.3 %
+// US 2024, quads (LLNL flow chart)
+const US=94.6, REJ=62.27, SERV=32.34;
+const SERV_PCT = 100*SERV/US;                      // 34.2 %
+const EG_IN=32.77, EG_OUT=13.56, EG_REJ=19.21;
+const EG_PCT = 100*EG_OUT/EG_IN;                   // 41.4 %
+const TR_IN=28.29, TR_SERV=5.94, TR_REJ=22.35;
 const TR_PCT = 100*TR_SERV/TR_IN;                  // 21.0 %
-const TR_PET=24.3, PET=35.1;
-const TR_PET_PCT = 100*TR_PET/TR_IN;               // 90.3 %
-const TR_SRC=[['Petroleum',24.3,'#1E5E2E'],['Biomass',1.48,'#6DBE6D'],['Natural gas',1.1,'#4FA3E0'],['Electricity',0.02,'#E8890C']];
-const EG_SRC=[['Natural gas',11.6,'#4FA3E0'],['Coal',9.47,'#333333'],['Nuclear',8.13,'#C8102E'],['Wind',3.32,'#8E2C8E'],['Hydro',2.27,'#1F3FD0'],['Solar',1.0,'#E8B400'],['Biomass',0.44,'#6DBE6D'],['Petroleum',0.2,'#1E5E2E'],['Geothermal',0.14,'#8B5A1E']];
+const TR_PET=24.97, PET=35.59;
+const TR_PET_PCT = 100*TR_PET/TR_IN;               // 88.3 %
+const TR_SRC=[['Petroleum',24.97,'#1E5E2E'],['Biomass',1.89,'#6DBE6D'],['Natural gas',1.39,'#4FA3E0'],['Electricity',0.02,'#E8890C']];
+const EG_SRC=[['Natural gas',13.94,'#4FA3E0'],['Nuclear',8.17,'#C8102E'],['Coal',7.01,'#333333'],['Wind',1.54,'#8E2C8E'],['Hydro',0.83,'#1F3FD0'],['Solar',0.75,'#E8B400'],['Biomass',0.32,'#6DBE6D'],['Petroleum',0.17,'#1E5E2E'],['Geothermal',0.05,'#8B5A1E']];
+// Waste heat vs CO2 forcing
+const SEC=3.16e7, AREA=5.1e14;
+const HEAT = G_TOT*1e18/(SEC*AREA);                // 0.0372 W/m2
+const FORCE = 5.35*Math.log(PPM1/PPM0);            // 2.30 W/m2
 
 const C={navy:'#1F3864',terra:'#B85042',teal:'#1F7A63',amber:'#E8890C',purp:'#6D4C7D',
 steel:'#2E5496',slate:'#3F4A5A',mut:'#6B7480',line:'#C7CFDA',ice:'#D9E1F2',light:'#F1F4F8',green:'#2C6E49'};
@@ -109,186 +119,252 @@ let stage=0;
 const answers={}, feedback={}, attempts={}, revealed={}, solved={};
 function done(k){return !!(solved[k]||revealed[k]);}
 function near(x,v,rel){return Math.abs(x-v)<=Math.abs(v)*(rel||0.03);}
-const S={TOT:2,FF:3,PCT:4,RAT:5,SLOW:6,SERV:8,EG:9,TR:10,PET:11,DIV:12};
+const S={TOT:2,FF:3,PCT:4,METH:5,CG:6,AIR:7,AF:8,SLOW:9,SERV:11,EG:12,TR:13,PET:14,DIV:15,HEAT:16};
 
 const stages=[
 { // 0
- title:'The scale of the energy system', view:'mix',
- body:`<p>Population growth and economic growth (GDP) drive global energy use, and personal choices shape the demand. The lecture's key message about change:</p>
- <p><b>The world of energy is slow to change because the scale of infrastructure is so massive.</b></p>
- <p>This walk-through puts numbers on that scale using two charts from the lecture: global energy consumption in 2021, and the U.S. energy flow chart from Lawrence Livermore National Laboratory (LLNL).</p>`,
- cap:'Global primary energy consumption in 2021 by source, in exajoules (EJ).'
+ title:'Energy and the climate', view:'mix',
+ body:`<p>Lectures 1–4 built the physical case: burning fuel releases energy <i>and</i> CO₂, CO₂ traps outgoing infrared, and the extra CO₂ in the air carries the isotopic fingerprint of fossil carbon.</p>
+ <p>Lecture 5 asked the human question: <b>where does our energy come from, and why is it so hard to change?</b></p>
+ <p>This walk-through puts numbers on that, using the world energy mix in 2025, the chemistry of carbon intensity, the atmosphere's carbon budget, and the U.S. energy flow chart from Lawrence Livermore National Laboratory (LLNL).</p>`,
+ cap:'World total energy supply in 2025 by source, in exajoules (EJ).'
 },
 { // 1
- title:'Global energy consumption, 2021', view:'mix',
+ title:'World energy supply, 2025', view:'mix',
  body:`<div class="given"><b>EJ</b> = exajoule = 10¹⁸ joules</div>
- <p>From the lecture chart (EJ):</p>
- <ul><li>Oil 184.2</li><li>Natural gas 145</li><li>Coal 160</li><li>Nuclear 25</li><li>Hydroelectric 40.26</li><li>Renewables 39.91 (hydroelectric is listed separately)</li></ul>`,
- cap:'The 2021 global energy mix as one stacked bar, in EJ.'
+ <p>From the lecture (Energy Institute 2026), in EJ:</p>
+ <ul><li>Oil 201.0</li><li>Coal 166.0</li><li>Natural gas 150.7</li><li>Nuclear 31.0</li><li>Hydro 16.1</li><li>Wind &amp; solar 19.9</li><li>Other renewables 15.6 (bioenergy, biofuels, geothermal)</li></ul>`,
+ cap:'The 2025 world energy mix as one stacked bar, in EJ.'
 },
 { // 2
- title:'Total consumption', view:'mix',
- body:`<p>Add up all six sources.</p>`,
+ title:'Total supply', view:'mix',
+ body:`<p>Add up all seven sources.</p>`,
  cap:'The full stacked bar. The total appears once you answer.',
- q:{type:'num', prompt:'Total global primary energy consumption in 2021?', label:'Total in exajoules', unit:'EJ',
-  // target 594.37 | distractors 489.2 (fossil only), 554.11 (no hydro), 554.46 (no renewables) | nearest gap 40 -> tol 0.5
+ q:{type:'num', prompt:'Total world energy supply in 2025?', label:'Total in exajoules', unit:'EJ',
+  // target 600.3 | distractors 517.7 (fossil only), 569.3 (no nuclear), 580.4 (no wind&solar), 584.2/584.7 (no hydro / no other) | nearest gap 15.6 -> tol 0.5
   answer:G_TOT, tol:0.5,
-  ok:`Correct: ≈ ${G_TOT.toFixed(1)} EJ, nearly 600 EJ in a single year.`,
-  diagFn:x=>{if(near(x,G_FF,0.005))return 'That is the fossil fuels only. Add nuclear, hydroelectric, and renewables too.';
-   if(near(x,G_TOT-40.26,0.003)||near(x,G_TOT-39.91,0.003))return 'You left out one of the non-fossil sources. There are six to add.';
-   if(near(x,G_TOT-25,0.003))return 'You left out nuclear. There are six sources to add.';return null;},
-  generic:'Add all six values: 184.2 + 145 + 160 + 25 + 40.26 + 39.91.',
-  solution:`184.2 + 145 + 160 + 25 + 40.26 + 39.91 = <b>${G_TOT.toFixed(2)} EJ</b>.`}
+  ok:`Correct: ≈ ${G_TOT.toFixed(1)} EJ, a record. That is about 19 trillion watts, running all year.`,
+  diagFn:x=>{if(near(x,G_FF,0.003))return 'That is the fossil fuels only. Add nuclear, hydro, wind & solar, and other renewables too.';
+   if(near(x,G_TOT-31,0.002))return 'You left out nuclear. There are seven sources to add.';
+   if(near(x,G_TOT-19.9,0.001)||near(x,G_TOT-16.1,0.0005)||near(x,G_TOT-15.6,0.0005))return 'You left out one of the non-fossil sources. There are seven to add.';return null;},
+  generic:'Add all seven values: 201.0 + 166.0 + 150.7 + 31.0 + 16.1 + 19.9 + 15.6.',
+  solution:`201.0 + 166.0 + 150.7 + 31.0 + 16.1 + 19.9 + 15.6 = <b>${G_TOT.toFixed(1)} EJ</b>.`}
 },
 { // 3
  title:'How much is fossil?', view:'mix',
- body:`<p>The fossil fuels are oil, natural gas, and coal.</p>`,
+ body:`<p>The fossil fuels are oil, coal, and natural gas.</p>`,
  cap:'The fossil fuel segments of the bar are bracketed.',
- q:{type:'num', prompt:'Total fossil fuel consumption in 2021?', label:'Fossil fuels in exajoules', unit:'EJ',
-  // target 489.2 | distractors 329.2 (oil+gas), 344.2 (oil+coal), 305 (gas+coal), 514.2 (+nuclear) | nearest gap 25 -> tol 0.5
+ q:{type:'num', prompt:'Total fossil fuel supply in 2025?', label:'Fossil fuels in exajoules', unit:'EJ',
+  // target 517.7 | distractors 367.0 (oil+coal), 351.7 (oil+gas), 316.7 (coal+gas), 548.7 (+nuclear) | nearest gap 31 -> tol 0.5
   answer:G_FF, tol:0.5,
-  ok:`Correct: 184.2 + 145 + 160 = ${G_FF.toFixed(1)} EJ.`,
-  diagFn:x=>{if(near(x,329.2,0.003)||near(x,344.2,0.003)||near(x,305,0.003))return 'You included only two of the three fossil fuels. Add oil, natural gas, and coal.';
-   if(near(x,G_FF+25,0.003))return 'Nuclear is not a fossil fuel. Use oil, natural gas, and coal only.';
-   if(near(x,G_TOT,0.003))return 'That is the total. Keep only oil, natural gas, and coal.';return null;},
-  generic:'Add oil, natural gas, and coal.',
-  solution:`184.2 + 145 + 160 = <b>${G_FF.toFixed(1)} EJ</b>.`}
+  ok:`Correct: 201.0 + 166.0 + 150.7 = ${G_FF.toFixed(1)} EJ.`,
+  diagFn:x=>{if(near(x,367.0,0.003)||near(x,351.7,0.003)||near(x,316.7,0.003))return 'You included only two of the three fossil fuels. Add oil, coal, and natural gas.';
+   if(near(x,G_FF+31,0.003))return 'Nuclear is not a fossil fuel. Use oil, coal, and natural gas only.';
+   if(near(x,G_TOT,0.003))return 'That is the total. Keep only oil, coal, and natural gas.';return null;},
+  generic:'Add oil, coal, and natural gas.',
+  solution:`201.0 + 166.0 + 150.7 = <b>${G_FF.toFixed(1)} EJ</b>.`}
 },
 { // 4
  title:'Fossil share', view:'mix',
  body:`<span class="eq">share (%) = 100 × fossil / total</span>`,
  cap:'Fossil fuels as a fraction of the whole bar.',
- q:{type:'num', prompt:'What percent of 2021 global primary energy came from fossil fuels?', label:'Fossil share in percent', unit:'%',
-  // target 82.31 (lecture: 82) | distractors 81.53 (divided by 600), 17.69 (non-fossil), 0.823 (fraction) | nearest gap 0.78 -> tol 0.35
+ q:{type:'num', prompt:'What percent of 2025 world energy came from fossil fuels?', label:'Fossil share in percent', unit:'%',
+  // target 86.24 (lecture: 86%) | distractors 13.76 (non-fossil), 0.862 (fraction) | tol 0.35
   answer:FF_PCT, tol:0.35,
-  ok:`Correct: 100 × ${G_FF.toFixed(1)} / ${G_TOT.toFixed(1)} ≈ ${FF_PCT.toFixed(1)}%. The lecture chart rounds this to 82%.`,
-  diagFn:x=>{if(near(x,100*G_FF/600,0.002))return 'Use the exact total from your earlier answer, not a rounded 600.';
-   if(near(x,100-FF_PCT,0.01))return 'That is the non-fossil share. The question asks for fossil.';
+  ok:`Correct: 100 × ${G_FF.toFixed(1)} / ${G_TOT.toFixed(1)} ≈ ${FF_PCT.toFixed(1)}%. The lecture rounds this to 86%. Every major source, fossil and non-fossil, set a record in 2025.`,
+  diagFn:x=>{if(near(x,100-FF_PCT,0.01))return 'That is the non-fossil share. The question asks for fossil.';
    if(near(x,FF_PCT/100,0.01))return 'That is a fraction. Multiply by 100 for percent.';return null;},
   generic:'Divide the fossil total by the overall total, then multiply by 100.',
-  solution:`100 × ${G_FF.toFixed(1)} / ${G_TOT.toFixed(2)} = <b>${FF_PCT.toFixed(1)}%</b>.`}
+  solution:`100 × ${G_FF.toFixed(1)} / ${G_TOT.toFixed(1)} = <b>${FF_PCT.toFixed(1)}%</b>.`}
 },
 { // 5
- title:'Fossil versus renewables', view:'mix',
- body:`<p>Compare the fossil total with the chart's "Renewables" category (39.91 EJ).</p>`,
- cap:'Fossil fuel bar segment versus the renewables segment.',
- q:{type:'num', prompt:'How many times larger was fossil fuel use than renewables use in 2021?', label:'Ratio', unit:'times',
-  // target 12.26 | distractors 0.0816 (inverted), 14.89 (total/ren), 4.61 (oil/ren) | nearest gap 2.6 -> tol 0.15
-  answer:FF_REN, tol:0.15,
-  ok:`Correct: ${G_FF.toFixed(1)} / 39.91 ≈ ${FF_REN.toFixed(1)}. To replace fossil fuels, renewables would have to grow about twelvefold, on top of any growth in demand.`,
-  diagFn:x=>{if(near(x,1/FF_REN,0.02))return 'That is renewables ÷ fossil. Put fossil on top.';
-   if(near(x,G_TOT/39.91,0.01))return 'That uses the total. Use the fossil total only.';
-   if(near(x,184.2/39.91,0.01))return 'That uses oil only. Use all three fossil fuels.';return null;},
-  generic:'Divide the fossil total by 39.91.',
-  solution:`${G_FF.toFixed(1)} / 39.91 = <b>${FF_REN.toFixed(1)}</b>.`}
+ title:'How you count matters', view:'mix',
+ body:`<p>Wind and solar were 19.9 of 600 EJ, about <b>3%</b> of world energy in 2025. Yet they generated about <b>17%</b> of the world's electricity.</p>
+ <div class="given"><b>Physical-content method</b> (used here): 1 kWh of wind or solar electricity counts as 3.6 MJ. Fossil fuels count as all the heat in the fuel, about 60% of which a power plant loses as waste heat.</div>`,
+ cap:'Wind & solar: a thin slice of total energy, a much bigger slice of electricity.',
+ q:{type:'choice', prompt:'How can both numbers be correct?',
+  options:[{v:'acct',label:'Wind and solar are counted by the electricity they produce, fossil fuels by all the heat in the fuel, and electricity is only about a fifth of all energy use'},
+           {v:'err',label:'One of the two statistics must be wrong'},
+           {v:'waste',label:'Most wind and solar electricity is thrown away before anyone uses it'},
+           {v:'trans',label:'Wind and solar mostly power transportation, not the grid'}],
+  answer:'acct',
+  ok:'Correct. The denominators differ (all energy vs. electricity only), and fuels are counted at their full heat content, much of which is lost. Always check the method and the denominator before comparing energy statistics.',
+  diag:{err:'Both come from the same 2025 data. Think about what each percentage is a share <i>of</i>.',
+        waste:'Curtailment exists but is small. The difference comes from accounting: what each source is counted as, and what the denominator is.',
+        trans:'Almost all wind and solar output goes to the grid; transportation is still mostly petroleum. Look at the accounting instead.'},
+  generic:'Try again.',
+  solution:'<b>Accounting and denominators.</b> Electricity is only ~20% of final energy, and fossil fuels are counted by their heat content (much of it lost as waste heat), while wind and solar are counted by their electricity output.'}
 },
 { // 6
- title:'Why transitions are slow', view:'mix',
- body:`<p>The lecture made several points about fossil fuel supplies and infrastructure. One of them: the world is not running out of fossil fuels; proven reserves are substantial.</p>`,
- cap:'The 2021 energy mix: about 82% fossil.',
- q:{type:'choice', prompt:'According to the lecture, what makes energy transitions hard and slow?',
-  options:[{v:'scale',label:'Scale: facilities are slow to build and decommission, and new technologies take decades to reach scale'},
-           {v:'run',label:'The world is about to run out of fossil fuels'},
-           {v:'none',label:'There are no alternatives to fossil fuels'},
-           {v:'demand',label:'Energy demand has stopped growing'}],
-  answer:'scale',
-  ok:'Correct. Scale is the biggest challenge in energy. Because population and personal consumption determine use, managing demand is a critical tool for managing scale.',
-  diag:{run:'The lecture showed the opposite: the world is not running out of fossil fuels.',
-        none:'Alternatives exist (nuclear, hydro, wind, solar, and more). The problem is scaling them up.',
-        demand:'Demand keeps growing: 2021 saw the largest increase in primary energy in history.'},
-  generic:'Try again.',
-  solution:'<b>Scale.</b> "The world of energy is slow to change because the scale of infrastructure is so massive" (Lecture 5).'}
+ title:'Lecture 1 callback: CO₂ per unit of energy', view:'carbon',
+ body:`<p>In Lecture 1 you found that fuels with more hydrogen per carbon release less CO₂ per unit of energy: natural gas (H:C = 4:1) ≈ 1.2 mol CO₂ per MJ, coal ≈ 2.0 mol CO₂ per MJ.</p>
+ <p>The chart shows the official IPCC inventory factors in kg CO₂ per GJ.</p>
+ <div class="given"><b>Bituminous coal</b> 94.6 kg CO₂/GJ &nbsp;·&nbsp; <b>Natural gas</b> 56.1 kg CO₂/GJ</div>`,
+ cap:'IPCC 2006 default CO₂ emission factors (kg CO₂ released per GJ of energy).',
+ q:{type:'num', prompt:'For the same amount of energy, how many times more CO₂ does burning bituminous coal release than burning natural gas?', label:'Ratio coal to gas', unit:'times',
+  // target 1.686 (L1 table: 2.0/1.2 = 1.667, also accepted) | distractors 0.593 (inverted), 38.5 (difference) | tol 0.04
+  answer:CG, tol:0.04,
+  ok:`Correct: 94.6 / 56.1 ≈ ${CG.toFixed(2)}. Coal releases about 70% more CO₂ than gas for the same energy, almost exactly what your Lecture 1 numbers predict (2.0 / 1.2 ≈ 1.67).`,
+  diagFn:x=>{if(near(x,1/CG,0.02))return 'That is gas ÷ coal. Put coal on top.';
+   if(near(x,94.6-56.1,0.02))return 'That is the difference in kg CO₂/GJ. The question asks for a ratio: divide.';return null;},
+  generic:'Divide coal\'s factor by natural gas\'s factor.',
+  solution:`94.6 / 56.1 = <b>${CG.toFixed(2)}</b>, so coal releases ~70% more CO₂ per unit of energy.`}
 },
 { // 7
- title:'Where U.S. energy goes', view:'flow',
- body:`<p>The LLNL chart follows U.S. energy in 2021 from sources to uses.</p>
- <div class="given"><b>quad</b> = one quadrillion (10¹⁵) British thermal units (BTU)<br>
- <b>Energy services</b> = the energy that ends up doing what we wanted (heating, moving, lighting, ...)<br>
- <b>Rejected energy</b> = the rest, which doesn't end up as a useful service (most of it leaves as waste heat)</div>
- <p>Total U.S. consumption: <b>97.3 quads</b>. Rejected energy: <b>65.4 quads</b>. Energy services: <b>31.8 quads</b>.</p>`,
- cap:'U.S. energy in 2021: all primary energy on the left splits into rejected energy and energy services on the right.'
+ title:'Closing the loop: CO₂ in the air', view:'atm',
+ body:`<p>Can the energy statistics account for the CO₂ rise we measure? Start with how much extra CO₂ is in the atmosphere now.</p>
+ <div class="given"><b>Pre-industrial CO₂</b> ≈ 278 ppm &nbsp;·&nbsp; <b>2025</b> ≈ 427 ppm (Mauna Loa)<br><b>1 ppm</b> of CO₂ ≈ 7.8 billion tonnes (Gt) of CO₂</div>`,
+ cap:'Atmospheric CO₂ rose from about 278 ppm to 427 ppm.',
+ q:{type:'num', prompt:'How many Gt of extra CO₂ are in the atmosphere now compared with pre-industrial times?', label:'Extra CO2 in gigatonnes', unit:'Gt CO₂',
+  // target 1162.2 | distractors 3330.6 (427x7.8), 2168.4 (278x7.8), 149 (no conversion) | tol 10
+  answer:AIR, tol:10,
+  ok:`Correct: (427 − 278) × 7.8 ≈ ${AIR.toFixed(0)} Gt CO₂ of added CO₂ in the air.`,
+  diagFn:x=>{if(near(x,PPM1*GT_PER_PPM,0.01))return 'That is <i>all</i> the CO₂ in the air today. Subtract the pre-industrial 278 ppm first.';
+   if(near(x,PPM0*GT_PER_PPM,0.01))return 'That is the pre-industrial amount. Use the increase, 427 − 278 ppm.';
+   if(near(x,PPM1-PPM0,0.01))return 'That is the increase in ppm. Convert to Gt: multiply by 7.8.';return null;},
+  generic:'Find the increase in ppm, then multiply by 7.8 Gt CO₂ per ppm.',
+  solution:`(427 − 278) ppm × 7.8 Gt/ppm = 149 × 7.8 = <b>${AIR.toFixed(0)} Gt CO₂</b>.`}
 },
 { // 8
+ title:'The airborne fraction', view:'atm',
+ body:`<p>From 1850 to 2024, humans emitted about <b>2,750 Gt CO₂</b> (about 1,845 Gt from fossil fuels and industry, plus about 907 Gt from land-use change).</p>
+ <span class="eq">airborne fraction (%) = 100 × CO₂ still in the air / CO₂ emitted</span>`,
+ cap:'CO₂ emitted since 1850 compared with CO₂ added to the atmosphere.',
+ q:{type:'num', prompt:'What percent of the CO₂ we emitted is still in the atmosphere?', label:'Airborne fraction in percent', unit:'%',
+  // target 42.26 | distractors 57.74 (absorbed), 236.6 (inverted), 0.423 (fraction) | tol 1.0
+  answer:AF, tol:1.0,
+  ok:`Correct: 100 × ${AIR.toFixed(0)} / 2,750 ≈ ${AF.toFixed(0)}%. The ocean and land plants absorbed the rest (and the ocean is acidifying as a result). The energy statistics account for the CO₂ rise we measure, and the isotopes from Lecture 3 confirm it is fossil carbon.`,
+  diagFn:x=>{if(near(x,100-AF,0.02))return 'That is the share that was absorbed by the ocean and land. The question asks what is still in the air.';
+   if(near(x,100*EMIT/AIR,0.02))return 'You divided emitted by airborne. Put the CO₂ still in the air on top.';
+   if(near(x,AF/100,0.03))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide your previous answer by 2,750 and multiply by 100.',
+  solution:`100 × ${AIR.toFixed(0)} / 2,750 = <b>${AF.toFixed(1)}%</b>.`}
+},
+{ // 9
+ title:'Why transitions are slow', view:'mix',
+ body:`<p>Past energy transitions were <i>additions</i>: coal took about 37 years to go from 5% to 25% of world energy, oil about 37 years too. Today wind and solar are about 3%.</p>`,
+ cap:'The 2025 energy mix: about 86% fossil.',
+ q:{type:'choice', prompt:'According to the lecture, what makes energy transitions hard and slow?',
+  options:[{v:'scale',label:'Scale and inertia: a huge system of long-lived infrastructure (power plants, refineries, buildings, vehicles) that takes decades to replace'},
+           {v:'run',label:'The world is about to run out of fossil fuels'},
+           {v:'none',label:'There are no affordable alternatives to fossil fuels'},
+           {v:'demand',label:'Energy demand has stopped growing'}],
+  answer:'scale',
+  ok:'Correct. The system is enormous (~600 EJ a year) and its assets last 15–100 years. What can move fast are modular, mass-produced technologies on learning curves: solar, batteries, EVs.',
+  diag:{run:'No. Known fossil reserves contain about 3,500 Gt of CO₂, far more than any carbon budget for 1.5–2 °C. The constraint is the atmosphere, not geology.',
+        none:'Solar and onshore wind are now among the cheapest new sources of electricity (solar costs fell ~90% from 2010 to 2024). The problem is scaling them up and replacing existing infrastructure.',
+        demand:'Demand keeps growing: world energy supply rose 1.7% in 2025 to a record.'},
+  generic:'Try again.',
+  solution:'<b>Scale and inertia.</b> The system is huge and built from long-lived assets, so replacing it takes decades.'}
+},
+{ // 10
+ title:'Where U.S. energy goes', view:'flow',
+ body:`<p>The LLNL chart follows U.S. energy in 2024 from sources to uses.</p>
+ <div class="given"><b>quad</b> = one quadrillion (10¹⁵) British thermal units (BTU) ≈ 1.06 EJ<br>
+ <b>Energy services</b> = the energy that ends up doing what we wanted (heating, moving, lighting, ...)<br>
+ <b>Rejected energy</b> = the rest, which doesn't end up as a useful service (most of it leaves as waste heat)</div>
+ <p>Total U.S. consumption: <b>94.6 quads</b>. Rejected energy: <b>62.27 quads</b>. Energy services: <b>32.34 quads</b>.</p>`,
+ cap:'U.S. energy in 2024: all primary energy on the left splits into rejected energy and energy services on the right.'
+},
+{ // 11
  title:'How much becomes useful?', view:'flow',
  body:`<span class="eq">% useful = 100 × energy services / total primary energy</span>`,
  cap:'The share of U.S. primary energy that becomes energy services appears once you answer.',
  q:{type:'num', prompt:'What percent of U.S. primary energy ended up as energy services?', label:'Percent useful', unit:'%',
-  // target 32.68 | distractors 67.21 (rejected), 48.6 (services/rejected), 0.327 (fraction) | nearest gap 16 -> tol 0.5 (accepts 33)
+  // target 34.19 | distractors 65.82 (rejected), 51.94 (services/rejected), 0.342 (fraction) | tol 0.5 (accepts 34)
   answer:SERV_PCT, tol:0.5,
-  ok:`Correct: 100 × 31.8 / 97.3 ≈ ${SERV_PCT.toFixed(1)}%. About two-thirds of U.S. primary energy is rejected.`,
+  ok:`Correct: 100 × 32.34 / 94.6 ≈ ${SERV_PCT.toFixed(1)}%. About two-thirds of U.S. primary energy is rejected, mostly as waste heat.`,
   diagFn:x=>{if(near(x,100*REJ/US,0.01))return 'That is the rejected share. The question asks for energy services.';
-   if(near(x,100*SERV/REJ,0.01))return 'You divided by rejected energy. Divide by the total, 97.3 quads.';
+   if(near(x,100*SERV/REJ,0.01))return 'You divided by rejected energy. Divide by the total, 94.6 quads.';
    if(near(x,SERV_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
-  generic:'Divide 31.8 by 97.3 and multiply by 100.',
-  solution:`100 × 31.8 / 97.3 = <b>${SERV_PCT.toFixed(1)}%</b>.`}
-},
-{ // 9
- title:'Electricity generation', view:'flow',
- body:`<p>36.6 quads went into electricity generation. 12.9 quads came out as retail electricity; 23.7 quads were rejected.</p>`,
- cap:'Electricity generation: 36.6 quads in, split into delivered electricity and rejected energy.',
- q:{type:'num', prompt:'What percent of the energy into electricity generation came out as delivered electricity?', label:'Percent delivered', unit:'%',
-  // target 35.25 | distractors 64.75 (rejected), 13.26 (divided by US total), 54.4 (12.9/23.7) | nearest gap 19 -> tol 0.3
-  answer:EG_PCT, tol:0.3,
-  ok:`Correct: 100 × 12.9 / 36.6 ≈ ${EG_PCT.toFixed(1)}%. Roughly two-thirds of the energy fed to power plants is rejected before electricity reaches customers.`,
-  diagFn:x=>{if(near(x,100*EG_REJ/EG_IN,0.01))return 'That is the rejected share. Use the 12.9 quads of delivered electricity.';
-   if(near(x,100*EG_OUT/US,0.01))return 'You divided by all U.S. energy. Divide by the 36.6 quads that went into electricity generation.';
-   if(near(x,100*EG_OUT/EG_REJ,0.01))return 'You divided by the rejected energy. Divide by the 36.6 quads going in.';
-   if(near(x,EG_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
-  generic:'Divide 12.9 by 36.6 and multiply by 100.',
-  solution:`100 × 12.9 / 36.6 = <b>${EG_PCT.toFixed(1)}%</b>.`}
-},
-{ // 10
- title:'Transportation', view:'flow',
- body:`<p>26.9 quads went into transportation. 5.65 quads became energy services; 21.2 quads were rejected.</p>`,
- cap:'Transportation: 26.9 quads in, split into energy services and rejected energy.',
- q:{type:'num', prompt:'What percent of transportation energy became energy services?', label:'Percent useful in transportation', unit:'%',
-  // target 21.0 (LLNL footnote: 21%) | distractors 78.8 (rejected), 5.81 (divided by US total), 26.7 (5.65/21.2) | nearest gap 5.7 -> tol 0.3
-  answer:TR_PCT, tol:0.3,
-  ok:`Correct: 100 × 5.65 / 26.9 ≈ ${TR_PCT.toFixed(0)}%, the value in the LLNL chart's footnote. Transportation turns the smallest fraction of its energy into useful work of any sector.`,
-  diagFn:x=>{if(near(x,100*TR_REJ/TR_IN,0.01))return 'That is the rejected share. Use the 5.65 quads of energy services.';
-   if(near(x,100*TR_SERV/US,0.02))return 'You divided by all U.S. energy. Divide by the 26.9 quads into transportation.';
-   if(near(x,100*TR_SERV/TR_REJ,0.01))return 'You divided by the rejected energy. Divide by the 26.9 quads going in.';
-   if(near(x,TR_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
-  generic:'Divide 5.65 by 26.9 and multiply by 100.',
-  solution:`100 × 5.65 / 26.9 = <b>${TR_PCT.toFixed(1)}%</b>.`}
-},
-{ // 11
- title:'What fuels transportation?', view:'flow',
- body:`<p>Transportation's 26.9 quads came from petroleum (24.3), biomass (1.48), natural gas (1.1), and electricity (0.02).</p>
- <p>Fuels made from oil are nearly ideal for transportation: energy-dense, averaging twice the energy content of coal by weight, and liquid.</p>`,
- cap:'The sources feeding U.S. transportation in 2021.',
- q:{type:'num', prompt:'What percent of U.S. transportation energy came from petroleum?', label:'Petroleum share of transportation', unit:'%',
-  // target 90.33 | distractors 69.23 (share of petroleum going to transport), 24.97 (divided by US total), 0.903 | nearest gap 21 -> tol 0.4
-  answer:TR_PET_PCT, tol:0.4,
-  ok:`Correct: 100 × 24.3 / 26.9 ≈ ${TR_PET_PCT.toFixed(0)}%. U.S. transportation runs almost entirely on petroleum.`,
-  diagFn:x=>{if(near(x,100*TR_PET/PET,0.01))return 'That is the share of all petroleum that goes to transportation (24.3 / 35.1). The question asks what share of transportation comes from petroleum: divide by 26.9.';
-   if(near(x,100*TR_PET/US,0.02))return 'You divided by all U.S. energy. Divide by transportation\'s 26.9 quads.';
-   if(near(x,TR_PET_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
-  generic:'Divide 24.3 by 26.9 and multiply by 100.',
-  solution:`100 × 24.3 / 26.9 = <b>${TR_PET_PCT.toFixed(1)}%</b>.`}
+  generic:'Divide 32.34 by 94.6 and multiply by 100.',
+  solution:`100 × 32.34 / 94.6 = <b>${SERV_PCT.toFixed(1)}%</b>.`}
 },
 { // 12
+ title:'Electricity generation', view:'flow',
+ body:`<p>32.77 quads went into electricity generation. 13.56 quads came out as retail electricity; 19.21 quads were rejected.</p>`,
+ cap:'Electricity generation: 32.77 quads in, split into delivered electricity and rejected energy.',
+ q:{type:'num', prompt:'What percent of the energy into electricity generation came out as delivered electricity?', label:'Percent delivered', unit:'%',
+  // target 41.38 | distractors 58.62 (rejected), 14.33 (divided by US total), 70.59 (13.56/19.21), 0.414 | tol 0.4
+  answer:EG_PCT, tol:0.4,
+  ok:`Correct: 100 × 13.56 / 32.77 ≈ ${EG_PCT.toFixed(1)}%. Thermal power plants are heat engines, limited by the Carnot efficiency, so most of the fuel's energy leaves as waste heat.`,
+  diagFn:x=>{if(near(x,100*EG_REJ/EG_IN,0.01))return 'That is the rejected share. Use the 13.56 quads of delivered electricity.';
+   if(near(x,100*EG_OUT/US,0.01))return 'You divided by all U.S. energy. Divide by the 32.77 quads that went into electricity generation.';
+   if(near(x,100*EG_OUT/EG_REJ,0.01))return 'You divided by the rejected energy. Divide by the 32.77 quads going in.';
+   if(near(x,EG_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 13.56 by 32.77 and multiply by 100.',
+  solution:`100 × 13.56 / 32.77 = <b>${EG_PCT.toFixed(1)}%</b>.`}
+},
+{ // 13
+ title:'Transportation', view:'flow',
+ body:`<p>28.29 quads went into transportation. 5.94 quads became energy services; 22.35 quads were rejected.</p>`,
+ cap:'Transportation: 28.29 quads in, split into energy services and rejected energy.',
+ q:{type:'num', prompt:'What percent of transportation energy became energy services?', label:'Percent useful in transportation', unit:'%',
+  // target 21.0 (LLNL footnote: 21%) | distractors 79.0 (rejected), 6.28 (divided by US total), 26.58 (5.94/22.35), 0.21 | tol 0.3
+  answer:TR_PCT, tol:0.3,
+  ok:`Correct: 100 × 5.94 / 28.29 ≈ ${TR_PCT.toFixed(0)}%, the value in the LLNL chart's footnote. Combustion engines turn only about a fifth of their fuel into motion; electric motors convert about 90% of their energy.`,
+  diagFn:x=>{if(near(x,100*TR_REJ/TR_IN,0.01))return 'That is the rejected share. Use the 5.94 quads of energy services.';
+   if(near(x,100*TR_SERV/US,0.02))return 'You divided by all U.S. energy. Divide by the 28.29 quads into transportation.';
+   if(near(x,100*TR_SERV/TR_REJ,0.01))return 'You divided by the rejected energy. Divide by the 28.29 quads going in.';
+   if(near(x,TR_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 5.94 by 28.29 and multiply by 100.',
+  solution:`100 × 5.94 / 28.29 = <b>${TR_PCT.toFixed(1)}%</b>.`}
+},
+{ // 14
+ title:'What fuels transportation?', view:'flow',
+ body:`<p>Transportation's 28.29 quads came from petroleum (24.97), biomass (1.89), natural gas (1.39), and electricity (0.02).</p>
+ <p>Liquid fuels made from oil are nearly ideal for vehicles: high energy per kilogram <i>and</i> per liter, and easy to store and pour.</p>`,
+ cap:'The sources feeding U.S. transportation in 2024.',
+ q:{type:'num', prompt:'What percent of U.S. transportation energy came from petroleum?', label:'Petroleum share of transportation', unit:'%',
+  // target 88.26 | distractors 70.16 (share of petroleum going to transport), 26.40 (divided by US total), 0.883 | tol 0.4
+  answer:TR_PET_PCT, tol:0.4,
+  ok:`Correct: 100 × 24.97 / 28.29 ≈ ${TR_PET_PCT.toFixed(0)}%. U.S. transportation still runs mostly on petroleum, though electric cars were one in four new cars sold worldwide in 2025.`,
+  diagFn:x=>{if(near(x,100*TR_PET/PET,0.01))return 'That is the share of all petroleum that goes to transportation (24.97 / 35.59). The question asks what share of transportation comes from petroleum: divide by 28.29.';
+   if(near(x,100*TR_PET/US,0.02))return 'You divided by all U.S. energy. Divide by transportation\'s 28.29 quads.';
+   if(near(x,TR_PET_PCT/100,0.02))return 'That is a fraction. Multiply by 100 for percent.';return null;},
+  generic:'Divide 24.97 by 28.29 and multiply by 100.',
+  solution:`100 × 24.97 / 28.29 = <b>${TR_PET_PCT.toFixed(1)}%</b>.`}
+},
+{ // 15
  title:'Electricity versus transportation', view:'flow',
- body:`<p>Electricity generation's 36.6 quads came from natural gas (11.6), coal (9.47), nuclear (8.13), wind (3.32), hydro (2.27), solar (1.0), and small amounts of biomass, petroleum, and geothermal.</p>`,
+ body:`<p>Electricity generation's 32.77 quads came from natural gas (13.94), nuclear (8.17), coal (7.01), wind (1.54), hydro (0.83), solar (0.75), and small amounts of biomass, petroleum, and geothermal.</p>`,
  cap:'Side by side: the sources feeding electricity generation and transportation.',
  q:{type:'choice', prompt:'Which sector draws on a more diverse mix of sources?',
   options:[{v:'elec',label:'Electricity generation'},{v:'trans',label:'Transportation'},{v:'same',label:'They are about equally diverse'}],
   answer:'elec',
-  ok:'Correct. Electricity already draws on many sources, including nuclear, wind, hydro, and solar, while transportation is about 90% petroleum. That is one reason the pace of transition differs between the two.',
-  diag:{trans:'Transportation is about 90% petroleum (your last answer). Compare that with the list for electricity.',
-        same:'Compare them: no single source is even a third of electricity generation, while petroleum is about 90% of transportation.'},
+  ok:'Correct. Electricity already draws on many sources, including nuclear, wind, hydro, and solar, while transportation is nearly 90% petroleum. That is one reason the electricity system is changing fastest (globally, renewables passed coal in electricity in 2025) and why "electrify, then clean the grid" is the central decarbonization strategy.',
+  diag:{trans:'Transportation is nearly 90% petroleum (your last answer). Compare that with the list for electricity.',
+        same:'Compare them: no single source is even half of electricity generation, while petroleum is nearly 90% of transportation.'},
   generic:'Try again.',
-  solution:'<b>Electricity generation.</b> Its largest source (natural gas) is under a third of its input; petroleum is ~90% of transportation.'}
+  solution:'<b>Electricity generation.</b> Its largest source (natural gas) is about 43% of its input; petroleum is ~88% of transportation.'}
 },
-{ // 13
+{ // 16
+ title:'Lecture 2 callback: waste heat or CO₂?', view:'heat',
+ body:`<p>All that rejected energy ends up as heat. Is <i>that</i> what warms the planet? Spread all of humanity's energy use over Earth's surface and compare it with CO₂'s greenhouse forcing.</p>
+ <div class="given"><b>World energy</b> ≈ 600 EJ per year (your first answer) &nbsp;·&nbsp; <b>1 year</b> ≈ 3.16 × 10⁷ s<br><b>Earth's surface area</b> ≈ 5.1 × 10¹⁴ m²</div>
+ <span class="eq">heat flux (W/m²) = energy per year (J) / seconds per year / area</span>`,
+ cap:'Direct human waste heat compared with the greenhouse forcing from today\'s extra CO₂.',
+ q:{type:'num', prompt:'What is the average heating from all human energy use, in watts per square meter?', label:'Heat flux in watts per square meter', unit:'W/m²',
+  // target 0.0372 | distractors 1.18e6 (forgot seconds), 1.9e13 (forgot area), 3.7e-20 (forgot 1e18) | tol 0.002 (accepts 0.035-0.039)
+  answer:HEAT, tol:0.002,
+  ok:`Correct: 6.0 × 10²⁰ J / 3.16 × 10⁷ s / 5.1 × 10¹⁴ m² ≈ ${HEAT.toFixed(3)} W/m². CO₂ forcing today is about 5.35 × ln(427/278) ≈ ${FORCE.toFixed(1)} W/m², roughly ${Math.round(FORCE/HEAT)}× larger, and it lasts for centuries. Remember Lecture 2: power in = power out. It's the CO₂, not the waste heat.`,
+  diagFn:x=>{if(near(x,G_TOT*1e18/AREA,0.05))return 'That is joules per square meter per year. Divide by the seconds in a year to get watts.';
+   if(near(x,G_TOT*1e18/SEC,0.05))return 'That is the total power in watts (about 19 TW). Now divide by Earth\'s surface area.';
+   if(near(x,G_TOT/(SEC*AREA),0.05))return 'Convert EJ to joules first: 1 EJ = 10¹⁸ J.';return null;},
+  generic:'Convert 600 EJ to joules (× 10¹⁸), divide by 3.16 × 10⁷ s, then divide by 5.1 × 10¹⁴ m².',
+  solution:`600 × 10¹⁸ J / 3.16 × 10⁷ s = 1.9 × 10¹³ W; / 5.1 × 10¹⁴ m² = <b>${HEAT.toFixed(3)} W/m²</b>.`}
+},
+{ // 17
  title:'Putting it together', view:'mix',
  body:`<ul>
- <li>In 2021 the world used about ${G_TOT.toFixed(0)} EJ of primary energy, about ${FF_PCT.toFixed(0)}% of it from fossil fuels: roughly ${FF_REN.toFixed(0)} times the renewables total.</li>
- <li>In the U.S., only about a third of primary energy (${SERV_PCT.toFixed(0)}%) ends up as energy services. Electricity generation delivers about ${EG_PCT.toFixed(0)}% of its input; transportation turns about ${TR_PCT.toFixed(0)}% of its input into useful work.</li>
- <li>Electricity already draws on many sources. Transportation is about ${TR_PET_PCT.toFixed(0)}% petroleum, because liquid, energy-dense fuels are nearly ideal for it.</li>
- <li>With a system this large, transitions are slow: facilities take decades to build and retire, and new technologies take decades to reach scale. Managing demand is a critical tool.</li>
+ <li>In 2025 the world used about ${G_TOT.toFixed(0)} EJ of energy, about ${FF_PCT.toFixed(0)}% of it from fossil fuels. Wind and solar are ~3% of all energy but ~17% of electricity. Always check the accounting method.</li>
+ <li>Chemistry sets carbon intensity: coal releases ~${Math.round(100*(CG-1))}% more CO₂ than gas for the same energy, as your Lecture 1 H:C table predicts.</li>
+ <li>About ${AF.toFixed(0)}% of the CO₂ we have emitted is still in the air. The energy statistics account for the rise we measure.</li>
+ <li>In the U.S., only about a third of primary energy (${SERV_PCT.toFixed(0)}%) becomes energy services. Power plants deliver ~${EG_PCT.toFixed(0)}% of their input; transportation turns ~${TR_PCT.toFixed(0)}% into motion and is ~${TR_PET_PCT.toFixed(0)}% petroleum.</li>
+ <li>The waste heat is tiny (~${HEAT.toFixed(2)} W/m²) next to CO₂'s forcing (~${FORCE.toFixed(1)} W/m²).</li>
+ <li>Transitions are slow because of scale and long-lived infrastructure. The binding constraint on fossil fuels is the atmosphere's carbon budget, not the size of reserves.</li>
  </ul>`,
- cap:'The global 2021 energy mix, about 82% fossil.'
+ cap:'The world energy mix in 2025, about 86% fossil.'
 }
 ];
 
@@ -298,32 +374,71 @@ function txt(s,x,y,o){o=o||{};ctx.font=font(o.sz||14,o.b,o.serif);ctx.fillStyle=
 function line(x1,y1,x2,y2,col,w,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=col;ctx.lineWidth=w||1.5;ctx.setLineDash(dash?[5,4]:[]);ctx.stroke();ctx.setLineDash([]);}
 function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function bracket(x1,x2,y,col,down){const d=down?8:-8;ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x1,y+d);ctx.lineTo(x2,y+d);ctx.lineTo(x2,y);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();}
+function qmark(d,val){return d?val:'?';}
 
 // ---------- global mix ----------
 function drawMix(){
- const x0=40,x1=680,y=120,h=64,scale=(x1-x0)/600, X=v=>x0+v*scale;
- txt('Global primary energy consumption, 2021 (EJ)',x0,34,{sz:15,b:1,c:C.navy});
- let acc=0; const mids=[];
+ const x0=40,x1=680,y=130,h=70,scale=(x1-x0)/650, X=v=>x0+v*scale;
+ txt('World total energy supply, 2025 (EJ)',x0,30,{sz:15,b:1,c:C.navy});
+ let acc=0;
  G.forEach(([n,v,col],i)=>{ctx.fillStyle=col;ctx.fillRect(X(acc),y,v*scale,h);ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.strokeRect(X(acc),y,v*scale,h);
-   const m=X(acc+v/2); mids.push(m); const up=i%2===0;
-   const ly=up?y-26:y+h+26; line(m,up?y-14:y+h+14,m,up?y:y+h,col,1);
-   txt(n,m,up?ly-8:ly,{sz:13,b:1,c:col,al:'center'});txt(String(v),m,up?ly+8:ly+16,{sz:13,c:C.slate,al:'center'});
+   if(v>100){txt(n,X(acc+v/2),y+h/2-9,{sz:13.5,b:1,c:'#fff',al:'center'});txt(String(v.toFixed(1)),X(acc+v/2),y+h/2+10,{sz:13,c:'#fff',al:'center'});}
    acc+=v;});
  // axis
- const ay=y+h+64; line(x0,ay,x1,ay,C.slate,1.5);
+ const ay=y+h+12; line(x0,ay,x1,ay,C.slate,1.5);
  for(let v=0;v<=600;v+=100){line(X(v),ay,X(v),ay+5,C.slate,1.5);txt(String(v),X(v),ay+16,{sz:13,c:C.mut,al:'center'});}
-
+ // legend for the thin non-fossil slices
+ let lx=x0, ly=ay+46;
+ G.slice(3).forEach(([n,v,col])=>{ctx.fillStyle=col;ctx.fillRect(lx,ly-7,14,14);const s=n+' '+v.toFixed(1);txt(s,lx+19,ly,{sz:13,c:C.slate});ctx.font=font(13);lx+=19+ctx.measureText(s).width+18;});
  const tDone=done(S.TOT)||stage>S.TOT;
- if(stage>=S.TOT){line(X(G_TOT),y-54,X(G_TOT),y+h+6,C.navy,2,true);txt('total = '+(tDone?G_TOT.toFixed(1)+' EJ':'?'),X(G_TOT)-4,y-64,{sz:14,b:1,c:tDone?C.green:C.amber,al:'right'});}
- if(stage>=S.FF){const fDone=done(S.FF)||stage>S.FF;const by=ay+34;bracket(X(0),X(G_FF),by,C.terra,true);
+ if(stage>=S.TOT){line(X(G_TOT),y-14,X(G_TOT),y+h+6,C.navy,2,true);txt('total = '+(tDone?G_TOT.toFixed(1)+' EJ':'?'),X(G_TOT),y-24,{sz:14,b:1,c:tDone?C.green:C.amber,al:'right'});}
+ if(stage>=S.FF){const fDone=done(S.FF)||stage>S.FF;const by=ay+86;bracket(X(0),X(G_FF),by,C.terra,true);
    txt('fossil fuels = '+(fDone?G_FF.toFixed(1)+' EJ':'?'),X(G_FF/2),by+24,{sz:14,b:1,c:fDone?C.green:C.amber,al:'center'});
    if(stage>=S.PCT){const pDone=done(S.PCT)||stage>S.PCT;txt('share = '+(pDone?FF_PCT.toFixed(1)+'%':'?'),X(G_FF/2),by+44,{sz:14,b:1,c:pDone?C.green:C.amber,al:'center'});}}
- if(stage>=S.RAT&&stage!==13){const rDone=done(S.RAT)||stage>S.RAT, yb=ay+100;
-   txt('to scale:',x0,yb+4,{sz:13,c:C.mut});
-   ctx.fillStyle=C.terra;ctx.fillRect(X(70),yb-12,G_FF*scale*0.8,14);txt('fossil '+G_FF.toFixed(1),X(70)+G_FF*scale*0.8+6,yb-5,{sz:12.5,c:C.terra,b:1});
-   ctx.fillStyle=C.amber;ctx.fillRect(X(70),yb+6,39.91*scale*0.8,14);txt('renewables 39.91',X(70)+39.91*scale*0.8+6,yb+13,{sz:12.5,c:C.amber,b:1});
-   txt('ratio = '+(rDone?FF_REN.toFixed(1)+'×':'?'),x1,yb+4,{sz:14,b:1,c:rDone?C.green:C.amber,al:'right'});}
- if(stage===13)txt('≈ 82% fossil; the system is enormous and slow to turn over',CW/2,ay+110,{sz:14,b:1,c:C.navy,al:'center'});
+ if(stage===S.METH){const yb=ay+150, bw=x1-x0-150;
+   txt('wind & solar share of…',x0,yb-22,{sz:13,c:C.mut});
+   txt('all energy',x0,yb,{sz:13,b:1});ctx.fillStyle=C.line;ctx.fillRect(x0+110,yb-8,bw,16);ctx.fillStyle='#E3A100';ctx.fillRect(x0+110,yb-8,bw*0.033,16);txt('~3%',x0+110+bw*0.033+6,yb,{sz:13,b:1,c:'#B07D00'});
+   txt('electricity',x0,yb+26,{sz:13,b:1});ctx.fillStyle=C.line;ctx.fillRect(x0+110,yb+18,bw,16);ctx.fillStyle='#E3A100';ctx.fillRect(x0+110,yb+18,bw*0.173,16);txt('~17%',x0+110+bw*0.173+6,yb+26,{sz:13,b:1,c:'#B07D00'});}
+ if(stage===17||stage===S.SLOW)txt('≈ 86% fossil; the system is enormous and slow to turn over',CW/2,ay+160,{sz:14,b:1,c:C.navy,al:'center'});
+}
+
+// ---------- emission factors ----------
+function drawCarbon(){
+ const x0=150,x1=640,top=70,bh=34,gap=12,scale=(x1-x0)/110;
+ txt('CO₂ released per unit of energy (kg CO₂ per GJ)',CW/2,32,{sz:15,b:1,c:C.navy,al:'center'});
+ EF.forEach(([n,v,col],i)=>{const yy=top+i*(bh+gap);txt(n,x0-10,yy+bh/2,{sz:14,b:1,c:C.slate,al:'right'});
+   ctx.fillStyle=col;ctx.fillRect(x0,yy,Math.max(v*scale,2),bh);txt(v.toFixed(1),x0+v*scale+8,yy+bh/2,{sz:14,b:1,c:C.slate});});
+ const d=done(S.CG)||stage>S.CG;
+ txt('coal ÷ gas = '+(d?CG.toFixed(2)+'×  (Lecture 1 table: 2.0 ÷ 1.2 ≈ 1.67)':'?'),CW/2,top+7*(bh+gap)+14,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+}
+
+// ---------- atmosphere check ----------
+function drawAtm(){
+ const x0=170,x1=640,scale=(x1-x0)/3000;
+ txt('Where did the CO₂ go? (Gt CO₂, 1850–2024)',CW/2,32,{sz:15,b:1,c:C.navy,al:'center'});
+ // ppm bar
+ txt('CO₂ in the air:',40,82,{sz:14,b:1});txt('278 ppm (pre-industrial) → 427 ppm (2025)',170,82,{sz:14,c:C.slate});
+ const aDone=done(S.AIR)||stage>S.AIR, fDone=done(S.AF)||stage>S.AF;
+ const rows=[['Emitted',EMIT,'#3B3B3B',true],['Still in the air',AIR,'#B85042',aDone]];
+ rows.forEach(([n,v,col,show],i)=>{const yy=130+i*70;txt(n,x0-12,yy+20,{sz:14,b:1,al:'right'});
+   if(show){ctx.fillStyle=col;ctx.fillRect(x0,yy,v*scale,40);txt(Math.round(v).toLocaleString()+' Gt',x0+v*scale+8,yy+20,{sz:14,b:1});}
+   else{ctx.strokeStyle=C.amber;ctx.setLineDash([5,4]);ctx.strokeRect(x0,yy,200,40);ctx.setLineDash([]);txt('?',x0+100,yy+20,{sz:18,b:1,c:C.amber,al:'center'});}});
+ if(stage>=S.AF){const yy=270;txt('Airborne fraction',x0-12,yy+20,{sz:14,b:1,al:'right'});
+   txt(fDone?AF.toFixed(0)+'% stayed in the air; ~'+(100-AF).toFixed(0)+'% went into the ocean and land':'?',x0,yy+20,{sz:14,b:1,c:fDone?C.green:C.amber});}
+ txt('1 ppm CO₂ ≈ 7.8 Gt CO₂',CW/2,380,{sz:13,c:C.mut,al:'center'});
+}
+
+// ---------- waste heat vs forcing ----------
+function drawHeat(){
+ const x0=230,x1=640,scale=(x1-x0)/2.5;
+ txt('Heating of the planet (watts per square meter)',CW/2,32,{sz:15,b:1,c:C.navy,al:'center'});
+ const d=done(S.HEAT);
+ const rows=[['All human waste heat',HEAT,'#9AA3AE',d],['CO₂ greenhouse forcing',FORCE,'#B85042',true]];
+ rows.forEach(([n,v,col,show],i)=>{const yy=110+i*90;txt(n,x0-12,yy+24,{sz:14,b:1,al:'right'});
+   if(show){ctx.fillStyle=col;ctx.fillRect(x0,yy,Math.max(v*scale,2),48);txt((v<0.1?v.toFixed(3):'≈ '+v.toFixed(1))+' W/m²',x0+Math.max(v*scale,2)+8,yy+24,{sz:15,b:1});}
+   else{ctx.strokeStyle=C.amber;ctx.setLineDash([5,4]);ctx.strokeRect(x0,yy,120,48);ctx.setLineDash([]);txt('?',x0+60,yy+24,{sz:18,b:1,c:C.amber,al:'center'});}});
+ txt('ΔF ≈ 5.35 ln(427/278)',x0,110+90+68,{sz:13,c:C.mut});
+ if(d)txt('CO₂ forcing is ~'+Math.round(FORCE/HEAT)+'× larger than all human waste heat',CW/2,370,{sz:15,b:1,c:C.green,al:'center'});
 }
 
 // ---------- proportional flow (ribbon) ----------
@@ -333,7 +448,6 @@ function ribbons(L,R,title,unit,note){
  txt(title,CW/2,30,{sz:15,b:1,c:C.navy,al:'center'});
  const place=(arr)=>{let y=top;return arr.map(([n,v,col])=>{const h=Math.max(v*k,1.5);const o={n,v,col,y,h};y+=h+gap;return o;});};
  const Lp=place(L), Rp=place(R);
- // ribbons: map cumulative intervals
  let li=0,ri=0,lu=0,ru=0; const lrem=L.map(a=>a[1]), rrem=R.map(a=>a[1]);
  while(li<L.length&&ri<R.length){const f=Math.min(lrem[li],rrem[ri]);if(f>1e-9){
    const ly0=Lp[li].y+lu*k, ly1=ly0+f*k, ry0=Rp[ri].y+ru*k, ry1=ry0+f*k, xa=xl+wl, xb=xr, xm=(xa+xb)/2;
@@ -341,7 +455,6 @@ function ribbons(L,R,title,unit,note){
    ctx.fillStyle=(R.length>1?Rp[ri].col:Lp[li].col)+'55';ctx.fill();}
    lrem[li]-=f;rrem[ri]-=f;lu+=f;ru+=f;if(lrem[li]<=1e-9){li++;lu=0;}if(rrem[ri]<=1e-9){ri++;ru=0;}}
  const box=(o,x,w,al)=>{ctx.fillStyle=o.col;ctx.fillRect(x,o.y,w,o.h);
-   const tx=al==='left'?x-8:x+w+8, a=al==='left'?'right':'left';
    if(o.h>=26){ctx.font=font(13.5,1);const words=o.n.split(' ');let lines=[o.n];if(ctx.measureText(o.n).width>w-10&&words.length>1){const m=Math.ceil(words.length/2);lines=[words.slice(0,m).join(' '),words.slice(m).join(' ')];}
    const y0=o.y+o.h/2-8-(lines.length-1)*8;lines.forEach((ln,j)=>txt(ln,x+w/2,y0+j*16,{sz:13.5,b:1,c:'#fff',al:'center'}));txt(o.v+' '+unit,x+w/2,y0+lines.length*16+1,{sz:13,c:'#fff',al:'center'});}
    else txt(o.n+' '+o.v,al==='left'?x+w+6:x-6,o.y+o.h/2,{sz:12,c:o.col==='#E8B400'?C.slate:o.col,b:1,al:al==='left'?'left':'right'});};
@@ -355,12 +468,12 @@ function stack100(x,title,src){const H=300,top=70,tot=src.reduce((a,b)=>a+b[1],0
    if(h>=16)txt(n+' '+Math.round(100*v/tot)+'%',x+60,y+h/2,{sz:12.5,b:1,c:'#fff',al:'center'});y+=h;});
  txt(tot.toFixed(1)+' quads',x+60,top+H+18,{sz:13,c:C.mut,al:'center'});}
 function drawFlow(){
- if(stage<=S.SERV){ribbons([['U.S. primary energy',US,'#3F4A5A']],[['Rejected energy',REJ,'#9AA3AE'],['Energy services',SERV,'#2C6E49']],'U.S. energy in 2021 (quads)','',stage===S.SERV?pctNote(S.SERV,SERV_PCT,'energy services share'):'65.4 + 31.8 ≈ 97.3 quads (LLNL rounding)');}
- else if(stage===S.EG){ribbons([['Electricity generation',EG_IN,'#E8890C']],[['Rejected energy',EG_REJ,'#9AA3AE'],['Delivered electricity',EG_OUT,'#E8890C']],'Electricity generation, 2021 (quads)','',pctNote(S.EG,EG_PCT,'delivered share'));}
- else if(stage===S.TR){ribbons([['Transportation',TR_IN,'#E7A0AE']],[['Rejected energy',TR_REJ,'#9AA3AE'],['Energy services',TR_SERV,'#2C6E49']],'Transportation, 2021 (quads)','',pctNote(S.TR,TR_PCT,'useful share'));}
- else if(stage===S.PET){ribbons(TR_SRC,[['Transportation',TR_IN,'#E7A0AE']],'Sources feeding U.S. transportation, 2021 (quads)','',pctNote(S.PET,TR_PET_PCT,'petroleum share of transportation'));}
+ if(stage<=S.SERV){ribbons([['U.S. primary energy',US,'#3F4A5A']],[['Rejected energy',REJ,'#9AA3AE'],['Energy services',SERV,'#2C6E49']],'U.S. energy in 2024 (quads)','',stage===S.SERV?pctNote(S.SERV,SERV_PCT,'energy services share'):'62.27 + 32.34 ≈ 94.6 quads (LLNL rounding)');}
+ else if(stage===S.EG){ribbons([['Electricity generation',EG_IN,'#E8890C']],[['Rejected energy',EG_REJ,'#9AA3AE'],['Delivered electricity',EG_OUT,'#E8890C']],'Electricity generation, 2024 (quads)','',pctNote(S.EG,EG_PCT,'delivered share'));}
+ else if(stage===S.TR){ribbons([['Transportation',TR_IN,'#E7A0AE']],[['Rejected energy',TR_REJ,'#9AA3AE'],['Energy services',TR_SERV,'#2C6E49']],'Transportation, 2024 (quads)','',pctNote(S.TR,TR_PCT,'useful share'));}
+ else if(stage===S.PET){ribbons(TR_SRC,[['Transportation',TR_IN,'#E7A0AE']],'Sources feeding U.S. transportation, 2024 (quads)','',pctNote(S.PET,TR_PET_PCT,'petroleum share of transportation'));}
  else {stack100(150,'Electricity generation',EG_SRC);stack100(450,'Transportation',TR_SRC);
-   const d=done(S.DIV);txt(d?'electricity: many sources  ·  transportation: ~90% petroleum':'which is more diverse?',CW/2,418,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+   const d=done(S.DIV);txt(d?'electricity: many sources  ·  transportation: ~88% petroleum':'which is more diverse?',CW/2,418,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
    txt('100% bars: share of each sector\'s input by source',CW/2,30,{sz:15,b:1,c:C.navy,al:'center'});}
 }
 
@@ -370,7 +483,7 @@ function draw(){
  cv.width=cssW*dpr; cv.height=cssW*(CH/CW)*dpr; cv.style.height=(cssW*(CH/CW))+'px';
  ctx.setTransform((cssW/CW)*dpr,0,0,(cssW/CW)*dpr,0,0);
  ctx.clearRect(0,0,CW,CH);
- ({mix:drawMix,flow:drawFlow})[stages[stage].view]();
+ ({mix:drawMix,flow:drawFlow,carbon:drawCarbon,atm:drawAtm,heat:drawHeat})[stages[stage].view]();
  const c=stages[stage].cap; capt.textContent=c; cv.setAttribute('aria-label',c);
 }
 
