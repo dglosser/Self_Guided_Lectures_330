@@ -131,7 +131,7 @@ const stages=[
  body:`<span class="eq">Intensity = power / area</span>
  <div class="given"><b>Intensity</b> in W/m² (watts per square meter)<br><b>Power</b> in W (watts = joules per second)<br><b>E = P × t</b>: energy (J) = power (W) × time (s)</div>
  <p>Sunlight at 240 W/m² means every square meter of panel receives 240 J of radiant energy every second.</p>
- <p>Intensity is a vector. Only the part <b>normal</b> to the surface (at 90° to it) delivers power. If the rays come in at angle θ from the normal, the delivered intensity is:</p>
+ <p>What matters is the angle between the sunlight and the panel. When the rays arrive at an angle, the same beam is spread over more panel area. If the rays come in at angle θ from the <b>normal</b> (the line at 90° to the panel), the intensity delivered to the panel is:</p>
  <span class="eq">I<sub>delivered</sub> = I × cos θ</span>`,
  cap:'Sunlight arriving at angle θ from the panel\'s normal. Only the normal component delivers power.'
 },
@@ -260,7 +260,7 @@ const stages=[
 },
 { // 12
  title:'Implication 2: seasons', view:'globe',
- body:`<p>Earth's tilt means the sun's angle at a given place changes through the year.</p>`,
+ body:`<p>Earth's axis is tilted about 23.4°, and that tilt stays fixed through the year. As Earth orbits, the tilted axis points toward or away from the sun, so the sun's angle at a given place changes with the seasons.</p>`,
  cap:'The best panel angle depends on latitude and season.',
  q:{type:'choice', prompt:'To produce the most power over the year, panel angles should be:',
   options:[{v:'seas',label:'Adjusted seasonally'},{v:'fixed',label:'Fixed at one angle forever gives the most power'},{v:'noon',label:'Pointed straight up everywhere'}],
@@ -287,7 +287,7 @@ const stages=[
 { // 14
  title:'Putting it together', view:'calc',
  body:`<ul>
- <li>PV panels transfer radiant energy directly to electrical energy; photons hitting the semiconductor liberate free electrons.</li>
+ <li>PV panels transfer radiant energy directly to electrical energy; photons with enough energy create electron–hole pairs in the semiconductor, and the p–n junction's electric field drives the electrons through a circuit.</li>
  <li>More sunlight on the panel means more electricity: intensity = power / area.</li>
  <li>Only the normal component delivers power: I × cos θ. Then multiply by efficiency, convert W to J/h (× 3,600), and solve for area.</li>
  <li>240 W/m², 15%, 10°, 766 kJ/h → about 6 m². At 40°, about 7.7 m².</li>
@@ -315,7 +315,7 @@ function drawTypes(){
  chain(110,'Solar thermal',['radiant','thermal','kinetic','electrical'],C.terra,false);
  txt('heat-transfer material → water → spinning turbine',30,150,{sz:13,c:C.mut});
  chain(270,'Photovoltaic (PV) panel',stage===S.TYPE&&!pvOk?['radiant','?']:['radiant','electrical'],C.steel,pvOk);
- txt('photons free electrons in a semiconductor (usually silicon)',30,310,{sz:13,c:C.mut});
+ txt('photons create electron–hole pairs in a semiconductor (usually silicon)',30,310,{sz:13,c:C.mut});
  txt('semiconductors conduct better than an insulator, but not as well as a conductor',30,400,{sz:13,c:C.mut});
 }
 
