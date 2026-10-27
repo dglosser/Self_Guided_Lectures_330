@@ -172,12 +172,12 @@ const stages=[
  body:`<p>Sedimentary basins are depressions filled with sedimentary rock, and the essential elements of a petroleum system are deposited in them. Plate tectonics frames the basin types.</p>
  <p>Passive margins (the transition from continental to oceanic crust, away from any active plate boundary) accumulate thick sedimentary deposits as they cool and subside, up to about 20 km thick.</p>`,
  cap:'Continental margins: active (narrow shelf) versus passive (wide shelf, thick sediment).',
- q:{type:'choice', prompt:'About 70% of oil and gas is found in basins at which kind of margin?',
-  options:[{v:'div',label:'Divergent (passive) margins'},{v:'conv',label:'Convergent (collision) margins'},{v:'tr',label:'Transform margins'}],
+ q:{type:'choice', prompt:'About two-thirds of the world's giant oil and gas fields are in basins at which kind of setting?',
+  options:[{v:'div',label:'Divergent settings (passive margins and rifts)'},{v:'conv',label:'Convergent (collision) margins'},{v:'tr',label:'Transform margins'}],
   answer:'div',
-  ok:'Correct. Divergent/passive margins, like the eastern coasts of North and South America and the U.S. Gulf Coast, have wide shelves and thick sediment accumulations.',
+  ok:'Correct. Passive margins (~35%) and rifts (~31%) hold about two-thirds of giant fields (Mann et al. 2003). Passive margins, like the eastern coasts of North and South America and the U.S. Gulf Coast, have wide shelves and thick sediment.',
   diag:{conv:'Convergent margins, like the U.S. west coast, have narrow shelves and steep slopes, with less room for thick sediment.',tr:'Transform margins host some pull-apart basins (for example along the San Andreas), but not most of the world\'s oil and gas.'},
-  generic:'Try again.', solution:'<b>Divergent (passive) margins</b>, ~70% (Lecture 10).'}
+  generic:'Try again.', solution:'<b>Divergent settings (passive margins and rifts)</b>, about two-thirds of giant fields (Lecture 10).'}
 },
 { // 8
  title:'How slow is geologic time?', view:'rate',
@@ -226,7 +226,7 @@ const stages=[
  <li>A petroleum system needs essential <b>elements</b> (source, reservoir, seal) and <b>processes</b> (generation/expulsion/migration, trap formation).</li>
  <li>Fine-grained rocks (clay, shale) make source rocks and seals; coarser sands and gravels make conventional reservoirs.</li>
  <li>Organic matter is preserved where production is high and the sea floor is anaerobic with fine clay.</li>
- <li>Plate tectonics frames sedimentary basins; about 70% of oil and gas is in divergent (passive) margins with thick sediment.</li>
+ <li>Plate tectonics frames sedimentary basins; about two-thirds of giant oil and gas fields are in divergent settings (passive margins and rifts) with thick sediment.</li>
  <li>Geologic time makes imperceptibly slow processes monumental, and the elements must line up in time: timing is everything.</li>
  </ul>`,
  cap:'The complete petroleum system: source, migration, reservoir, trap, and seal.'
@@ -310,7 +310,7 @@ function drawMargin(){
  ctx.fillStyle='#E8C45A';ctx.beginPath();ctx.moveTo(390,110);ctx.lineTo(590,120);ctx.lineTo(690,300);ctx.lineTo(690,380);ctx.lineTo(390,200);ctx.closePath();ctx.fill();
  txt('thick sediment (up to ~20 km)',520,190,{sz:13.5,b:1,c:C.navy,al:'center'});txt('wide shelf',490,98,{sz:13,c:C.slate,al:'center'});
  txt('continental → oceanic crust',540,400,{sz:13,c:C.slate,al:'center'});
- txt(d?'~70% of oil & gas':'where is ~70% of oil & gas?',540,70,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
+ txt(d?'~2/3 of giant fields':'where are ~2/3 of giant fields?',540,70,{sz:14,b:1,c:d?C.green:C.amber,al:'center'});
 }
 
 // ---------- rates ----------
